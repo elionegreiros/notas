@@ -4,7 +4,7 @@
 
 const usuariosAutorizados = {
     // Professores
-    "12345678900": { nome: "Prof. João Silva", senha: "123456", tipo: "professor" },
+    "02711337324": { nome: "Prof. Elio Negreiros", senha: "02711337324", tipo: "professor" },
     "98765432100": { nome: "Profa. Maria Santos", senha: "123456", tipo: "professor" },
     "11122233344": { nome: "Prof. Carlos Lima", senha: "123456", tipo: "professor" },
     
