@@ -86,34 +86,20 @@ const alunos2DS = [
 
 const alunosInf1 = [
     { nome: "ALEXANDRE BARBOSA DA SILVA", nascimento: "2005-07-18" },
-    { nome: "ANA MARIA DE JESUS OLIVEIRA", nascimento: "2006-03-23" },
     { nome: "ANTONIA GLENDA DA SILVA ALVES", nascimento: "2005-11-09" },
-    { nome: "ANTONIO MAIK BEZERRA DOS SANTOS", nascimento: "2006-08-14" },
-    { nome: "DAGMA MOREIRA LIMA FERNANDES", nascimento: "2005-04-27" },
-    { nome: "DANIEL RODRIGUES XAVIER", nascimento: "2006-12-11" },
     { nome: "EMANUELLY DA SILVA ALVES", nascimento: "2005-01-31" },
-    { nome: "FRANCIDALVA DE LIMA NOGUEIRA", nascimento: "2006-06-08" },
     { nome: "FRANCISCO EDSON DA SILVA CARNEIRO", nascimento: "2005-10-03" },
-    { nome: "FRANCISCO VINICIUS SOARES MELO", nascimento: "2006-02-19" },
-    { nome: "GEANE MARIA CARDOSO SOARES", nascimento: "2005-09-14" },
     { nome: "GEOVANA MARIA PEREIRA MARTINS", nascimento: "2006-05-29" },
     { nome: "KELIANY VIEIRA ANDRADE", nascimento: "2005-07-24" },
-    { nome: "LUCIANO FRANCISCO DA SILVA", nascimento: "2006-11-02" },
     { nome: "LUZANIRA ARAUJO DE SOUSA", nascimento: "2005-03-20" },
-    { nome: "MAICON RODRIGO BARROS SILVA", nascimento: "2006-08-07" },
-    { nome: "MARIA BEATRIZ FERREIRA DA SILVA", nascimento: "2005-12-15" },
     { nome: "MARIA DA CRUZ FURTUNATA DA SILVA", nascimento: "2006-04-26" },
     { nome: "MARIA DE FATIMA OLIVEIRA", nascimento: "2005-06-12" },
     { nome: "MARIA ISABELLY RIBEIRO MARTINA", nascimento: "2006-10-29" },
     { nome: "MARIA ISLANIA DE SOUSA", nascimento: "2005-01-17" },
     { nome: "MARIA KARIELY DE MELO ANDRADE", nascimento: "2006-09-06" },
-    { nome: "MARINA FERREIRA LEAL", nascimento: "2005-11-19" },
     { nome: "MARISANGELA VELOSO DA SILVA", nascimento: "2006-07-01" },
-    { nome: "MAURO SILVA MARTINS DE SOUSA", nascimento: "2005-02-23" },
     { nome: "RITA FRALINA ROQUE DA SILVA", nascimento: "2006-12-20" },
     { nome: "SIDNEY SANTANA DA SILVA", nascimento: "2005-05-11" },
-    { nome: "TALYSON SOUSA CARVALHO", nascimento: "2006-03-07" },
-    { nome: "VENILSON GOMES DA SILVA", nascimento: "2005-08-25" },
     { nome: "VIVIANE DE SOUSA LOPES", nascimento: "2006-01-15" }
 ];
 
@@ -128,7 +114,6 @@ const alunosInf5 = [
     { nome: "KAIQUE JOSE LIMA LEITE", nascimento: "2006-03-31" }
 ];
 
-// Converter para arrays de nomes simples para compatibilidade
 const alunosPorTurmaRaw = {
     "1adm": alunos1Adm.map(a => a.nome),
     "1amb": alunos1Amb.map(a => a.nome),
@@ -217,12 +202,11 @@ function verificarNotificacoes() {
     const mesAtual = hoje.getMonth() + 1;
     const diaAtual = hoje.getDate();
     
-    // Verificar aniversariantes
     const aniversariantes = [];
     const alunos = turmasConfig[turmaAtual].alunos;
     const nascimentos = alunosNascimentos[turmaAtual] || [];
     
-    alunos.forEach((aluno, idx) => {
+    alunos.forEach(aluno => {
         const nasc = nascimentos.find(n => n.nome === aluno);
         if (nasc && nasc.nascimento) {
             const dataNasc = new Date(nasc.nascimento);
@@ -239,7 +223,6 @@ function verificarNotificacoes() {
         container.appendChild(notif);
     }
     
-    // Verificar alunos com frequência baixa
     let totalPresencas = 0, totalAulas = 0;
     const faltasPorAluno = {};
     
@@ -250,9 +233,6 @@ function verificarNotificacoes() {
                 alunos.forEach(aluno => {
                     if (aula.presencas && aula.presencas[aluno] === false) {
                         faltasPorAluno[aluno] = (faltasPorAluno[aluno] || 0) + 1;
-                    }
-                    if (aula.presencas && aula.presencas[aluno] === true) {
-                        totalPresencas++;
                     }
                 });
             });
@@ -339,7 +319,7 @@ function removerAluno(turmaId, alunoNome) {
     
     if (turmaAtual === turmaId) {
         renderizarNotas(); renderizarPresenca(); renderizarVistos(); renderizarRelatorios(); 
-        atualizarDashboard(); renderizarRanking(); verificarNotificacoes();
+        atualizarDashboard(); renderizarRanking(); renderizarDashboard(); verificarNotificacoes();
     }
     renderizarAdmin();
     alert(`✅ "${alunoNome}" removido!`);
@@ -375,7 +355,7 @@ function adicionarAluno(turmaId, alunoNome, nascimento = "") {
     
     if (turmaAtual === turmaId) {
         renderizarNotas(); renderizarPresenca(); renderizarVistos(); renderizarRelatorios();
-        atualizarDashboard(); verificarNotificacoes();
+        atualizarDashboard(); renderizarDashboard(); verificarNotificacoes();
     }
     renderizarAdmin();
     alert(`✅ "${alunoNome}" adicionado!`);
@@ -428,7 +408,7 @@ function restoreDados(file) {
             salvarDados();
             salvarAlunosPersistencia();
             renderizarNotas(); renderizarPresenca(); renderizarVistos(); 
-            renderizarRelatorios(); renderizarEventos(); atualizarDashboard();
+            renderizarRelatorios(); renderizarEventos(); renderizarDashboard(); atualizarDashboard();
             alert("✅ Restore realizado com sucesso!");
         } catch(e) { alert("Erro ao restaurar backup!"); }
     };
@@ -613,7 +593,6 @@ function atualizarDashboard() {
     document.getElementById("statRecuperacao").textContent = recuperacao;
     document.getElementById("statReprovados").textContent = reprovados;
     
-    // Aniversariantes do mês
     const hoje = new Date();
     const mesAtual = hoje.getMonth() + 1;
     let anivCount = 0;
@@ -680,7 +659,6 @@ function renderizarNotas() {
             row.insertCell(4).innerHTML = `<span class="${statusClass}">${status}</span>`;
         }
         
-        // Botão de observações
         const obsCell = row.insertCell(tipo === "trimestral" ? 6 : 5);
         const obsBtn = document.createElement("button");
         obsBtn.innerHTML = '<i class="fas fa-comment"></i>';
@@ -747,7 +725,7 @@ function renderizarPresenca() {
         });
         aulaCard.innerHTML = `
             <div class="aula-header"><span class="aula-data"><i class="fas fa-calendar-alt"></i> ${new Date(aula.data).toLocaleDateString('pt-BR')}</span><button class="aula-remover" data-index="${idx}"><i class="fas fa-trash"></i> Remover</button></div>
-            <div class="tabela-container"><table class="tabela-presenca"><thead><tr><th>Aluno</th><th>Presente?</th></tr></thead><tbody>${presencasHtml}</tbody></table></div>
+            <div class="tabela-container"><table class="tabela-presenca"><thead><tr><th>Aluno</th><th>Presente?</th><tr></thead><tbody>${presencasHtml}</tbody></table></div>
         `;
         container.appendChild(aulaCard);
         aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
@@ -973,6 +951,7 @@ function trocarTurma(turmaId) {
     renderizarRelatorios();
     renderizarRanking();
     renderizarEventos();
+    renderizarDashboard();  // <-- ATUALIZA DASHBOARD AO TROCAR TURMA
     atualizarDashboard();
     verificarNotificacoes();
 }
@@ -1001,23 +980,6 @@ function renderizarAdmin() {
     });
 }
 
-function iniciarSistema(usuario) {
-    sessaoAtual = usuario;
-    document.getElementById("sidebarUserName").textContent = usuario.nome;
-    document.getElementById("sidebarUserType").textContent = usuario.tipo === "professor" ? "Professor" : (usuario.tipo === "coordenador" ? "Coordenador" : "Administrador");
-    document.getElementById("usuarioLogado").textContent = usuario.nome;
-    document.getElementById("telaLogin").style.display = "none";
-    document.getElementById("conteudoPrincipal").style.display = "flex";
-    carregarDadosSalvos();
-    trocarTurma("1adm");
-    
-    const toggleBtn = document.getElementById("toggleSidebar");
-    if (toggleBtn) toggleBtn.onclick = () => document.getElementById("sidebar").classList.toggle("collapsed");
-    
-    const darkModeBtn = document.getElementById("toggleDarkMode");
-    if (darkModeBtn) darkModeBtn.onclick = () => document.body.classList.toggle("dark-mode");
-}
-
 function formatarCPF(input) {
     let valor = input.value.replace(/\D/g, '');
     if (valor.length <= 11) {
@@ -1033,302 +995,101 @@ function formatarCPF(input) {
 // ============================================
 
 const horarios = {
-    segunda: {
-        "1adm": [],
-        "1amb": [],
-        "2ds": [
-            { hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
-            { hora: "08:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
-            { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" },
-            { hora: "13:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }
-        ]
-    },
-    terca: {
-        "1adm": [],
-        "1amb": [],
-        "2ds": [
-            { hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" },
-            { hora: "13:50", disciplina: "MENTORIA TEC" },
-            { hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" },
-            { hora: "16:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
-        ]
-    },
-    quarta: {
-        "1adm": [],
-        "1amb": [
-            { hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" },
-            { hora: "09:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
-        ],
-        "2ds": [
-            { hora: "15:10", disciplina: "FRONT-END" },
-            { hora: "16:10", disciplina: "PROGRAMAÇÃO ESTRUTURADA" }
-        ]
-    },
-    quinta: {
-        "1adm": [],
-        "1amb": [],
-        "2ds": [
-            { hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
-            { hora: "08:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
-            { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" },
-            { hora: "13:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }
-        ]
-    },
-    sexta: {
-        "1adm": [],
-        "1amb": [
-            { hora: "10:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" },
-            { hora: "11:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
-        ],
-        "2ds": [
-            { hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" },
-            { hora: "16:10", disciplina: "PENSAMENTO COMPUTACIONAL" }
-        ]
-    }
+    segunda: { "1adm": [], "1amb": [], "2ds": [{ hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "08:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }, { hora: "13:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }] },
+    terca: { "1adm": [], "1amb": [], "2ds": [{ hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" }, { hora: "13:50", disciplina: "MENTORIA TEC" }, { hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "16:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }] },
+    quarta: { "1adm": [], "1amb": [{ hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "09:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }], "2ds": [{ hora: "15:10", disciplina: "FRONT-END" }, { hora: "16:10", disciplina: "PROGRAMAÇÃO ESTRUTURADA" }] },
+    quinta: { "1adm": [], "1amb": [], "2ds": [{ hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "08:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }, { hora: "13:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }] },
+    sexta: { "1adm": [], "1amb": [{ hora: "10:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "11:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" }], "2ds": [{ hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" }, { hora: "16:10", disciplina: "PENSAMENTO COMPUTACIONAL" }] }
 };
 
-const turmaHorariosMap = {
-    "1adm": "1º ADM",
-    "1amb": "1º CONT. AMB",
-    "2ds": "2º SISTEMAS"
-};
-
-let configAlertas = {
-    notificar: true,
-    minutosAntecedencia: 15,
-    som: true
-};
+let configAlertas = { notificar: true, minutosAntecedencia: 15, som: true };
 
 function carregarConfigAlertas() {
     const saved = localStorage.getItem("configAlertas");
-    if (saved) {
-        try {
-            configAlertas = JSON.parse(saved);
-        } catch(e) {}
-    }
+    if (saved) { try { configAlertas = JSON.parse(saved); } catch(e) {} }
 }
 
-function salvarConfigAlertas() {
-    localStorage.setItem("configAlertas", JSON.stringify(configAlertas));
-}
+function salvarConfigAlertas() { localStorage.setItem("configAlertas", JSON.stringify(configAlertas)); }
 
 function verificarAlertasHorarios() {
     if (!configAlertas.notificar) return;
-    
     const agora = new Date();
     const horaAtual = agora.getHours();
     const minutoAtual = agora.getMinutes();
-    const horaMinuto = `${horaAtual.toString().padStart(2,'0')}:${minutoAtual.toString().padStart(2,'0')}`;
-    
     const dias = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
     const diaSemana = dias[agora.getDay()];
-    
     if (diaSemana === "domingo" || diaSemana === "sabado") return;
-    
     const aulasHoje = horarios[diaSemana];
     if (!aulasHoje) return;
     
-    // Verificar aulas para cada turma
     for (let turmaId of ["1adm", "1amb", "2ds"]) {
         const aulasTurma = aulasHoje[turmaId] || [];
         for (let aula of aulasTurma) {
             const [aulaHora, aulaMinuto] = aula.hora.split(":").map(Number);
             const minutosAteAula = (aulaHora * 60 + aulaMinuto) - (horaAtual * 60 + minutoAtual);
-            
-            if (minutosAteAula === configAlertas.minutosAntecedencia || 
-                (minutosAteAula > 0 && minutosAteAula <= configAlertas.minutosAntecedencia && minutosAteAula > 0)) {
-                mostrarAlerta(turmaId, aula.disciplina, aula.hora);
+            if (minutosAteAula === configAlertas.minutosAntecedencia || (minutosAteAula > 0 && minutosAteAula <= configAlertas.minutosAntecedencia)) {
+                const chave = `${turmaId}_${aula.disciplina}_${aula.hora}_${new Date().toDateString()}`;
+                if (!localStorage.getItem(chave)) {
+                    localStorage.setItem(chave, "true");
+                    setTimeout(() => localStorage.removeItem(chave), 60000);
+                    const alertaDiv = document.createElement("div");
+                    alertaDiv.className = "alerta-teste";
+                    alertaDiv.innerHTML = `<i class="fas fa-bell"></i><div><strong>📚 Próxima Aula!</strong><br>${turmasConfig[turmaId]?.nome}<br>${aula.disciplina} às ${aula.hora}</div><button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;">✕</button>`;
+                    document.body.appendChild(alertaDiv);
+                    if (configAlertas.som) new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==').play().catch(() => {});
+                    setTimeout(() => alertaDiv.remove(), 30000);
+                    if ("Notification" in window && Notification.permission === "granted") new Notification("Próxima Aula", { body: `${turmasConfig[turmaId]?.nome}: ${aula.disciplina} às ${aula.hora}` });
+                    else if ("Notification" in window && Notification.permission !== "denied") Notification.requestPermission();
+                }
             }
         }
-    }
-}
-
-function mostrarAlerta(turmaId, disciplina, hora) {
-    const turmaNome = turmasConfig[turmaId]?.nome || turmaId;
-    
-    // Verificar se já notificou esta aula
-    const chaveNotificacao = `${turmaId}_${disciplina}_${hora}_${new Date().toDateString()}`;
-    if (localStorage.getItem(chaveNotificacao)) return;
-    localStorage.setItem(chaveNotificacao, "true");
-    setTimeout(() => localStorage.removeItem(chaveNotificacao), 60000);
-    
-    const alertaDiv = document.createElement("div");
-    alertaDiv.className = "alerta-teste";
-    alertaDiv.innerHTML = `
-        <i class="fas fa-bell"></i>
-        <div>
-            <strong>📚 Próxima Aula!</strong><br>
-            ${turmaNome}<br>
-            ${disciplina} às ${hora}
-        </div>
-        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;">✕</button>
-    `;
-    document.body.appendChild(alertaDiv);
-    
-    if (configAlertas.som) {
-        const audio = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-        audio.play().catch(e => console.log("Áudio não suportado"));
-    }
-    
-    setTimeout(() => alertaDiv.remove(), 30000);
-    
-    if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("Próxima Aula", { body: `${turmaNome}: ${disciplina} às ${hora}`, icon: "https://via.placeholder.com/64" });
-    } else if ("Notification" in window && Notification.permission !== "denied") {
-        Notification.requestPermission();
     }
 }
 
 function renderizarHorarios(dia = null) {
-    if (!dia) {
-        const dias = ["segunda", "terca", "quarta", "quinta", "sexta"];
-        const hoje = new Date();
-        const diaSemana = hoje.getDay();
-        dia = dias[diaSemana - 1] || "segunda";
-    }
-    
-    document.querySelectorAll(".dia-btn").forEach(btn => {
-        btn.classList.toggle("ativo", btn.dataset.dia === dia);
-    });
-    
+    if (!dia) { const dias = ["segunda", "terca", "quarta", "quinta", "sexta"]; const hoje = new Date(); dia = dias[hoje.getDay() - 1] || "segunda"; }
+    document.querySelectorAll(".dia-btn").forEach(btn => btn.classList.toggle("ativo", btn.dataset.dia === dia));
     const aulasDia = horarios[dia];
     if (!aulasDia) return;
-    
     const horariosFixos = ["07:30", "08:30", "09:50", "10:50", "11:50", "12:50", "13:50", "15:10", "16:10"];
-    const intervalos = ["09:30-09:50", "12:50-13:50", "14:50-15:10"];
-    
     let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th><th>1º Administração</th><th>1º Controle Ambiental</th><th>2º Desenvolvimento</th></tr></thead><tbody>`;
-    
     for (let i = 0; i < horariosFixos.length; i++) {
         const hora = horariosFixos[i];
         const horaAnterior = i > 0 ? horariosFixos[i-1] : null;
-        let isIntervalo = false;
-        
-        if (hora === "09:50" && horaAnterior === "08:30") isIntervalo = true;
-        if (hora === "12:50" && horaAnterior === "11:50") isIntervalo = true;
-        if (hora === "15:10" && horaAnterior === "13:50") isIntervalo = true;
-        
-        html += `<tr>`;
-        html += `<td class="hora-col">${hora}</td>`;
-        
+        let isIntervalo = (hora === "09:50" && horaAnterior === "08:30") || (hora === "12:50" && horaAnterior === "11:50") || (hora === "15:10" && horaAnterior === "13:50");
+        html += `<tr><td class="hora-col">${hora}</td>`;
         for (let turmaId of ["1adm", "1amb", "2ds"]) {
             const aula = aulasDia[turmaId]?.find(a => a.hora === hora);
-            let conteudo = "—";
-            let classe = "";
-            
-            if (aula) {
-                conteudo = `<strong>${aula.disciplina}</strong>`;
-                classe = "aula-atual";
-                
-                const agora = new Date();
-                const [h, m] = hora.split(":");
-                const horaAula = new Date();
-                horaAula.setHours(parseInt(h), parseInt(m), 0);
-                const diffMin = (horaAula - agora) / 1000 / 60;
-                
-                if (diffMin > 0 && diffMin <= 30) classe = "aula-em-breve";
-            }
-            
+            let conteudo = "—", classe = "";
+            if (aula) { conteudo = `<strong>${aula.disciplina}</strong>`; }
             html += `<td class="${classe}">${conteudo}</td>`;
         }
         html += `</tr>`;
-        
-        if (isIntervalo) {
-            html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO</td><td colspan="3">🥪 Intervalo - Recreio</td></tr>`;
-        }
+        if (isIntervalo) html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO</td><td colspan="3">🥪 Intervalo - Recreio</td></tr>`;
     }
-    
     html += `</tbody></table>`;
     document.getElementById("gradeHorarios").innerHTML = html;
     
-    // Próximas aulas
     const agora = new Date();
-    const horaAtual = agora.getHours();
-    const minutoAtual = agora.getMinutes();
-    const horaMinutoAtual = horaAtual * 60 + minutoAtual;
-    
+    const horaMinutoAtual = agora.getHours() * 60 + agora.getMinutes();
     const todasAulas = [];
     for (let turmaId of ["1adm", "1amb", "2ds"]) {
-        const aulasTurma = aulasDia[turmaId] || [];
-        for (let aula of aulasTurma) {
+        (aulasDia[turmaId] || []).forEach(aula => {
             const [h, m] = aula.hora.split(":").map(Number);
-            const horaMinutoAula = h * 60 + m;
-            if (horaMinutoAula > horaMinutoAtual) {
-                todasAulas.push({ turmaId, turmaNome: turmasConfig[turmaId].nome, ...aula, minutosRestantes: horaMinutoAula - horaMinutoAtual });
-            }
-        }
+            const minutosAula = h * 60 + m;
+            if (minutosAula > horaMinutoAtual) todasAulas.push({ turmaNome: turmasConfig[turmaId].nome, ...aula, minutosRestantes: minutosAula - horaMinutoAtual });
+        });
     }
-    
     todasAulas.sort((a, b) => a.minutosRestantes - b.minutosRestantes);
-    
-    const proximasHtml = todasAulas.slice(0, 5).map(aula => `
-        <div class="proxima-aula-item">
-            <div class="proxima-aula-hora">${aula.hora}</div>
-            <div class="proxima-aula-info">
-                <strong>${aula.disciplina}</strong>
-                <small>${aula.turmaNome}</small>
-            </div>
-            <div class="proxima-aula-tempo">em ${aula.minutosRestantes} min</div>
-        </div>
-    `).join("");
-    
+    const proximasHtml = todasAulas.slice(0, 5).map(a => `<div class="proxima-aula-item"><div class="proxima-aula-hora">${a.hora}</div><div class="proxima-aula-info"><strong>${a.disciplina}</strong><small>${a.turmaNome}</small></div><div class="proxima-aula-tempo">em ${a.minutosRestantes} min</div></div>`).join("");
     document.getElementById("proximasAulas").innerHTML = proximasHtml || '<div class="lista-vazia">Nenhuma aula programada para hoje</div>';
-    
-    // Alertas do dia
-    const alertasHtml = todasAulas.slice(0, 3).map(aula => `
-        <div class="alerta-card">
-            <i class="fas fa-bell"></i>
-            <div class="alerta-info">
-                <h4>${aula.disciplina}</h4>
-                <p>${aula.turmaNome} - ${aula.hora}</p>
-            </div>
-            <div class="alerta-tempo">em ${aula.minutosRestantes} min</div>
-        </div>
-    `).join("");
-    
-    document.getElementById("alertasHoje").innerHTML = `
-        <div style="margin-bottom: 10px;"><i class="fas fa-bell"></i> 📢 Alertas de Hoje</div>
-        ${alertasHtml || '<div class="alerta-card"><i class="fas fa-check-circle"></i><div class="alerta-info"><h4>Todas as aulas já passaram</h4><p>Nenhuma aula pendente para hoje</p></div></div>'}
-    `;
+    const alertasHtml = todasAulas.slice(0, 3).map(a => `<div class="alerta-card"><i class="fas fa-bell"></i><div class="alerta-info"><h4>${a.disciplina}</h4><p>${a.turmaNome} - ${a.hora}</p></div><div class="alerta-tempo">em ${a.minutosRestantes} min</div></div>`).join("");
+    document.getElementById("alertasHoje").innerHTML = `<div style="margin-bottom: 10px;"><i class="fas fa-bell"></i> 📢 Alertas de Hoje</div>${alertasHtml || '<div class="alerta-card"><i class="fas fa-check-circle"></i><div class="alerta-info"><h4>Todas as aulas já passaram</h4></div></div>'}`;
 }
 
 function configurarAlertasModal() {
-    const modalHtml = `
-        <div id="modalConfigAlertas" class="modal-profissional" style="display:flex">
-            <div class="modal-content modal-alertas">
-                <div class="modal-header">
-                    <h3><i class="fas fa-bell"></i> Configurar Alertas</h3>
-                    <button class="modal-fechar-config">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="config-alerta-item">
-                        <label><i class="fas fa-toggle-on"></i> Notificações</label>
-                        <input type="checkbox" id="configNotificar" ${configAlertas.notificar ? 'checked' : ''}>
-                    </div>
-                    <div class="config-alerta-item">
-                        <label><i class="fas fa-clock"></i> Antecedência</label>
-                        <select id="configMinutos">
-                            <option value="5" ${configAlertas.minutosAntecedencia === 5 ? 'selected' : ''}>5 minutos</option>
-                            <option value="10" ${configAlertas.minutosAntecedencia === 10 ? 'selected' : ''}>10 minutos</option>
-                            <option value="15" ${configAlertas.minutosAntecedencia === 15 ? 'selected' : ''}>15 minutos</option>
-                            <option value="30" ${configAlertas.minutosAntecedencia === 30 ? 'selected' : ''}>30 minutos</option>
-                            <option value="60" ${configAlertas.minutosAntecedencia === 60 ? 'selected' : ''}>1 hora</option>
-                        </select>
-                    </div>
-                    <div class="config-alerta-item">
-                        <label><i class="fas fa-volume-up"></i> Som de Alerta</label>
-                        <input type="checkbox" id="configSom" ${configAlertas.som ? 'checked' : ''}>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="salvarConfigAlertas" class="btn-primary">Salvar</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
+    const modalHtml = `<div id="modalConfigAlertas" class="modal-profissional" style="display:flex"><div class="modal-content modal-alertas"><div class="modal-header"><h3><i class="fas fa-bell"></i> Configurar Alertas</h3><button class="modal-fechar-config">&times;</button></div><div class="modal-body"><div class="config-alerta-item"><label><i class="fas fa-toggle-on"></i> Notificações</label><input type="checkbox" id="configNotificar" ${configAlertas.notificar ? 'checked' : ''}></div><div class="config-alerta-item"><label><i class="fas fa-clock"></i> Antecedência</label><select id="configMinutos"><option value="5" ${configAlertas.minutosAntecedencia === 5 ? 'selected' : ''}>5 minutos</option><option value="10" ${configAlertas.minutosAntecedencia === 10 ? 'selected' : ''}>10 minutos</option><option value="15" ${configAlertas.minutosAntecedencia === 15 ? 'selected' : ''}>15 minutos</option><option value="30" ${configAlertas.minutosAntecedencia === 30 ? 'selected' : ''}>30 minutos</option><option value="60" ${configAlertas.minutosAntecedencia === 60 ? 'selected' : ''}>1 hora</option></select></div><div class="config-alerta-item"><label><i class="fas fa-volume-up"></i> Som de Alerta</label><input type="checkbox" id="configSom" ${configAlertas.som ? 'checked' : ''}></div></div><div class="modal-footer"><button id="salvarConfigAlertas" class="btn-primary">Salvar</button></div></div></div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
     document.querySelector(".modal-fechar-config").onclick = () => document.getElementById("modalConfigAlertas")?.remove();
     document.getElementById("salvarConfigAlertas").onclick = () => {
         configAlertas.notificar = document.getElementById("configNotificar").checked;
@@ -1343,244 +1104,117 @@ function configurarAlertasModal() {
 function testarAlerta() {
     const alertaDiv = document.createElement("div");
     alertaDiv.className = "alerta-teste";
-    alertaDiv.innerHTML = `
-        <i class="fas fa-bell"></i>
-        <div>
-            <strong>🔔 Teste de Alerta</strong><br>
-            Você receberá notificações ${configAlertas.minutosAntecedencia} minutos antes de cada aula!
-        </div>
-        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;">✕</button>
-    `;
+    alertaDiv.innerHTML = `<i class="fas fa-bell"></i><div><strong>🔔 Teste de Alerta</strong><br>Você receberá notificações ${configAlertas.minutosAntecedencia} minutos antes de cada aula!</div><button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;">✕</button>`;
     document.body.appendChild(alertaDiv);
     setTimeout(() => alertaDiv.remove(), 5000);
-    
-    if (configAlertas.som) {
-        const audio = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-        audio.play().catch(e => console.log("Áudio não suportado"));
-    }
-}
-// ============================================
-// DASHBOARD - TELA INICIAL COM HORÁRIOS
-// ============================================
-
-function getDiaSemanaNome(data) {
-    const dias = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
-    return dias[data.getDay()];
+    if (configAlertas.som) new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==').play().catch(() => {});
 }
 
-function formatarDataBR(data) {
-    return data.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-}
+// ============================================
+// DASHBOARD - TELA INICIAL
+// ============================================
+
+function getDiaSemanaNome(data) { const dias = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"]; return dias[data.getDay()]; }
+function formatarDataBR(data) { return data.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
 
 function getAulasDoDia(data) {
     const diaSemana = getDiaSemanaNome(data);
     const aulas = [];
-    
     for (let turmaId of ["1adm", "1amb", "2ds"]) {
-        const aulasTurma = horarios[diaSemana]?.[turmaId] || [];
-        for (let aula of aulasTurma) {
-            aulas.push({
-                turmaId: turmaId,
-                turmaNome: turmasConfig[turmaId]?.nome || turmaId,
-                disciplina: aula.disciplina,
-                hora: aula.hora
-            });
-        }
+        (horarios[diaSemana]?.[turmaId] || []).forEach(aula => {
+            aulas.push({ turmaId, turmaNome: turmasConfig[turmaId]?.nome || turmaId, disciplina: aula.disciplina, hora: aula.hora });
+        });
     }
-    
     aulas.sort((a, b) => a.hora.localeCompare(b.hora));
     return aulas;
 }
 
 function calcularTempoRestante(hora) {
     const agora = new Date();
-    const [horaAula, minutoAula] = hora.split(":").map(Number);
-    const dataAula = new Date();
-    dataAula.setHours(horaAula, minutoAula, 0);
-    
+    const [h, m] = hora.split(":").map(Number);
+    const dataAula = new Date(); dataAula.setHours(h, m, 0);
     const diffMs = dataAula - agora;
     if (diffMs < 0) return null;
-    
     const diffMin = Math.floor(diffMs / 60000);
     if (diffMin < 60) return `${diffMin} minutos`;
-    const diffHoras = Math.floor(diffMin / 60);
-    const diffRestoMin = diffMin % 60;
-    return `${diffHoras}h ${diffRestoMin}min`;
+    return `${Math.floor(diffMin / 60)}h ${diffMin % 60}min`;
 }
 
 function renderizarDashboard() {
     const hoje = new Date();
-    const amanha = new Date(hoje);
-    amanha.setDate(amanha.getDate() + 1);
-    
-    // Saudação
+    const amanha = new Date(hoje); amanha.setDate(amanha.getDate() + 1);
     const horaAtual = hoje.getHours();
-    let saudacao = "Bom dia";
-    if (horaAtual >= 12 && horaAtual < 18) saudacao = "Boa tarde";
-    if (horaAtual >= 18) saudacao = "Boa noite";
-    
+    let saudacao = horaAtual < 12 ? "Bom dia" : (horaAtual < 18 ? "Boa tarde" : "Boa noite");
     const saudacaoElem = document.getElementById("saudacaoTexto");
     if (saudacaoElem) saudacaoElem.innerHTML = `${saudacao}, ${sessaoAtual?.nome || "Professor"}! 👋`;
-    
     const dataAtualElem = document.getElementById("dataAtual");
     if (dataAtualElem) dataAtualElem.textContent = formatarDataBR(hoje);
-    
     const hojeDataElem = document.getElementById("hojeData");
     if (hojeDataElem) hojeDataElem.textContent = hoje.toLocaleDateString('pt-BR');
-    
     const amanhaDataElem = document.getElementById("amanhaData");
     if (amanhaDataElem) amanhaDataElem.textContent = amanha.toLocaleDateString('pt-BR');
     
-    // Aulas de hoje
     const aulasHoje = getAulasDoDia(hoje);
     const aulasHojeContainer = document.getElementById("aulasHojeContainer");
-    
     if (aulasHojeContainer) {
-        if (aulasHoje.length === 0) {
-            aulasHojeContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-check"></i> Nenhuma aula programada para hoje! 🎉</div>`;
-        } else {
-            aulasHojeContainer.innerHTML = aulasHoje.map(aula => {
-                const tempoRestante = calcularTempoRestante(aula.hora);
-                return `
-                    <div class="aula-card-dashboard">
-                        <div class="aula-hora">${aula.hora}</div>
-                        <div class="aula-info">
-                            <strong>${aula.disciplina}</strong>
-                            <small><span class="aula-badge">${aula.turmaNome}</span></small>
-                        </div>
-                        ${tempoRestante ? `<div class="aula-tempo">⏰ em ${tempoRestante}</div>` : '<div class="aula-tempo">✅ Já ocorreu</div>'}
-                    </div>
-                `;
-            }).join('');
-        }
+        if (aulasHoje.length === 0) aulasHojeContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-check"></i> Nenhuma aula programada para hoje! 🎉</div>`;
+        else aulasHojeContainer.innerHTML = aulasHoje.map(aula => `<div class="aula-card-dashboard"><div class="aula-hora">${aula.hora}</div><div class="aula-info"><strong>${aula.disciplina}</strong><small><span class="aula-badge">${aula.turmaNome}</span></small></div>${calcularTempoRestante(aula.hora) ? `<div class="aula-tempo">⏰ em ${calcularTempoRestante(aula.hora)}</div>` : '<div class="aula-tempo">✅ Já ocorreu</div>'}</div>`).join('');
     }
     
-    // Aulas de amanhã
     const aulasAmanha = getAulasDoDia(amanha);
     const aulasAmanhaContainer = document.getElementById("aulasAmanhaContainer");
-    
     if (aulasAmanhaContainer) {
-        if (aulasAmanha.length === 0) {
-            aulasAmanhaContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-day"></i> Nenhuma aula programada para amanhã!</div>`;
-        } else {
-            aulasAmanhaContainer.innerHTML = aulasAmanha.map(aula => `
-                <div class="aula-card-dashboard">
-                    <div class="aula-hora">${aula.hora}</div>
-                    <div class="aula-info">
-                        <strong>${aula.disciplina}</strong>
-                        <small><span class="aula-badge">${aula.turmaNome}</span></small>
-                    </div>
-                </div>
-            `).join('');
-        }
+        if (aulasAmanha.length === 0) aulasAmanhaContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-day"></i> Nenhuma aula programada para amanhã!</div>`;
+        else aulasAmanhaContainer.innerHTML = aulasAmanha.map(aula => `<div class="aula-card-dashboard"><div class="aula-hora">${aula.hora}</div><div class="aula-info"><strong>${aula.disciplina}</strong><small><span class="aula-badge">${aula.turmaNome}</span></small></div></div>`).join('');
     }
     
-    // Próximas aulas
     const todasProximas = [];
     for (let i = 0; i < 3; i++) {
-        const dia = new Date(hoje);
-        dia.setDate(hoje.getDate() + i);
-        const aulasDia = getAulasDoDia(dia);
-        const agora = new Date();
-        for (let aula of aulasDia) {
-            const [h, m] = aula.hora.split(":");
-            const dataAula = new Date(dia);
-            dataAula.setHours(parseInt(h), parseInt(m), 0);
-            if (dataAula > agora) {
-                todasProximas.push({
-                    ...aula,
-                    data: new Date(dia),
-                    diffMin: Math.floor((dataAula - agora) / 60000)
-                });
-            }
-        }
+        const dia = new Date(hoje); dia.setDate(hoje.getDate() + i);
+        getAulasDoDia(dia).forEach(aula => {
+            const [h, m] = aula.hora.split(":").map(Number);
+            const dataAula = new Date(dia); dataAula.setHours(h, m, 0);
+            if (dataAula > new Date()) todasProximas.push({ ...aula, data: new Date(dia), diffMin: Math.floor((dataAula - new Date()) / 60000) });
+        });
     }
-    
     todasProximas.sort((a, b) => a.diffMin - b.diffMin);
     const proximasAulasContainer = document.getElementById("proximasAulasContainer");
-    
     if (proximasAulasContainer) {
-        if (todasProximas.length === 0) {
-            proximasAulasContainer.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i> Nenhuma aula futura agendada!</div>`;
-        } else {
-            proximasAulasContainer.innerHTML = todasProximas.slice(0, 5).map(aula => `
-                <div class="aula-card-dashboard">
-                    <div class="aula-hora">${aula.hora}</div>
-                    <div class="aula-info">
-                        <strong>${aula.disciplina}</strong>
-                        <small>
-                            <span class="aula-badge">${aula.turmaNome}</span>
-                            <span class="aula-badge">${aula.data.toLocaleDateString('pt-BR')}</span>
-                        </small>
-                    </div>
-                    <div class="aula-tempo">📅 em ${aula.diffMin < 60 ? `${aula.diffMin} min` : `${Math.floor(aula.diffMin/60)}h ${aula.diffMin%60}min`}</div>
-                </div>
-            `).join('');
-        }
+        if (todasProximas.length === 0) proximasAulasContainer.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i> Nenhuma aula futura agendada!</div>`;
+        else proximasAulasContainer.innerHTML = todasProximas.slice(0, 5).map(a => `<div class="aula-card-dashboard"><div class="aula-hora">${a.hora}</div><div class="aula-info"><strong>${a.disciplina}</strong><small><span class="aula-badge">${a.turmaNome}</span><span class="aula-badge">${a.data.toLocaleDateString('pt-BR')}</span></small></div><div class="aula-tempo">📅 em ${a.diffMin < 60 ? `${a.diffMin} min` : `${Math.floor(a.diffMin/60)}h ${a.diffMin%60}min`}</div></div>`).join('');
     }
     
-    // Estatísticas
     const totalAulasHojeElem = document.getElementById("totalAulasHoje");
     if (totalAulasHojeElem) totalAulasHojeElem.textContent = aulasHoje.length;
-    
-    const mesAtual = hoje.getMonth() + 1;
-    let totalVistosMes = 0;
-    for (let turmaId in dadosVistos) {
-        if (dadosVistos[turmaId]?.alunos) {
-            for (let aluno in dadosVistos[turmaId].alunos) {
-                const registros = dadosVistos[turmaId].alunos[aluno]?.registros || [];
-                registros.forEach(reg => {
-                    const dataReg = new Date(reg.data);
-                    if (dataReg.getMonth() + 1 === mesAtual) totalVistosMes++;
-                });
-            }
-        }
-    }
     const totalVistosMesElem = document.getElementById("totalVistosMes");
-    if (totalVistosMesElem) totalVistosMesElem.textContent = totalVistosMes;
-    
-    let totalAlunos = 0;
-    for (let turmaId in turmasConfig) {
-        totalAlunos += turmasConfig[turmaId].alunos.length;
+    if (totalVistosMesElem) {
+        let total = 0;
+        for (let turmaId in dadosVistos) if (dadosVistos[turmaId]?.alunos) for (let aluno in dadosVistos[turmaId].alunos) total += dadosVistos[turmaId].alunos[aluno]?.registros?.filter(r => new Date(r.data).getMonth() + 1 === hoje.getMonth() + 1).length || 0;
+        totalVistosMesElem.textContent = total;
     }
     const totalAlunosElem = document.getElementById("totalAlunos");
-    if (totalAlunosElem) totalAlunosElem.textContent = totalAlunos;
+    if (totalAlunosElem) { let total = 0; for (let turmaId in turmasConfig) total += turmasConfig[turmaId].alunos.length; totalAlunosElem.textContent = total; }
 }
 
 let dashboardInterval = null;
-
 function iniciarDashboardAutoRefresh() {
     if (dashboardInterval) clearInterval(dashboardInterval);
-    dashboardInterval = setInterval(() => {
-        if (document.getElementById("abaDashboard")?.classList.contains("active")) {
-            renderizarDashboard();
-        }
-    }, 60000);
+    dashboardInterval = setInterval(() => { if (document.getElementById("abaDashboard")?.classList.contains("active")) renderizarDashboard(); }, 60000);
 }
-// Inicializar horários
+
 function iniciarHorarios() {
     carregarConfigAlertas();
-    
-    document.querySelectorAll(".dia-btn").forEach(btn => {
-        btn.addEventListener("click", () => renderizarHorarios(btn.dataset.dia));
-    });
-    
+    document.querySelectorAll(".dia-btn").forEach(btn => btn.addEventListener("click", () => renderizarHorarios(btn.dataset.dia)));
     document.getElementById("configurarAlertas")?.addEventListener("click", configurarAlertasModal);
     document.getElementById("testarAlerta")?.addEventListener("click", testarAlerta);
-    
     renderizarHorarios();
-    
-    // Verificar alertas a cada minuto
     setInterval(verificarAlertasHorarios, 60000);
     verificarAlertasHorarios();
-    
-    // Solicitar permissão para notificações
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
-    }
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
 }
+
 // ============================================
-// FUNÇÃO QUE INICIA O SISTEMA APÓS LOGIN
+// FUNÇÃO QUE INICIA O SISTEMA APÓS LOGIN (ÚNICA)
 // ============================================
 
 function iniciarSistema(usuario) {
@@ -1595,12 +1229,12 @@ function iniciarSistema(usuario) {
     
     const toggleBtn = document.getElementById("toggleSidebar");
     if (toggleBtn) toggleBtn.onclick = () => document.getElementById("sidebar").classList.toggle("collapsed");
-    
     const darkModeBtn = document.getElementById("toggleDarkMode");
     if (darkModeBtn) darkModeBtn.onclick = () => document.body.classList.toggle("dark-mode");
     
-    // INICIAR HORÁRIOS E ALERTAS
     iniciarHorarios();
+    iniciarDashboardAutoRefresh();
+    renderizarDashboard();
 }
 
 // ============================================
@@ -1609,47 +1243,30 @@ function iniciarSistema(usuario) {
 
 document.addEventListener("DOMContentLoaded", () => {
     const sessao = verificarSessao();
-    if (sessao) {
-        iniciarSistema(sessao);
-    } else {
-        document.getElementById("telaLogin").style.display = "flex";
-        document.getElementById("conteudoPrincipal").style.display = "none";
-    }
+    if (sessao) iniciarSistema(sessao);
+    else { document.getElementById("telaLogin").style.display = "flex"; document.getElementById("conteudoPrincipal").style.display = "none"; }
     
-    // Eventos de login
     document.getElementById("loginCpf")?.addEventListener("input", () => formatarCPF(document.getElementById("loginCpf")));
     document.getElementById("btnLogin")?.addEventListener("click", () => {
         const resultado = fazerLogin(document.getElementById("loginCpf").value, document.getElementById("loginSenha").value);
-        if (resultado.sucesso) {
-            iniciarSistema(resultado.usuario);
-        } else {
-            document.getElementById("loginError").textContent = resultado.erro;
-        }
+        if (resultado.sucesso) iniciarSistema(resultado.usuario);
+        else document.getElementById("loginError").textContent = resultado.erro;
     });
-    document.getElementById("loginSenha")?.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") document.getElementById("btnLogin").click();
-    });
+    document.getElementById("loginSenha")?.addEventListener("keypress", (e) => { if (e.key === "Enter") document.getElementById("btnLogin").click(); });
     document.getElementById("btnLogoutSidebar")?.addEventListener("click", fazerLogout);
     
-    // Navegação do sidebar
-    document.querySelectorAll(".nav-item[data-turma]").forEach(btn => {
-        btn.addEventListener("click", () => trocarTurma(btn.dataset.turma));
-    });
+    document.querySelectorAll(".nav-item[data-turma]").forEach(btn => btn.addEventListener("click", () => trocarTurma(btn.dataset.turma)));
+    document.querySelectorAll(".nav-item-aba").forEach(btn => btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav-item-aba").forEach(b => b.classList.remove("ativo"));
+        btn.classList.add("ativo");
+        document.querySelectorAll(".aba-conteudo").forEach(c => c.classList.remove("active"));
+        document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`)?.classList.add("active");
+        if (btn.dataset.aba === "relatorios") renderizarRelatorios();
+        if (btn.dataset.aba === "ranking") renderizarRanking();
+        if (btn.dataset.aba === "calendario") renderizarEventos();
+        if (btn.dataset.aba === "admin") { renderizarAdmin(); document.getElementById("adminTurmaSelect").value = turmaAtual; }
+    }));
     
-    document.querySelectorAll(".nav-item-aba").forEach(btn => {
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".nav-item-aba").forEach(b => b.classList.remove("ativo"));
-            btn.classList.add("ativo");
-            document.querySelectorAll(".aba-conteudo").forEach(c => c.classList.remove("active"));
-            document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`)?.classList.add("active");
-            if (btn.dataset.aba === "relatorios") renderizarRelatorios();
-            if (btn.dataset.aba === "ranking") renderizarRanking();
-            if (btn.dataset.aba === "calendario") renderizarEventos();
-            if (btn.dataset.aba === "admin") { renderizarAdmin(); document.getElementById("adminTurmaSelect").value = turmaAtual; }
-        });
-    });
-    
-    // Eventos dos botões principais
     document.getElementById("disciplinaNotas")?.addEventListener("change", () => { renderizarNotas(); renderizarRanking(); });
     document.getElementById("rankingDisciplina")?.addEventListener("change", renderizarRanking);
     document.getElementById("graficoAlunoSelect")?.addEventListener("change", atualizarGraficoEvolucao);
@@ -1677,7 +1294,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("exportarVistos")?.addEventListener("click", renderizarVistos);
     document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
     
-    // Eventos de admin
     document.getElementById("adicionarAlunoBtn")?.addEventListener("click", () => {
         document.getElementById("modalAlunoNome").value = "";
         document.getElementById("modalAlunoNascimento").value = "";
@@ -1686,15 +1302,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     document.getElementById("adminTurmaSelect")?.addEventListener("change", renderizarAdmin);
     document.getElementById("backupDadosBtn")?.addEventListener("click", backupDados);
-    document.getElementById("restoreDadosBtn")?.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".json";
-        input.onchange = (e) => { if (e.target.files[0]) restoreDados(e.target.files[0]); };
-        input.click();
-    });
+    document.getElementById("restoreDadosBtn")?.addEventListener("click", () => { const input = document.createElement("input"); input.type = "file"; input.accept = ".json"; input.onchange = (e) => { if (e.target.files[0]) restoreDados(e.target.files[0]); }; input.click(); });
     
-    // Eventos de eventos
     document.getElementById("adicionarEvento")?.addEventListener("click", () => {
         document.getElementById("eventoTitulo").value = "";
         document.getElementById("eventoData").value = "";
@@ -1706,14 +1315,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("modalEvento").style.display = "none";
     });
     
-    // Fechar modais
-    document.querySelectorAll(".modal-fechar, .modal-fechar-aluno, .modal-fechar-evento, .modal-fechar-obs").forEach(btn => {
-        btn.onclick = () => {
-            document.getElementById("modalAluno").style.display = "none";
-            document.getElementById("modalVisto").style.display = "none";
-            document.getElementById("modalEvento").style.display = "none";
-            document.getElementById("modalObs").style.display = "none";
-        };
+    document.querySelectorAll(".modal-fechar, .modal-fechar-aluno, .modal-fechar-evento, .modal-fechar-obs").forEach(btn => btn.onclick = () => {
+        document.getElementById("modalAluno").style.display = "none";
+        document.getElementById("modalVisto").style.display = "none";
+        document.getElementById("modalEvento").style.display = "none";
+        document.getElementById("modalObs").style.display = "none";
     });
     document.getElementById("modalCancelarAluno")?.addEventListener("click", () => document.getElementById("modalAluno").style.display = "none");
     document.getElementById("modalSalvarAluno")?.addEventListener("click", () => {
@@ -1723,21 +1329,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modalSalvarVisto")?.addEventListener("click", salvarVisto);
     document.getElementById("modalSalvarObs")?.addEventListener("click", salvarObservacaoModal);
     
-    // Filtros
     document.getElementById("mesPresenca")?.addEventListener("change", renderizarPresenca);
     document.getElementById("anoPresenca")?.addEventListener("change", renderizarPresenca);
     
-    // Clique fora do modal
-    window.onclick = (event) => {
-        if (event.target.classList.contains("modal-profissional")) {
-            document.getElementById("modalAluno").style.display = "none";
-            document.getElementById("modalVisto").style.display = "none";
-            document.getElementById("modalEvento").style.display = "none";
-            document.getElementById("modalObs").style.display = "none";
-        }
-    };
+    window.onclick = (event) => { if (event.target.classList.contains("modal-profissional")) { document.getElementById("modalAluno").style.display = "none"; document.getElementById("modalVisto").style.display = "none"; document.getElementById("modalEvento").style.display = "none"; document.getElementById("modalObs").style.display = "none"; } };
     
-    // Pesquisa global
     document.getElementById("globalSearch")?.addEventListener("input", (e) => {
         const termo = e.target.value.toLowerCase();
         const alunos = turmasConfig[turmaAtual].alunos;
