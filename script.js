@@ -113,7 +113,7 @@ const ALUNOS_INF5 = [
 ];
 
 // ============================================================================
-// HORÁRIOS CORRETOS (ATUALIZADO CONFORME SEU ARQUIVO)
+// HORÁRIOS CORRETOS
 // ============================================================================
 
 const HORARIOS = {
@@ -124,42 +124,28 @@ const HORARIOS = {
             { hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
             { hora: "16:10", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }
         ],
-        "inf1": [
-            { hora: "19:25", disciplina: "INF - MÓDULO I" }
-        ],
-        "inf5": [
-            { hora: "18:30", disciplina: "INF - MÓDULO V" }
-        ]
+        "inf1": [{ hora: "19:25", disciplina: "INF - MÓDULO I" }],
+        "inf5": [{ hora: "18:30", disciplina: "INF - MÓDULO V" }]
     },
     terca: {
-        "1adm": [
-            { hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
-        ],
+        "1adm": [{ hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }],
         "1amb": [],
         "2ds": [
             { hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" },
             { hora: "13:50", disciplina: "MENTORIA TEC" }
         ],
-        "inf1": [
-            { hora: "20:20", disciplina: "INF - MÓDULO I" }
-        ],
-        "inf5": [
-            { hora: "21:25", disciplina: "INF - MÓDULO V" }
-        ]
+        "inf1": [{ hora: "20:20", disciplina: "INF - MÓDULO I" }],
+        "inf5": [{ hora: "21:25", disciplina: "INF - MÓDULO V" }]
     },
     quarta: {
         "1adm": [],
-        "1amb": [
-            { hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
-        ],
+        "1amb": [{ hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }],
         "2ds": [
             { hora: "15:10", disciplina: "FRONT-END" },
             { hora: "16:10", disciplina: "PROGRAMAÇÃO ESTRUTURADA" }
         ],
         "inf1": [],
-        "inf5": [
-            { hora: "18:30", disciplina: "INF - MÓDULO V" }
-        ]
+        "inf5": [{ hora: "18:30", disciplina: "INF - MÓDULO V" }]
     },
     quinta: {
         "1adm": [],
@@ -725,15 +711,15 @@ function renderizarHorarios(dia = null) {
     let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th><th>1º Administração</th><th>1º Controle Ambiental</th><th>2º Desenvolvimento</th><th>Informática Mód I</th><th>Informática Mód V</th></tr></thead><tbody>`;
     for (let i = 0; i < horariosFixos.length; i++) {
         const hora = horariosFixos[i];
-        html += `<tr><td class="hora-col">${hora}</td>`;
+        html += `<td><td class="hora-col">${hora}</td>`;
         for (let turmaId of ["1adm", "1amb", "2ds", "inf1", "inf5"]) {
             const aula = aulasDia[turmaId]?.find(a => a.hora === hora);
             html += `<td>${aula ? `<strong>${aula.disciplina}</strong>` : "—"}</td>`;
         }
         html += `</tr>`;
-        if (hora === "09:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO<td colspan="5">🥪 Intervalo - Recreio</tr>`;
-        if (hora === "12:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">🍽️ ALMOÇO<td colspan="5">🍽️ Horário de Almoço</tr>`;
-        if (hora === "18:30") html += `<tr style="background:#e8f4f8;"><td class="hora-col">🌙 NOTURNO<td colspan="5">🌙 Início das Aulas Noturnas</tr>`;
+        if (hora === "09:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO<td colspan="5">🥪 Intervalo - Recreio</td>`;
+        if (hora === "12:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">🍽️ ALMOÇO<td colspan="5">🍽️ Horário de Almoço</td></tr>`;
+        if (hora === "18:30") html += `<tr style="background:#e8f4f8;"><td class="hora-col">🌙 NOTURNO<td colspan="5">🌙 Início das Aulas Noturnas</td></tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById("gradeHorarios").innerHTML = html;
@@ -844,13 +830,306 @@ function removerAluno(turmaId, alunoNome) {
     if (!confirm(`⚠️ Remover "${alunoNome}"? Todos os dados serão excluídos!`)) return;
     const index = TURMAS_CONFIG[turmaId].alunos.indexOf(alunoNome);
     if (index !== -1) TURMAS_CONFIG[turmaId].alunos.splice(index, 1);
+    
+    // Remover dados do aluno
+    const disciplinas = TURMAS_CONFIG[turmaId].disciplinas;
+    disciplinas.forEach(disciplina => {
+        if (estado.dadosNotas[turmaId]?.[disciplina]) delete estado.dadosNotas[turmaId][disciplina][alunoNome];
+    });
+    if (estado.dadosVistos[turmaId]?.alunos) delete estado.dadosVistos[turmaId].alunos[alunoNome];
+    if (estado.dadosObservacoes[turmaId]) delete estado.dadosObservacoes[turmaId][alunoNome];
+    
     salvarDados();
+    if (estado.turmaAtual === turmaId) {
+        renderizarNotas();
+        renderizarPresenca();
+        renderizarVistos();
+        renderizarRelatorios();
+        renderizarDashboard();
+        atualizarCardsDashboard();
+    }
     renderizarAdmin();
     mostrarToast(`"${alunoNome}" removido!`, "warning");
 }
 
+function adicionarAluno(turmaId, alunoNome, nascimento = "") {
+    alunoNome = alunoNome.trim().toUpperCase();
+    if (!alunoNome) { mostrarToast("Digite o nome!", "warning"); return false; }
+    if (TURMAS_CONFIG[turmaId].alunos.includes(alunoNome)) { mostrarToast("Aluno já cadastrado!", "warning"); return false; }
+    
+    TURMAS_CONFIG[turmaId].alunos.push(alunoNome);
+    TURMAS_CONFIG[turmaId].alunos.sort();
+    
+    const disciplinas = TURMAS_CONFIG[turmaId].disciplinas;
+    const tipo = TURMAS_CONFIG[turmaId].tipoAvaliacao;
+    
+    disciplinas.forEach(disciplina => {
+        if (!estado.dadosNotas[turmaId]) estado.dadosNotas[turmaId] = {};
+        if (!estado.dadosNotas[turmaId][disciplina]) estado.dadosNotas[turmaId][disciplina] = {};
+        if (tipo === "trimestral") estado.dadosNotas[turmaId][disciplina][alunoNome] = { nm1: "", nm2: "", nm3: "" };
+        else estado.dadosNotas[turmaId][disciplina][alunoNome] = { nm1: "", nm2: "" };
+    });
+    
+    if (!estado.dadosVistos[turmaId]) estado.dadosVistos[turmaId] = {};
+    if (!estado.dadosVistos[turmaId].alunos) estado.dadosVistos[turmaId].alunos = {};
+    estado.dadosVistos[turmaId].alunos[alunoNome] = { total: 0, registros: [], ultima: "" };
+    
+    salvarDados();
+    
+    if (estado.turmaAtual === turmaId) {
+        renderizarNotas();
+        renderizarPresenca();
+        renderizarVistos();
+        renderizarRelatorios();
+        renderizarDashboard();
+        atualizarCardsDashboard();
+    }
+    renderizarAdmin();
+    mostrarToast(`"${alunoNome}" adicionado!`);
+    return true;
+}
+
 // ============================================================================
-// 12. TROCAR TURMA
+// 12. EVENTOS
+// ============================================================================
+
+function renderizarEventos() {
+    const container = document.getElementById("eventosContainer");
+    if (!container) return;
+    container.innerHTML = "";
+    
+    if (!estado.dadosEventos || estado.dadosEventos.length === 0) {
+        container.innerHTML = '<div class="lista-vazia"><i class="fas fa-calendar"></i> Nenhum evento cadastrado</div>';
+        return;
+    }
+    
+    const eventosOrdenados = [...estado.dadosEventos].sort((a, b) => new Date(a.data) - new Date(b.data));
+    const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+    
+    eventosOrdenados.forEach((evento, idx) => {
+        const data = new Date(evento.data);
+        const eventCard = document.createElement("div");
+        eventCard.className = "evento-card";
+        eventCard.innerHTML = `
+            <div class="evento-data"><div class="dia">${data.getDate()}</div><div class="mes">${meses[data.getMonth()]}</div></div>
+            <div class="evento-info"><h4>${evento.titulo}</h4><p>${evento.descricao || ""}</p></div>
+            <button class="evento-remover" data-index="${idx}"><i class="fas fa-trash"></i></button>
+        `;
+        container.appendChild(eventCard);
+        eventCard.querySelector(".evento-remover").onclick = () => {
+            estado.dadosEventos.splice(idx, 1);
+            salvarDados();
+            renderizarEventos();
+            mostrarToast("Evento removido!", "warning");
+        };
+    });
+}
+
+function adicionarEvento(titulo, data, descricao) {
+    if (!titulo || !data) { mostrarToast("Preencha título e data!", "warning"); return false; }
+    estado.dadosEventos.push({ titulo, data, descricao });
+    salvarDados();
+    renderizarEventos();
+    mostrarToast("Evento adicionado!");
+    return true;
+}
+
+// ============================================================================
+// 13. BACKUP E RESTORE
+// ============================================================================
+
+function backupDados() {
+    const backup = {
+        notas: estado.dadosNotas,
+        presenca: estado.dadosPresenca,
+        vistos: estado.dadosVistos,
+        observacoes: estado.dadosObservacoes,
+        eventos: estado.dadosEventos,
+        alunos: {
+            "1adm": TURMAS_CONFIG["1adm"].alunos,
+            "1amb": TURMAS_CONFIG["1amb"].alunos,
+            "2ds": TURMAS_CONFIG["2ds"].alunos,
+            "inf1": TURMAS_CONFIG["inf1"].alunos,
+            "inf5": TURMAS_CONFIG["inf5"].alunos
+        },
+        dataBackup: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(backup, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `academic_backup_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    mostrarToast("Backup realizado com sucesso!");
+}
+
+function restoreDados(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const backup = JSON.parse(e.target.result);
+            if (backup.notas) estado.dadosNotas = backup.notas;
+            if (backup.presenca) estado.dadosPresenca = backup.presenca;
+            if (backup.vistos) estado.dadosVistos = backup.vistos;
+            if (backup.observacoes) estado.dadosObservacoes = backup.observacoes;
+            if (backup.eventos) estado.dadosEventos = backup.eventos;
+            if (backup.alunos) {
+                for (let turmaId in backup.alunos) {
+                    if (TURMAS_CONFIG[turmaId]) TURMAS_CONFIG[turmaId].alunos = backup.alunos[turmaId];
+                }
+            }
+            salvarDados();
+            renderizarNotas();
+            renderizarPresenca();
+            renderizarVistos();
+            renderizarRelatorios();
+            renderizarEventos();
+            renderizarDashboard();
+            atualizarCardsDashboard();
+            mostrarToast("Restore realizado com sucesso!");
+        } catch(e) { mostrarToast("Erro ao restaurar backup!", "error"); }
+    };
+    reader.readAsText(file);
+}
+
+// ============================================================================
+// 14. EXPORTAÇÕES
+// ============================================================================
+
+function exportarNotas() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value;
+    const tipo = TURMAS_CONFIG[estado.turmaAtual].tipoAvaliacao;
+    const dados = TURMAS_CONFIG[estado.turmaAtual].alunos.map(aluno => {
+        const notas = estado.dadosNotas[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
+        if (tipo === "trimestral") return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" };
+        return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "" };
+    });
+    const planilha = XLSX.utils.json_to_sheet(dados);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, "Notas");
+    XLSX.writeFile(livro, `Notas_${TURMAS_CONFIG[estado.turmaAtual].nome}.xlsx`);
+    mostrarToast("Notas exportadas!");
+}
+
+function exportarPresenca() {
+    const alunos = TURMAS_CONFIG[estado.turmaAtual].alunos;
+    const dadosExport = [];
+    
+    for (const aluno of alunos) {
+        let totalPresencas = 0, totalAulas = 0;
+        const aulasPorMes = {};
+        
+        for (let key in estado.dadosPresenca[estado.turmaAtual]) {
+            if (Array.isArray(estado.dadosPresenca[estado.turmaAtual][key])) {
+                estado.dadosPresenca[estado.turmaAtual][key].forEach(aula => {
+                    totalAulas++;
+                    if (aula.presencas && aula.presencas[aluno] === true) totalPresencas++;
+                    const [ano, mes] = key.split('-');
+                    const mesNome = `${mes}/${ano}`;
+                    if (!aulasPorMes[mesNome]) aulasPorMes[mesNome] = { presencas: 0, total: 0 };
+                    aulasPorMes[mesNome].total++;
+                    if (aula.presencas && aula.presencas[aluno] === true) aulasPorMes[mesNome].presencas++;
+                });
+            }
+        }
+        
+        const frequencia = totalAulas > 0 ? ((totalPresencas / totalAulas) * 100).toFixed(1) : "0";
+        const row = { Aluno: aluno, "Total Aulas": totalAulas, "Total Presenças": totalPresencas, "Frequência (%)": frequencia };
+        
+        for (let mes in aulasPorMes) {
+            const freqMes = aulasPorMes[mes].total > 0 ? ((aulasPorMes[mes].presencas / aulasPorMes[mes].total) * 100).toFixed(1) : "0";
+            row[`${mes}`] = `${aulasPorMes[mes].presencas}/${aulasPorMes[mes].total} (${freqMes}%)`;
+        }
+        dadosExport.push(row);
+    }
+    
+    const planilha = XLSX.utils.json_to_sheet(dadosExport);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, `Presenca_${TURMAS_CONFIG[estado.turmaAtual].nome}`);
+    XLSX.writeFile(livro, `Presenca_${TURMAS_CONFIG[estado.turmaAtual].nome}.xlsx`);
+    mostrarToast("Presenças exportadas!");
+}
+
+function exportarVistos() {
+    const alunos = TURMAS_CONFIG[estado.turmaAtual].alunos;
+    const dadosExport = [];
+    
+    for (const aluno of alunos) {
+        const dados = estado.dadosVistos[estado.turmaAtual]?.alunos?.[aluno] || { total: 0, registros: [] };
+        dadosExport.push({
+            "Aluno": aluno,
+            "Total de Vistos": dados.total,
+            "Última Participação": dados.ultima ? new Date(dados.ultima).toLocaleDateString('pt-BR') : "-",
+            "Histórico": dados.registros.map(r => `${new Date(r.data).toLocaleDateString('pt-BR')}: ${r.descricao}`).join("; ")
+        });
+    }
+    
+    const planilha = XLSX.utils.json_to_sheet(dadosExport);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, `Vistos_${TURMAS_CONFIG[estado.turmaAtual].nome}`);
+    XLSX.writeFile(livro, `Vistos_${TURMAS_CONFIG[estado.turmaAtual].nome}.xlsx`);
+    mostrarToast("Vistos exportados!");
+}
+
+// ============================================================================
+// 15. GRÁFICO E OBSERVAÇÕES
+// ============================================================================
+
+function atualizarGraficoEvolucao() {
+    const alunoSelect = document.getElementById("graficoAlunoSelect");
+    if (!alunoSelect) return;
+    const aluno = alunoSelect.value;
+    if (!aluno) return;
+    
+    const disciplina = document.getElementById("disciplinaNotas")?.value || TURMAS_CONFIG[estado.turmaAtual].disciplinas[0];
+    const tipo = TURMAS_CONFIG[estado.turmaAtual].tipoAvaliacao;
+    const notas = estado.dadosNotas[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
+    
+    let labels = [], valores = [];
+    
+    if (tipo === "trimestral") {
+        labels = ["NM1 - 1º Trimestre", "NM2 - 2º Trimestre", "NM3 - 3º Trimestre"];
+        valores = [parseFloat(notas.nm1) || 0, parseFloat(notas.nm2) || 0, parseFloat(notas.nm3) || 0];
+    } else {
+        labels = ["NM1 - 1º Bimestre", "NM2 - 2º Bimestre"];
+        valores = [parseFloat(notas.nm1) || 0, parseFloat(notas.nm2) || 0];
+    }
+    
+    const ctx = document.getElementById("graficoEvolucao")?.getContext("2d");
+    if (!ctx) return;
+    
+    if (estado.graficoEvolucao) estado.graficoEvolucao.destroy();
+    
+    estado.graficoEvolucao = new Chart(ctx, {
+        type: 'line',
+        data: { labels: labels, datasets: [{ label: 'Evolução das Notas', data: valores, borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointBackgroundColor: '#667eea' }] },
+        options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 0, max: 10, title: { display: true, text: 'Nota' } }, x: { title: { display: true, text: 'Avaliações' } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `Nota: ${ctx.raw.toFixed(1)}` } } } }
+    });
+}
+
+function abrirModalObservacao(aluno) {
+    const obs = estado.dadosObservacoes[estado.turmaAtual]?.[aluno] || "";
+    document.getElementById("modalObsTexto").value = obs;
+    document.getElementById("modalObs").style.display = "flex";
+    window.alunoObsSelecionado = aluno;
+}
+
+function salvarObservacaoModal() {
+    const obs = document.getElementById("modalObsTexto").value;
+    if (window.alunoObsSelecionado) {
+        if (!estado.dadosObservacoes[estado.turmaAtual]) estado.dadosObservacoes[estado.turmaAtual] = {};
+        estado.dadosObservacoes[estado.turmaAtual][window.alunoObsSelecionado] = obs;
+        salvarDados();
+        document.getElementById("modalObs").style.display = "none";
+        mostrarToast("Observação salva!");
+    }
+}
+
+// ============================================================================
+// 16. TROCAR TURMA
 // ============================================================================
 
 function trocarTurma(turmaId) {
@@ -894,7 +1173,7 @@ function atualizarCabecalhoNotas() {
 }
 
 // ============================================================================
-// 13. INICIALIZAÇÃO
+// 17. INICIALIZAÇÃO
 // ============================================================================
 
 function iniciarHorarios() {
@@ -923,6 +1202,10 @@ function iniciarSistema(usuario) {
     setInterval(() => { if (document.getElementById("abaDashboard")?.classList.contains("active")) renderizarDashboard(); }, 60000);
 }
 
+// ============================================================================
+// 18. DOM CONTENT LOADED
+// ============================================================================
+
 document.addEventListener("DOMContentLoaded", () => {
     const sessao = verificarSessao();
     if (sessao) iniciarSistema(sessao);
@@ -945,17 +1228,55 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`)?.classList.add("active");
         if (btn.dataset.aba === "relatorios") renderizarRelatorios();
         if (btn.dataset.aba === "ranking") renderizarRanking();
+        if (btn.dataset.aba === "calendario") renderizarEventos();
         if (btn.dataset.aba === "admin") renderizarAdmin();
     }));
     
     document.getElementById("disciplinaNotas")?.addEventListener("change", () => { renderizarNotas(); renderizarRanking(); });
     document.getElementById("rankingDisciplina")?.addEventListener("change", renderizarRanking);
+    document.getElementById("graficoAlunoSelect")?.addEventListener("change", atualizarGraficoEvolucao);
     document.getElementById("salvarNotas")?.addEventListener("click", salvarNotas);
+    document.getElementById("exportarNotas")?.addEventListener("click", exportarNotas);
     document.getElementById("adicionarAula")?.addEventListener("click", adicionarAula);
     document.getElementById("salvarPresenca")?.addEventListener("click", () => { salvarDados(); mostrarToast("Presenças salvas!"); });
+    document.getElementById("exportarPresenca")?.addEventListener("click", exportarPresenca);
     document.getElementById("adicionarVisto")?.addEventListener("click", () => { if (TURMAS_CONFIG[estado.turmaAtual].alunos.length > 0) abrirModalVisto(TURMAS_CONFIG[estado.turmaAtual].alunos[0]); });
     document.getElementById("salvarVistos")?.addEventListener("click", () => { salvarDados(); mostrarToast("Vistos salvos!"); });
+    document.getElementById("exportarVistos")?.addEventListener("click", exportarVistos);
     document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
+    
+    document.getElementById("adicionarEvento")?.addEventListener("click", () => {
+        document.getElementById("eventoTitulo").value = "";
+        document.getElementById("eventoData").value = "";
+        document.getElementById("eventoDescricao").value = "";
+        document.getElementById("modalEvento").style.display = "flex";
+    });
+    document.getElementById("modalSalvarEvento")?.addEventListener("click", () => {
+        adicionarEvento(document.getElementById("eventoTitulo").value, document.getElementById("eventoData").value, document.getElementById("eventoDescricao").value);
+        document.getElementById("modalEvento").style.display = "none";
+    });
+    
+    document.getElementById("adicionarAlunoBtn")?.addEventListener("click", () => {
+        document.getElementById("modalAlunoNome").value = "";
+        document.getElementById("modalAlunoNascimento").value = "";
+        document.getElementById("modalAlunoTurma").value = document.getElementById("adminTurmaSelect").value;
+        document.getElementById("modalAluno").style.display = "flex";
+    });
+    document.getElementById("adminTurmaSelect")?.addEventListener("change", renderizarAdmin);
+    document.getElementById("backupDadosBtn")?.addEventListener("click", backupDados);
+    document.getElementById("restoreDadosBtn")?.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json";
+        input.onchange = (e) => { if (e.target.files[0]) restoreDados(e.target.files[0]); };
+        input.click();
+    });
+    document.getElementById("modalSalvarAluno")?.addEventListener("click", () => {
+        adicionarAluno(document.getElementById("modalAlunoTurma").value, document.getElementById("modalAlunoNome").value, document.getElementById("modalAlunoNascimento").value);
+        document.getElementById("modalAluno").style.display = "none";
+    });
+    document.getElementById("modalSalvarVisto")?.addEventListener("click", salvarVisto);
+    document.getElementById("modalSalvarObs")?.addEventListener("click", salvarObservacaoModal);
     document.getElementById("configurarAlertas")?.addEventListener("click", () => {
         const minutos = prompt("Minutos de antecedência para alertas? (5, 10, 15, 30, 60)", estado.configAlertas.minutosAntecedencia);
         if (minutos && [5,10,15,30,60].includes(parseInt(minutos))) {
@@ -971,8 +1292,36 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => alertaDiv.remove(), 5000);
     });
     
-    document.querySelector(".nav-item-aba[data-aba='dashboard']")?.classList.add("ativo");
+    document.querySelectorAll(".modal-fechar, .modal-fechar-aluno, .modal-fechar-evento, .modal-fechar-obs").forEach(btn => {
+        btn.onclick = () => {
+            document.getElementById("modalAluno").style.display = "none";
+            document.getElementById("modalVisto").style.display = "none";
+            document.getElementById("modalEvento").style.display = "none";
+            document.getElementById("modalObs").style.display = "none";
+        };
+    });
+    document.getElementById("modalCancelarAluno")?.addEventListener("click", () => document.getElementById("modalAluno").style.display = "none");
     
-    // Renderizar eventos se existir a função
-    if (typeof renderizarEventos === 'function') renderizarEventos();
+    document.getElementById("mesPresenca")?.addEventListener("change", renderizarPresenca);
+    document.getElementById("anoPresenca")?.addEventListener("change", renderizarPresenca);
+    
+    window.onclick = (event) => {
+        if (event.target.classList.contains("modal-profissional")) {
+            document.getElementById("modalAluno").style.display = "none";
+            document.getElementById("modalVisto").style.display = "none";
+            document.getElementById("modalEvento").style.display = "none";
+            document.getElementById("modalObs").style.display = "none";
+        }
+    };
+    
+    document.getElementById("globalSearch")?.addEventListener("input", (e) => {
+        const termo = e.target.value.toLowerCase();
+        const alunos = TURMAS_CONFIG[estado.turmaAtual].alunos;
+        const filtrados = alunos.filter(a => a.toLowerCase().includes(termo));
+        if (termo.length > 0 && filtrados.length > 0) {
+            mostrarToast(`🔍 Encontrados ${filtrados.length} alunos`, "info");
+        }
+    });
+    
+    document.querySelector(".nav-item-aba[data-aba='dashboard']")?.classList.add("ativo");
 });
