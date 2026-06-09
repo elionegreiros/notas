@@ -114,13 +114,72 @@ const ALUNOS_INF5 = [
 
 // Horários das aulas (baseado no PDF)
 const HORARIOS = {
-    segunda: { "1adm": [], "1amb": [], "2ds": [{ hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "08:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }, { hora: "13:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }] },
-    terca: { "1adm": [], "1amb": [], "2ds": [{ hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" }, { hora: "13:50", disciplina: "MENTORIA TEC" }, { hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "16:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }] },
-    quarta: { "1adm": [], "1amb": [{ hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "09:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }], "2ds": [{ hora: "15:10", disciplina: "FRONT-END" }, { hora: "16:10", disciplina: "PROGRAMAÇÃO ESTRUTURADA" }] },
-    quinta: { "1adm": [], "1amb": [], "2ds": [{ hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "08:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }, { hora: "13:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }] },
-    sexta: { "1adm": [], "1amb": [{ hora: "10:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "11:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" }], "2ds": [{ hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" }, { hora: "16:10", disciplina: "PENSAMENTO COMPUTACIONAL" }] }
+    segunda: {
+        "1adm": [],
+        "1amb": [],
+        "2ds": [
+            { hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
+            { hora: "16:10", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }
+        ],
+        "inf1": [
+            { hora: "19:25", disciplina: "INF - MÓDULO I" }
+        ],
+        "inf5": [
+            { hora: "18:30", disciplina: "INF - MÓDULO V" }
+        ]
+    },
+    terca: {
+        "1adm": [
+            { hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
+        ],
+        "1amb": [],
+        "2ds": [
+            { hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" },
+            { hora: "13:50", disciplina: "MENTORIA TEC" }
+        ],
+        "inf1": [
+            { hora: "20:20", disciplina: "INF - MÓDULO I" }
+        ],
+        "inf5": [
+            { hora: "21:25", disciplina: "INF - MÓDULO V" }
+        ]
+    },
+    quarta: {
+        "1adm": [],
+        "1amb": [
+            { hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }
+        ],
+        "2ds": [
+            { hora: "15:10", disciplina: "FRONT-END" },
+            { hora: "16:10", disciplina: "PROGRAMAÇÃO ESTRUTURADA" }
+        ],
+        "inf1": [],
+        "inf5": [
+            { hora: "18:30", disciplina: "INF - MÓDULO V" }
+        ]
+    },
+    quinta: {
+        "1adm": [],
+        "1amb": [],
+        "2ds": [
+            { hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" },
+            { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }
+        ],
+        "inf1": [],
+        "inf5": []
+    },
+    sexta: {
+        "1adm": [],
+        "1amb": [],
+        "2ds": [
+            { hora: "10:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" },
+            { hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" },
+            { hora: "16:10", disciplina: "PENSAMENTO COMPUTACIONAL" }
+        ],
+        "inf1": [],
+        "inf5": []
+    }
 };
-
 // Configuração das turmas
 const TURMAS_CONFIG = {
     "1adm": { nome: "1º Administração", alunos: ALUNOS_1ADM.map(a => a.nome), disciplinas: ["Inteligência Artificial"], tipoAvaliacao: "trimestral" },
