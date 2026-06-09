@@ -3,78 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Notas e Provas - Professor</title>
+    <title>Sistema Acadêmico - Professor</title>
     <link rel="stylesheet" href="estilo.css">
-    <!-- Biblioteca para gerar Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 Gerenciador de Notas e Datas de Provas</h1>
-            <p>Organização por Turma e Disciplina — 5 Turmas</p>
-        </header>
-
-        <!-- Formulário de Cadastro -->
-        <section class="formulario">
-            <h2>Cadastrar Dados</h2>
-            <form id="formCadastro">
-                <div class="campo">
-                    <label for="turma">Turma:</label>
-                    <select id="turma" required>
-                        <option value="">Selecione a turma</option>
-                    </select>
-                </div>
-
-                <div class="campo">
-                    <label for="disciplina">Disciplina:</label>
-                    <select id="disciplina" required>
-                        <option value="">Selecione primeiro a turma</option>
-                    </select>
-                </div>
-
-                <div class="campo">
-                    <label for="nomeAluno">Nome do Aluno:</label>
-                    <select id="nomeAluno" required>
-                        <option value="">Selecione primeiro a turma</option>
-                    </select>
-                </div>
-
-                <div class="campo">
-                    <label for="dataProva">Data da Prova:</label>
-                    <input type="date" id="dataProva" required>
-                </div>
-
-                <div class="campo">
-                    <label for="nota">Nota Obtida (0 a 10):</label>
-                    <input type="number" id="nota" min="0" max="10" step="0.1" required placeholder="Ex: 8.5">
-                </div>
-
-                <button type="submit" class="btn">Salvar Dados</button>
-            </form>
-        </section>
-
-        <!-- Filtros e Botão Exportar -->
-        <section class="filtros">
-            <h2>Filtrar Visualização</h2>
-            <div class="filtro-grupo">
-                <select id="filtroTurma">
-                    <option value="todas">Todas as Turmas</option>
-                </select>
-
-                <select id="filtroDisciplina">
-                    <option value="todas">Todas as Disciplinas</option>
-                </select>
-
-                <button id="btnExportar" class="btn btn-exportar">📊 Exportar para Excel</button>
+    <div class="app">
+        <!-- Menu Superior -->
+        <nav class="menu-superior">
+            <div class="logo">
+                <h2>📚 Sistema Acadêmico</h2>
             </div>
-        </section>
+            <div class="turmas-menu">
+                <button class="turma-btn" data-turma="1adm">1º Administração</button>
+                <button class="turma-btn" data-turma="1amb">1º Controle Ambiental</button>
+                <button class="turma-btn" data-turma="2ds">2º Desenvolvimento</button>
+                <button class="turma-btn" data-turma="inf1">Informática - Mód I</button>
+                <button class="turma-btn" data-turma="inf5">Informática - Mód V</button>
+            </div>
+        </nav>
 
-        <!-- Área de Visualização -->
-        <section class="dados">
-            <h2>Dados Cadastrados</h2>
-            <div id="listaDados" class="lista-vazia">Nenhum dado cadastrado ainda.</div>
-        </section>
+        <!-- Conteúdo Principal -->
+        <main class="conteudo">
+            <div id="turmaTitulo" class="turma-titulo"></div>
+
+            <!-- Abas -->
+            <div class="abas">
+                <button class="aba-btn active" data-aba="notas">📝 Notas Trimestrais</button>
+                <button class="aba-btn" data-aba="presenca">📋 Lista de Presença</button>
+                <button class="aba-btn" data-aba="vistos">⭐ Vistos de Participação</button>
+                <button class="aba-btn" data-aba="relatorios">📊 Relatórios</button>
+            </div>
+
+            <!-- Conteúdo das Abas -->
+            <div id="abaNotas" class="aba-conteudo active">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Lançamento de Notas Trimestrais</h3>
+                        <div class="disciplina-selector">
+                            <label>Disciplina:</label>
+                            <select id="disciplinaNotas" class="select-disciplina"></select>
+                        </div>
+                    </div>
+                    <div class="tabela-container">
+                        <table class="tabela-notas" id="tabelaNotas">
+                            <thead>
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>NM1 <span class="info-tooltip" title="Nota do 1º Trimestre">ⓘ</span></th>
+                                    <th>NM2 <span class="info-tooltip" title="Nota do 2º Trimestre">ⓘ</span></th>
+                                    <th>NM3 <span class="info-tooltip" title="Nota do 3º Trimestre">ⓘ</span></th>
+                                    <th>Média Final</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyNotas"></tbody>
+                        </table>
+                    </div>
+                    <div class="acoes-card">
+                        <button id="salvarNotas" class="btn btn-salvar">💾 Salvar Notas</button>
+                        <button id="exportarNotas" class="btn btn-exportar">📊 Exportar Notas</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaPresenca" class="aba-conteudo">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Lista de Presença</h3>
+                        <div class="filtros-presenca">
+                            <div class="campo">
+                                <label>Mês:</label>
+                                <select id="mesPresenca">
+                                    <option value="1">Janeiro</option>
+                                    <option value="2">Fevereiro</option>
+                                    <option value="3">Março</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Maio</option>
+                                    <option value="6">Junho</option>
+                                    <option value="7">Julho</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                            <div class="campo">
+                                <label>Ano:</label>
+                                <input type="number" id="anoPresenca" value="2026" step="1">
+                            </div>
+                            <button id="adicionarAula" class="btn btn-pequeno">➕ Nova Aula</button>
+                        </div>
+                    </div>
+                    <div id="aulasContainer" class="aulas-container"></div>
+                    <div class="acoes-card">
+                        <button id="salvarPresenca" class="btn btn-salvar">💾 Salvar Presenças</button>
+                        <button id="exportarPresenca" class="btn btn-exportar">📊 Exportar Relatório</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaVistos" class="aba-conteudo">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Registro de Vistos - Participação em Aula</h3>
+                        <div class="filtros-vistos">
+                            <div class="campo">
+                                <label>Data:</label>
+                                <input type="date" id="dataVisto">
+                            </div>
+                            <div class="campo">
+                                <label>Descrição da Atividade:</label>
+                                <input type="text" id="descVisto" placeholder="Ex: Respondeu questões no quadro">
+                            </div>
+                            <button id="adicionarVisto" class="btn btn-pequeno">➕ Adicionar Visto</button>
+                        </div>
+                    </div>
+                    <div class="tabela-container">
+                        <table class="tabela-vistos" id="tabelaVistos">
+                            <thead>
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>Total de Vistos</th>
+                                    <th>Última Participação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyVistos"></tbody>
+                        </table>
+                    </div>
+                    <div class="acoes-card">
+                        <button id="salvarVistos" class="btn btn-salvar">💾 Salvar Vistos</button>
+                        <button id="exportarVistos" class="btn btn-exportar">📊 Exportar Vistos</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="abaRelatorios" class="aba-conteudo">
+                <div class="card">
+                    <h3>Relatórios Gerenciais</h3>
+                    <div class="relatorios-grid">
+                        <div class="relatorio-card">
+                            <h4>📈 Resumo de Notas</h4>
+                            <div id="resumoNotas"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>📊 Frequência Geral</h4>
+                            <div id="resumoFrequencia"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>⭐ Alunos Destaque</h4>
+                            <div id="alunosDestaque"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>⚠️ Alunos em Recuperação</h4>
+                            <div id="alunosRecuperacao"></div>
+                        </div>
+                    </div>
+                    <div class="acoes-card">
+                        <button id="exportarRelatorioGeral" class="btn btn-exportar">📊 Exportar Relatório Completo</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para adicionar visto individual -->
+    <div id="modalVisto" class="modal">
+        <div class="modal-conteudo">
+            <span class="modal-fechar">&times;</span>
+            <h3>Adicionar Visto para Aluno</h3>
+            <div class="campo">
+                <label>Descrição:</label>
+                <textarea id="modalDescVisto" rows="3" placeholder="Descreva a participação do aluno..."></textarea>
+            </div>
+            <button id="modalSalvarVisto" class="btn btn-salvar">Salvar Visto</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
