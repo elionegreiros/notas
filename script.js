@@ -1,3 +1,31 @@
+// Adicione esta função no início do script.js para forçar a inicialização dos dados
+function forcarInicializacaoDados() {
+    console.log("Forçando inicialização dos dados...");
+    
+    // Verificar se os dados das escolas existem
+    if (typeof ESCOLAS !== 'undefined') {
+        for (let escolaId in ESCOLAS) {
+            const turmas = ESCOLAS[escolaId].turmas;
+            for (let turmaId in turmas) {
+                const turma = turmas[turmaId];
+                console.log(`Inicializando ${escolaId}/${turmaId} com ${turma.alunos.length} alunos`);
+            }
+        }
+    }
+    
+    // Forçar renderização da dashboard
+    setTimeout(() => {
+        if (typeof renderizarDashboard === 'function') {
+            renderizarDashboard();
+        }
+        if (typeof renderizarNotas === 'function') {
+            renderizarNotas();
+        }
+    }, 100);
+}
+
+// Chamar no final do DOMContentLoaded
+// forcarInicializacaoDados();
 // ============================================================================
 // 1. CONFIGURAÇÕES E CONSTANTES GLOBAIS
 // ============================================================================
