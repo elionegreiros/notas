@@ -51,19 +51,21 @@ const alunosInf5 = [
 ];
 
 // ============================================
-// CONFIGURAÇÃO DAS TURMAS
+// CONFIGURAÇÃO DAS TURMAS (com tipo de avaliação)
 // ============================================
 
 const turmasConfig = {
     "1adm": { 
         nome: "1º Administração", 
         alunos: alunos1Adm, 
-        disciplinas: ["Inteligência Artificial"] 
+        disciplinas: ["Inteligência Artificial"],
+        tipoAvaliacao: "trimestral"  // NM1, NM2, NM3
     },
     "1amb": { 
         nome: "1º Controle Ambiental", 
         alunos: alunos1Amb, 
-        disciplinas: ["Inteligência Artificial"] 
+        disciplinas: ["Inteligência Artificial"],
+        tipoAvaliacao: "trimestral"  // NM1, NM2, NM3
     },
     "2ds": { 
         nome: "2º Desenvolvimento de Sistemas", 
@@ -73,17 +75,20 @@ const turmasConfig = {
             "PENSAMENTO COMPUTACIONAL II", "PROGRAMAÇÃO ESTRUTURADA", "PROGRAMAÇÃO ORIENTADA À OBJETOS - POO",
             "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", "PROGRAMAÇÃO WEB FRONT-END", "ARQUITETURA DE MICROSSERVIÇOS",
             "INTRODUÇÃO AO ECOSSISTEMA DEVops", "MANUTENÇÃO DE SISTEMAS"
-        ] 
+        ],
+        tipoAvaliacao: "trimestral"  // NM1, NM2, NM3
     },
     "inf1": { 
         nome: "Informática - Módulo I", 
         alunos: alunosInf1, 
-        disciplinas: ["Análise e Lógica de Programação"] 
+        disciplinas: ["Análise e Lógica de Programação"],
+        tipoAvaliacao: "bimestral"   // NM1, NM2
     },
     "inf5": { 
         nome: "Informática - Módulo V", 
         alunos: alunosInf5, 
-        disciplinas: ["Empreendedorismo para TI"] 
+        disciplinas: ["Empreendedorismo para TI"],
+        tipoAvaliacao: "bimestral"   // NM1, NM2
     }
 };
 
@@ -109,13 +114,18 @@ function inicializarEstruturas() {
         
         const alunos = turmasConfig[turmaId].alunos;
         const disciplinas = turmasConfig[turmaId].disciplinas;
+        const tipo = turmasConfig[turmaId].tipoAvaliacao;
         
-        // Inicializar notas
+        // Inicializar notas (diferente para cada tipo)
         disciplinas.forEach(disciplina => {
             if (!dadosNotas[turmaId][disciplina]) {
                 dadosNotas[turmaId][disciplina] = {};
                 alunos.forEach(aluno => {
-                    dadosNotas[turmaId][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
+                    if (tipo === "trimestral") {
+                        dadosNotas[turmaId][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
+                    } else {
+                        dadosNotas[turmaId][disciplina][aluno] = { nm1: "", nm2: "" };
+                    }
                 });
             }
         });
@@ -156,7 +166,7 @@ function salvarDados() {
 }
 
 // ============================================
-// RENDERIZAÇÃO DAS NOTAS
+// RENDERIZAÇÃO DAS NOTAS (adaptada para cada tipo)
 // ============================================
 
 function renderizarNotas() {
@@ -168,17 +178,24 @@ function renderizarNotas() {
     
     const alunos = turmasConfig[turmaAtual].alunos;
     const notasTurma = dadosNotas[turmaAtual]?.[disciplina] || {};
+    const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
     const tbody = document.getElementById("tbodyNotas");
     if (!tbody) return;
     
     tbody.innerHTML = "";
     
     alunos.forEach(aluno => {
-        const notas = notasTurma[aluno] || { nm1: "", nm2: "", nm3: "" };
+        const notas = notasTurma[aluno] || (tipo === "trimestral" ? { nm1: "", nm2: "", nm3: "" } : { nm1: "", nm2: "" });
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = parseFloat(notas.nm3) || 0;
-        const media = (nm1 + nm2 + nm3) / 3;
+        const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+        
+        let media = 0;
+        if (tipo === "trimestral") {
+            media = (nm1 + nm2 + nm3) / 3;
+        } else {
+            media = (nm1 + nm2) / 2;
+        }
         
         let status = "";
         let statusClass = "";
@@ -196,6 +213,7 @@ function renderizarNotas() {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = aluno;
         
+        // NM1
         const cell1 = row.insertCell(1);
         const input1 = document.createElement("input");
         input1.type = "number";
@@ -208,6 +226,7 @@ function renderizarNotas() {
         input1.dataset.trimestre = "nm1";
         cell1.appendChild(input1);
         
+        // NM2
         const cell2 = row.insertCell(2);
         const input2 = document.createElement("input");
         input2.type = "number";
@@ -220,26 +239,32 @@ function renderizarNotas() {
         input2.dataset.trimestre = "nm2";
         cell2.appendChild(input2);
         
-        const cell3 = row.insertCell(3);
-        const input3 = document.createElement("input");
-        input3.type = "number";
-        input3.step = "0.1";
-        input3.min = "0";
-        input3.max = "10";
-        input3.value = notas.nm3 !== "" ? notas.nm3 : "";
-        input3.classList.add("nota-input");
-        input3.dataset.aluno = aluno;
-        input3.dataset.trimestre = "nm3";
-        cell3.appendChild(input3);
-        
-        row.insertCell(4).textContent = media.toFixed(1);
-        row.insertCell(5).innerHTML = `<span class="${statusClass}">${status}</span>`;
+        // NM3 (apenas para trimestral)
+        if (tipo === "trimestral") {
+            const cell3 = row.insertCell(3);
+            const input3 = document.createElement("input");
+            input3.type = "number";
+            input3.step = "0.1";
+            input3.min = "0";
+            input3.max = "10";
+            input3.value = notas.nm3 !== "" ? notas.nm3 : "";
+            input3.classList.add("nota-input");
+            input3.dataset.aluno = aluno;
+            input3.dataset.trimestre = "nm3";
+            cell3.appendChild(input3);
+            row.insertCell(4).textContent = media.toFixed(1);
+            row.insertCell(5).innerHTML = `<span class="${statusClass}">${status}</span>`;
+        } else {
+            row.insertCell(3).textContent = media.toFixed(1);
+            row.insertCell(4).innerHTML = `<span class="${statusClass}">${status}</span>`;
+        }
     });
 }
 
 function salvarNotas() {
     const disciplina = document.getElementById("disciplinaNotas").value;
     const inputs = document.querySelectorAll("#tbodyNotas .nota-input");
+    const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
     
     inputs.forEach(input => {
         const aluno = input.dataset.aluno;
@@ -248,7 +273,11 @@ function salvarNotas() {
         if (valor !== "" && (isNaN(valor) || valor < 0 || valor > 10)) valor = "";
         
         if (!dadosNotas[turmaAtual][disciplina][aluno]) {
-            dadosNotas[turmaAtual][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
+            if (tipo === "trimestral") {
+                dadosNotas[turmaAtual][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
+            } else {
+                dadosNotas[turmaAtual][disciplina][aluno] = { nm1: "", nm2: "" };
+            }
         }
         dadosNotas[turmaAtual][disciplina][aluno][trimestre] = valor;
     });
@@ -428,24 +457,31 @@ function salvarVisto() {
 }
 
 // ============================================
-// RELATÓRIOS
+// RELATÓRIOS (adaptado)
 // ============================================
 
 function renderizarRelatorios() {
     const disciplinaSelect = document.getElementById("disciplinaNotas");
     const disciplina = disciplinaSelect?.value || turmasConfig[turmaAtual].disciplinas[0];
     const alunos = turmasConfig[turmaAtual].alunos;
+    const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
     
     // Resumo de Notas
     let aprovados = 0, recuperacao = 0, reprovados = 0;
     let somaMedias = 0;
     
     alunos.forEach(aluno => {
-        const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || { nm1: "", nm2: "", nm3: "" };
+        const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = parseFloat(notas.nm3) || 0;
-        const media = (nm1 + nm2 + nm3) / 3;
+        const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+        
+        let media = 0;
+        if (tipo === "trimestral") {
+            media = (nm1 + nm2 + nm3) / 3;
+        } else {
+            media = (nm1 + nm2) / 2;
+        }
         
         if (media >= 7) aprovados++;
         else if (media >= 5) recuperacao++;
@@ -463,6 +499,7 @@ function renderizarRelatorios() {
                 <li>✅ Aprovados: <strong style="color:#2e7d32">${aprovados}</strong></li>
                 <li>⚠️ Recuperação: <strong style="color:#f57c00">${recuperacao}</strong></li>
                 <li>❌ Reprovados: <strong style="color:#c62828">${reprovados}</strong></li>
+                <li>📋 Avaliação: <strong>${tipo === "trimestral" ? "Trimestral (NM1, NM2, NM3)" : "Bimestral (NM1, NM2)"}</strong></li>
             </ul>
         `;
     }
@@ -516,11 +553,18 @@ function renderizarRelatorios() {
     // Alunos em Recuperação
     const recuperacaoList = [];
     alunos.forEach(aluno => {
-        const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || { nm1: "", nm2: "", nm3: "" };
+        const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = parseFloat(notas.nm3) || 0;
-        const media = (nm1 + nm2 + nm3) / 3;
+        const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+        
+        let media = 0;
+        if (tipo === "trimestral") {
+            media = (nm1 + nm2 + nm3) / 3;
+        } else {
+            media = (nm1 + nm2) / 2;
+        }
+        
         if (media >= 5 && media < 7) {
             recuperacaoList.push({ aluno, media });
         }
@@ -540,31 +584,72 @@ function exportarRelatorioCompleto() {
     const disciplinaSelect = document.getElementById("disciplinaNotas");
     const disciplina = disciplinaSelect?.value || turmasConfig[turmaAtual].disciplinas[0];
     const alunos = turmasConfig[turmaAtual].alunos;
+    const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
     
     const dadosExport = alunos.map(aluno => {
         const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = parseFloat(notas.nm3) || 0;
-        const mediaFinal = (nm1 + nm2 + nm3) / 3;
+        const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+        
+        let mediaFinal = 0;
+        if (tipo === "trimestral") {
+            mediaFinal = (nm1 + nm2 + nm3) / 3;
+        } else {
+            mediaFinal = (nm1 + nm2) / 2;
+        }
+        
         const status = mediaFinal >= 7 ? "Aprovado" : (mediaFinal >= 5 ? "Recuperação" : "Reprovado");
         const vistos = dadosVistos[turmaAtual]?.alunos?.[aluno]?.total || 0;
         
-        return {
+        const baseObj = {
             "Aluno": aluno,
             "NM1": nm1,
             "NM2": nm2,
-            "NM3": nm3,
             "Média Final": mediaFinal.toFixed(1),
             "Status": status,
             "Vistos de Participação": vistos
         };
+        
+        if (tipo === "trimestral") {
+            return { ...baseObj, "NM3": nm3 };
+        }
+        return baseObj;
     });
     
     const planilha = XLSX.utils.json_to_sheet(dadosExport);
     const livro = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turmasConfig[turmaAtual].nome}`);
     XLSX.writeFile(livro, `Relatorio_${turmasConfig[turmaAtual].nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+}
+
+// ============================================
+// ATUALIZAR CABEÇALHO DA TABELA DE NOTAS
+// ============================================
+
+function atualizarCabecalhoNotas() {
+    const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
+    const thead = document.querySelector("#tabelaNotas thead tr");
+    if (!thead) return;
+    
+    if (tipo === "trimestral") {
+        thead.innerHTML = `
+            <th>Aluno</th>
+            <th>NM1 <span class="info-tooltip" title="Nota do 1º Trimestre">ⓘ</span></th>
+            <th>NM2 <span class="info-tooltip" title="Nota do 2º Trimestre">ⓘ</span></th>
+            <th>NM3 <span class="info-tooltip" title="Nota do 3º Trimestre">ⓘ</span></th>
+            <th>Média Final</th>
+            <th>Status</th>
+        `;
+    } else {
+        thead.innerHTML = `
+            <th>Aluno</th>
+            <th>NM1 <span class="info-tooltip" title="Nota do 1º Bimestre">ⓘ</span></th>
+            <th>NM2 <span class="info-tooltip" title="Nota do 2º Bimestre">ⓘ</span></th>
+            <th>Média Final</th>
+            <th>Status</th>
+        `;
+    }
 }
 
 // ============================================
@@ -584,7 +669,7 @@ function trocarTurma(turmaId) {
     
     const turmaTitulo = document.getElementById("turmaTitulo");
     if (turmaTitulo) {
-        turmaTitulo.innerHTML = `<h1>📚 ${turmasConfig[turmaId].nome}</h1>`;
+        turmaTitulo.innerHTML = `<h1>📚 ${turmasConfig[turmaId].nome} ${turmasConfig[turmaId].tipoAvaliacao === "bimestral" ? "(Avaliação Bimestral)" : "(Avaliação Trimestral)"}</h1>`;
     }
     
     const selectDisciplina = document.getElementById("disciplinaNotas");
@@ -598,6 +683,7 @@ function trocarTurma(turmaId) {
         });
     }
     
+    atualizarCabecalhoNotas();
     renderizarNotas();
     renderizarPresenca();
     renderizarVistos();
@@ -640,9 +726,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (exportarNotasBtn) {
         exportarNotasBtn.addEventListener("click", () => {
             const disciplina = document.getElementById("disciplinaNotas")?.value;
+            const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
             const dados = turmasConfig[turmaAtual].alunos.map(aluno => {
                 const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
-                return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" };
+                if (tipo === "trimestral") {
+                    return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" };
+                } else {
+                    return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "" };
+                }
             });
             const planilha = XLSX.utils.json_to_sheet(dados);
             const livro = XLSX.utils.book_new();
