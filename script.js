@@ -12,7 +12,7 @@ const usuariosAutorizados = {
     "55566677788": { nome: "Coord. Ana Paula", senha: "admin123", tipo: "coordenador" },
     
     // Admin (acesso total)
-    "99988877766": { nome: "Administrador", senha: "admin123", tipo: "admin" }
+    "02711337324": { nome: "Administrador", senha: "admin123", tipo: "admin" }
 };
 
 // Função de login
