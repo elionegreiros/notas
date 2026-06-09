@@ -2,17 +2,54 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#2c5aa0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Sistema Acadêmico - Professor</title>
     <link rel="stylesheet" href="estilo.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-    <div class="app">
+    <!-- TELA DE LOGIN -->
+    <div id="telaLogin" class="tela-login">
+        <div class="login-container">
+            <div class="login-logo">
+                <h1>📚 Sistema Acadêmico</h1>
+                <p>Professores e Coordenadores</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="campo">
+                    <label>📄 CPF</label>
+                    <input type="text" id="loginCpf" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
+                </div>
+                
+                <div class="campo">
+                    <label>🔒 Senha</label>
+                    <input type="password" id="loginSenha" placeholder="Digite sua senha">
+                </div>
+                
+                <button id="btnLogin" class="btn btn-login">Entrar</button>
+                
+                <div id="loginError" class="login-error"></div>
+            </div>
+            
+            <div class="login-footer">
+                <p>Sistema de Gestão Acadêmica</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL (SÓ APARECE APÓS LOGIN) -->
+    <div id="conteudoPrincipal" class="app" style="display: none;">
         <!-- Menu Superior -->
         <nav class="menu-superior">
             <div class="logo">
                 <h2>📚 Sistema Acadêmico</h2>
+            </div>
+            <div class="user-info">
+                <span id="usuarioLogado" class="usuario-nome"></span>
+                <button id="btnLogout" class="btn-logout">🚪 Sair</button>
             </div>
             <div class="turmas-menu">
                 <button class="turma-btn" data-turma="1adm">1º Administração</button>
@@ -29,17 +66,18 @@
 
             <!-- Abas -->
             <div class="abas">
-                <button class="aba-btn active" data-aba="notas">📝 Notas Trimestrais</button>
-                <button class="aba-btn" data-aba="presenca">📋 Lista de Presença</button>
-                <button class="aba-btn" data-aba="vistos">⭐ Vistos de Participação</button>
+                <button class="aba-btn active" data-aba="notas">📝 Notas</button>
+                <button class="aba-btn" data-aba="presenca">📋 Presença</button>
+                <button class="aba-btn" data-aba="vistos">⭐ Vistos</button>
                 <button class="aba-btn" data-aba="relatorios">📊 Relatórios</button>
+                <button class="aba-btn" data-aba="admin">⚙️ Admin</button>
             </div>
 
-            <!-- Conteúdo das Abas -->
+            <!-- Aba Notas -->
             <div id="abaNotas" class="aba-conteudo active">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Lançamento de Notas Trimestrais</h3>
+                        <h3>Lançamento de Notas</h3>
                         <div class="disciplina-selector">
                             <label>Disciplina:</label>
                             <select id="disciplinaNotas" class="select-disciplina"></select>
@@ -47,16 +85,7 @@
                     </div>
                     <div class="tabela-container">
                         <table class="tabela-notas" id="tabelaNotas">
-                            <thead>
-                                <tr>
-                                    <th>Aluno</th>
-                                    <th>NM1 <span class="info-tooltip" title="Nota do 1º Trimestre">ⓘ</span></th>
-                                    <th>NM2 <span class="info-tooltip" title="Nota do 2º Trimestre">ⓘ</span></th>
-                                    <th>NM3 <span class="info-tooltip" title="Nota do 3º Trimestre">ⓘ</span></th>
-                                    <th>Média Final</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th></tr></thead>
                             <tbody id="tbodyNotas"></tbody>
                         </table>
                     </div>
@@ -67,32 +96,14 @@
                 </div>
             </div>
 
+            <!-- Aba Presença -->
             <div id="abaPresenca" class="aba-conteudo">
                 <div class="card">
                     <div class="card-header">
                         <h3>Lista de Presença</h3>
                         <div class="filtros-presenca">
-                            <div class="campo">
-                                <label>Mês:</label>
-                                <select id="mesPresenca">
-                                    <option value="1">Janeiro</option>
-                                    <option value="2">Fevereiro</option>
-                                    <option value="3">Março</option>
-                                    <option value="4">Abril</option>
-                                    <option value="5">Maio</option>
-                                    <option value="6">Junho</option>
-                                    <option value="7">Julho</option>
-                                    <option value="8">Agosto</option>
-                                    <option value="9">Setembro</option>
-                                    <option value="10">Outubro</option>
-                                    <option value="11">Novembro</option>
-                                    <option value="12">Dezembro</option>
-                                </select>
-                            </div>
-                            <div class="campo">
-                                <label>Ano:</label>
-                                <input type="number" id="anoPresenca" value="2026" step="1">
-                            </div>
+                            <div class="campo"><label>Mês:</label><select id="mesPresenca"><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+                            <div class="campo"><label>Ano:</label><input type="number" id="anoPresenca" value="2026" step="1"></div>
                             <button id="adicionarAula" class="btn btn-pequeno">➕ Nova Aula</button>
                         </div>
                     </div>
@@ -104,32 +115,16 @@
                 </div>
             </div>
 
+            <!-- Aba Vistos -->
             <div id="abaVistos" class="aba-conteudo">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Registro de Vistos - Participação em Aula</h3>
-                        <div class="filtros-vistos">
-                            <div class="campo">
-                                <label>Data:</label>
-                                <input type="date" id="dataVisto">
-                            </div>
-                            <div class="campo">
-                                <label>Descrição da Atividade:</label>
-                                <input type="text" id="descVisto" placeholder="Ex: Respondeu questões no quadro">
-                            </div>
-                            <button id="adicionarVisto" class="btn btn-pequeno">➕ Adicionar Visto</button>
-                        </div>
+                        <h3>Registro de Vistos</h3>
+                        <button id="adicionarVisto" class="btn btn-pequeno">➕ Dar Visto</button>
                     </div>
                     <div class="tabela-container">
-                        <table class="tabela-vistos" id="tabelaVistos">
-                            <thead>
-                                <tr>
-                                    <th>Aluno</th>
-                                    <th>Total de Vistos</th>
-                                    <th>Última Participação</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
+                        <table class="tabela-vistos">
+                            <thead><tr><th>Aluno</th><th>Total</th><th>Última</th><th>Ações</th></tr></thead>
                             <tbody id="tbodyVistos"></tbody>
                         </table>
                     </div>
@@ -140,36 +135,84 @@
                 </div>
             </div>
 
+            <!-- Aba Relatórios -->
             <div id="abaRelatorios" class="aba-conteudo">
                 <div class="card">
                     <h3>Relatórios Gerenciais</h3>
                     <div class="relatorios-grid">
-                        <div class="relatorio-card">
-                            <h4>📈 Resumo de Notas</h4>
-                            <div id="resumoNotas"></div>
-                        </div>
-                        <div class="relatorio-card">
-                            <h4>📊 Frequência Geral</h4>
-                            <div id="resumoFrequencia"></div>
-                        </div>
-                        <div class="relatorio-card">
-                            <h4>⭐ Alunos Destaque</h4>
-                            <div id="alunosDestaque"></div>
-                        </div>
-                        <div class="relatorio-card">
-                            <h4>⚠️ Alunos em Recuperação</h4>
-                            <div id="alunosRecuperacao"></div>
-                        </div>
+                        <div class="relatorio-card"><h4>📈 Resumo de Notas</h4><div id="resumoNotas"></div></div>
+                        <div class="relatorio-card"><h4>📊 Frequência Geral</h4><div id="resumoFrequencia"></div></div>
+                        <div class="relatorio-card"><h4>⭐ Alunos Destaque</h4><div id="alunosDestaque"></div></div>
+                        <div class="relatorio-card"><h4>⚠️ Alunos em Recuperação</h4><div id="alunosRecuperacao"></div></div>
                     </div>
                     <div class="acoes-card">
                         <button id="exportarRelatorioGeral" class="btn btn-exportar">📊 Exportar Relatório Completo</button>
                     </div>
                 </div>
             </div>
+
+            <!-- Aba Admin -->
+            <div id="abaAdmin" class="aba-conteudo">
+                <div class="card">
+                    <h3>⚙️ Administração de Alunos</h3>
+                    <p style="color: #666; margin-bottom: 15px;">Gerencie os alunos da turma selecionada.</p>
+                    
+                    <div class="admin-turma-selector">
+                        <label>📚 Selecionar Turma:</label>
+                        <select id="adminTurmaSelect" class="select-disciplina">
+                            <option value="1adm">1º Administração</option>
+                            <option value="1amb">1º Controle Ambiental</option>
+                            <option value="2ds">2º Desenvolvimento de Sistemas</option>
+                            <option value="inf1">Informática - Módulo I</option>
+                            <option value="inf5">Informática - Módulo V</option>
+                        </select>
+                    </div>
+
+                    <div style="margin: 20px 0;">
+                        <button id="adicionarAlunoBtn" class="btn btn-salvar" style="background: #107c41;">➕ Adicionar Novo Aluno</button>
+                    </div>
+
+                    <div class="tabela-container">
+                        <table class="tabela-admin">
+                            <thead><tr><th>#</th><th>Nome do Aluno</th><th>Status</th><th>Ações</th></tr></thead>
+                            <tbody id="tbodyAdmin"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="aviso-admin" style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ffc107;">
+                        ⚠️ <strong>Atenção:</strong> Ao remover um aluno, todas as suas notas, presenças e vistos serão permanentemente excluídos.
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
-    <!-- Modal para adicionar visto individual -->
+    <!-- Modais -->
+    <div id="modalAluno" class="modal">
+        <div class="modal-conteudo">
+            <span class="modal-fechar-aluno">&times;</span>
+            <h3 id="modalAlunoTitulo">➕ Adicionar Novo Aluno</h3>
+            <div class="campo">
+                <label>Nome completo do aluno:</label>
+                <input type="text" id="modalAlunoNome" placeholder="Ex: JOÃO SILVA SANTOS" style="width: 100%; padding: 10px; margin-top: 10px;">
+            </div>
+            <div class="campo">
+                <label>Turma:</label>
+                <select id="modalAlunoTurma" class="select-disciplina" style="width: 100%; margin-top: 10px;">
+                    <option value="1adm">1º Administração</option>
+                    <option value="1amb">1º Controle Ambiental</option>
+                    <option value="2ds">2º Desenvolvimento de Sistemas</option>
+                    <option value="inf1">Informática - Módulo I</option>
+                    <option value="inf5">Informática - Módulo V</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="modalSalvarAluno" class="btn btn-salvar">💾 Salvar</button>
+                <button id="modalCancelarAluno" class="btn" style="background: #ccc;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="modalVisto" class="modal">
         <div class="modal-conteudo">
             <span class="modal-fechar">&times;</span>
