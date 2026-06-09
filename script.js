@@ -51,7 +51,7 @@ const alunosInf5 = [
 ];
 
 // ============================================
-// CONFIGURAÇÃO DAS TURMAS (com tipo de avaliação)
+// CONFIGURAÇÃO DAS TURMAS
 // ============================================
 
 const turmasConfig = {
@@ -59,13 +59,13 @@ const turmasConfig = {
         nome: "1º Administração", 
         alunos: alunos1Adm, 
         disciplinas: ["Inteligência Artificial"],
-        tipoAvaliacao: "trimestral"  // NM1, NM2, NM3
+        tipoAvaliacao: "trimestral"
     },
     "1amb": { 
         nome: "1º Controle Ambiental", 
         alunos: alunos1Amb, 
         disciplinas: ["Inteligência Artificial"],
-        tipoAvaliacao: "trimestral"  // NM1, NM2, NM3
+        tipoAvaliacao: "trimestral"
     },
     "2ds": { 
         nome: "2º Desenvolvimento de Sistemas", 
@@ -76,19 +76,19 @@ const turmasConfig = {
             "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", "PROGRAMAÇÃO WEB FRONT-END", "ARQUITETURA DE MICROSSERVIÇOS",
             "INTRODUÇÃO AO ECOSSISTEMA DEVops", "MANUTENÇÃO DE SISTEMAS"
         ],
-        tipoAvaliacao: "trimestral"  // NM1, NM2, NM3
+        tipoAvaliacao: "trimestral"
     },
     "inf1": { 
         nome: "Informática - Módulo I", 
         alunos: alunosInf1, 
         disciplinas: ["Análise e Lógica de Programação"],
-        tipoAvaliacao: "bimestral"   // NM1, NM2
+        tipoAvaliacao: "bimestral"
     },
     "inf5": { 
         nome: "Informática - Módulo V", 
         alunos: alunosInf5, 
         disciplinas: ["Empreendedorismo para TI"],
-        tipoAvaliacao: "bimestral"   // NM1, NM2
+        tipoAvaliacao: "bimestral"
     }
 };
 
@@ -116,7 +116,6 @@ function inicializarEstruturas() {
         const disciplinas = turmasConfig[turmaId].disciplinas;
         const tipo = turmasConfig[turmaId].tipoAvaliacao;
         
-        // Inicializar notas (diferente para cada tipo)
         disciplinas.forEach(disciplina => {
             if (!dadosNotas[turmaId][disciplina]) {
                 dadosNotas[turmaId][disciplina] = {};
@@ -130,7 +129,6 @@ function inicializarEstruturas() {
             }
         });
         
-        // Inicializar vistos
         if (!dadosVistos[turmaId].alunos) {
             dadosVistos[turmaId].alunos = {};
             alunos.forEach(aluno => {
@@ -152,7 +150,6 @@ function carregarDadosSalvos() {
             console.log("Erro ao carregar dados salvos");
         }
     }
-    
     inicializarEstruturas();
     salvarDados();
 }
@@ -166,7 +163,7 @@ function salvarDados() {
 }
 
 // ============================================
-// RENDERIZAÇÃO DAS NOTAS (adaptada para cada tipo)
+// RENDERIZAÇÃO DAS NOTAS
 // ============================================
 
 function renderizarNotas() {
@@ -213,7 +210,6 @@ function renderizarNotas() {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = aluno;
         
-        // NM1
         const cell1 = row.insertCell(1);
         const input1 = document.createElement("input");
         input1.type = "number";
@@ -226,7 +222,6 @@ function renderizarNotas() {
         input1.dataset.trimestre = "nm1";
         cell1.appendChild(input1);
         
-        // NM2
         const cell2 = row.insertCell(2);
         const input2 = document.createElement("input");
         input2.type = "number";
@@ -239,7 +234,6 @@ function renderizarNotas() {
         input2.dataset.trimestre = "nm2";
         cell2.appendChild(input2);
         
-        // NM3 (apenas para trimestral)
         if (tipo === "trimestral") {
             const cell3 = row.insertCell(3);
             const input3 = document.createElement("input");
@@ -457,7 +451,7 @@ function salvarVisto() {
 }
 
 // ============================================
-// RELATÓRIOS (adaptado)
+// RELATÓRIOS
 // ============================================
 
 function renderizarRelatorios() {
@@ -466,7 +460,6 @@ function renderizarRelatorios() {
     const alunos = turmasConfig[turmaAtual].alunos;
     const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
     
-    // Resumo de Notas
     let aprovados = 0, recuperacao = 0, reprovados = 0;
     let somaMedias = 0;
     
@@ -504,7 +497,6 @@ function renderizarRelatorios() {
         `;
     }
     
-    // Frequência Geral
     let totalPresencas = 0;
     let totalAulas = 0;
     
@@ -531,7 +523,6 @@ function renderizarRelatorios() {
         `;
     }
     
-    // Alunos Destaque
     const destaques = [];
     alunos.forEach(aluno => {
         const vistos = dadosVistos[turmaAtual]?.alunos?.[aluno]?.total || 0;
@@ -550,7 +541,6 @@ function renderizarRelatorios() {
         ` : "<p>Nenhum aluno com destaque ainda</p>";
     }
     
-    // Alunos em Recuperação
     const recuperacaoList = [];
     alunos.forEach(aluno => {
         const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
@@ -580,47 +570,98 @@ function renderizarRelatorios() {
     }
 }
 
+// ============================================
+// EXPORTAR RELATÓRIO COMPLETO (CORRIGIDO)
+// ============================================
+
 function exportarRelatorioCompleto() {
-    const disciplinaSelect = document.getElementById("disciplinaNotas");
-    const disciplina = disciplinaSelect?.value || turmasConfig[turmaAtual].disciplinas[0];
-    const alunos = turmasConfig[turmaAtual].alunos;
-    const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
-    
-    const dadosExport = alunos.map(aluno => {
-        const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
-        const nm1 = parseFloat(notas.nm1) || 0;
-        const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+    try {
+        const disciplinaSelect = document.getElementById("disciplinaNotas");
+        const disciplina = disciplinaSelect?.value || turmasConfig[turmaAtual].disciplinas[0];
+        const alunos = turmasConfig[turmaAtual].alunos;
+        const tipo = turmasConfig[turmaAtual].tipoAvaliacao;
         
-        let mediaFinal = 0;
-        if (tipo === "trimestral") {
-            mediaFinal = (nm1 + nm2 + nm3) / 3;
-        } else {
-            mediaFinal = (nm1 + nm2) / 2;
+        const dadosExport = [];
+        
+        for (const aluno of alunos) {
+            const notas = dadosNotas[turmaAtual]?.[disciplina]?.[aluno] || {};
+            const nm1 = parseFloat(notas.nm1) || 0;
+            const nm2 = parseFloat(notas.nm2) || 0;
+            const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+            
+            let mediaFinal = 0;
+            if (tipo === "trimestral") {
+                mediaFinal = (nm1 + nm2 + nm3) / 3;
+            } else {
+                mediaFinal = (nm1 + nm2) / 2;
+            }
+            
+            const status = mediaFinal >= 7 ? "Aprovado" : (mediaFinal >= 5 ? "Recuperação" : "Reprovado");
+            const vistos = dadosVistos[turmaAtual]?.alunos?.[aluno]?.total || 0;
+            
+            // Calcular frequência do aluno
+            let presencasAluno = 0;
+            let totalAulasAluno = 0;
+            for (let key in dadosPresenca[turmaAtual]) {
+                if (Array.isArray(dadosPresenca[turmaAtual][key])) {
+                    dadosPresenca[turmaAtual][key].forEach(aula => {
+                        totalAulasAluno++;
+                        if (aula.presencas && aula.presencas[aluno] === true) {
+                            presencasAluno++;
+                        }
+                    });
+                }
+            }
+            const frequencia = totalAulasAluno > 0 ? ((presencasAluno / totalAulasAluno) * 100).toFixed(1) : "0";
+            
+            const row = {
+                "Aluno": aluno,
+                "NM1": nm1,
+                "NM2": nm2,
+                "Média Final": mediaFinal.toFixed(1),
+                "Status": status,
+                "Frequência (%)": frequencia,
+                "Vistos": vistos
+            };
+            
+            if (tipo === "trimestral") {
+                row["NM3"] = nm3;
+            }
+            
+            dadosExport.push(row);
         }
         
-        const status = mediaFinal >= 7 ? "Aprovado" : (mediaFinal >= 5 ? "Recuperação" : "Reprovado");
-        const vistos = dadosVistos[turmaAtual]?.alunos?.[aluno]?.total || 0;
+        const planilha = XLSX.utils.json_to_sheet(dadosExport);
         
-        const baseObj = {
-            "Aluno": aluno,
-            "NM1": nm1,
-            "NM2": nm2,
-            "Média Final": mediaFinal.toFixed(1),
-            "Status": status,
-            "Vistos de Participação": vistos
-        };
-        
+        // Ajustar largura das colunas
+        planilha['!cols'] = [
+            { wch: 35 },  // Aluno
+            { wch: 8 },   // NM1
+            { wch: 8 },   // NM2
+            { wch: 12 },  // Média Final
+            { wch: 12 },  // Status
+            { wch: 12 },  // Frequência
+            { wch: 8 }    // Vistos
+        ];
         if (tipo === "trimestral") {
-            return { ...baseObj, "NM3": nm3 };
+            planilha['!cols'] = [
+                { wch: 35 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 8 }
+            ];
         }
-        return baseObj;
-    });
-    
-    const planilha = XLSX.utils.json_to_sheet(dadosExport);
-    const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turmasConfig[turmaAtual].nome}`);
-    XLSX.writeFile(livro, `Relatorio_${turmasConfig[turmaAtual].nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+        
+        const livro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turmasConfig[turmaAtual].nome}`);
+        
+        const dataAtual = new Date();
+        const nomeArquivo = `Relatorio_${turmasConfig[turmaAtual].nome}_${dataAtual.getFullYear()}-${(dataAtual.getMonth()+1).toString().padStart(2,'0')}-${dataAtual.getDate().toString().padStart(2,'0')}.xlsx`;
+        
+        XLSX.writeFile(livro, nomeArquivo);
+        alert("✅ Relatório exportado com sucesso!");
+        
+    } catch (error) {
+        console.error("Erro ao exportar:", error);
+        alert("Erro ao exportar relatório. Verifique o console para mais detalhes.");
+    }
 }
 
 // ============================================
@@ -691,6 +732,96 @@ function trocarTurma(turmaId) {
 }
 
 // ============================================
+// EXPORTAR PRESENÇA
+// ============================================
+
+function exportarPresenca() {
+    try {
+        const alunos = turmasConfig[turmaAtual].alunos;
+        const dadosExport = [];
+        
+        for (const aluno of alunos) {
+            let totalPresencas = 0;
+            let totalAulas = 0;
+            const aulasPorMes = {};
+            
+            for (let key in dadosPresenca[turmaAtual]) {
+                if (Array.isArray(dadosPresenca[turmaAtual][key])) {
+                    dadosPresenca[turmaAtual][key].forEach(aula => {
+                        totalAulas++;
+                        if (aula.presencas && aula.presencas[aluno] === true) {
+                            totalPresencas++;
+                        }
+                        const [ano, mes] = key.split('-');
+                        const mesNome = `${mes}/${ano}`;
+                        if (!aulasPorMes[mesNome]) {
+                            aulasPorMes[mesNome] = { presencas: 0, total: 0 };
+                        }
+                        aulasPorMes[mesNome].total++;
+                        if (aula.presencas && aula.presencas[aluno] === true) {
+                            aulasPorMes[mesNome].presencas++;
+                        }
+                    });
+                }
+            }
+            
+            const frequencia = totalAulas > 0 ? ((totalPresencas / totalAulas) * 100).toFixed(1) : "0";
+            
+            const row = {
+                "Aluno": aluno,
+                "Total Aulas": totalAulas,
+                "Total Presenças": totalPresencas,
+                "Frequência (%)": frequencia
+            };
+            
+            for (let mes in aulasPorMes) {
+                const freqMes = aulasPorMes[mes].total > 0 ? ((aulasPorMes[mes].presencas / aulasPorMes[mes].total) * 100).toFixed(1) : "0";
+                row[`${mes} - Presenças`] = `${aulasPorMes[mes].presencas}/${aulasPorMes[mes].total} (${freqMes}%)`;
+            }
+            
+            dadosExport.push(row);
+        }
+        
+        const planilha = XLSX.utils.json_to_sheet(dadosExport);
+        const livro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(livro, planilha, `Presenca_${turmasConfig[turmaAtual].nome}`);
+        XLSX.writeFile(livro, `Presenca_${turmasConfig[turmaAtual].nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+        alert("✅ Relatório de presença exportado!");
+    } catch(error) {
+        alert("Erro ao exportar presença: " + error.message);
+    }
+}
+
+// ============================================
+// EXPORTAR VISTOS
+// ============================================
+
+function exportarVistos() {
+    try {
+        const alunos = turmasConfig[turmaAtual].alunos;
+        const dadosExport = [];
+        
+        for (const aluno of alunos) {
+            const dados = dadosVistos[turmaAtual]?.alunos?.[aluno] || { total: 0, registros: [] };
+            dadosExport.push({
+                "Aluno": aluno,
+                "Total de Vistos": dados.total,
+                "Última Participação": dados.ultima ? new Date(dados.ultima).toLocaleDateString('pt-BR') : "-",
+                "Histórico": dados.registros.map(r => `${new Date(r.data).toLocaleDateString('pt-BR')}: ${r.descricao}`).join("; ")
+            });
+        }
+        
+        const planilha = XLSX.utils.json_to_sheet(dadosExport);
+        const livro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(livro, planilha, `Vistos_${turmasConfig[turmaAtual].nome}`);
+        XLSX.writeFile(livro, `Vistos_${turmasConfig[turmaAtual].nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+        alert("✅ Relatório de vistos exportado!");
+    } catch(error) {
+        alert("Erro ao exportar vistos: " + error.message);
+    }
+}
+
+// ============================================
 // INICIALIZAÇÃO
 // ============================================
 
@@ -739,6 +870,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const livro = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(livro, planilha, "Notas");
             XLSX.writeFile(livro, `Notas_${turmasConfig[turmaAtual].nome}.xlsx`);
+            alert("✅ Notas exportadas!");
         });
     }
     
@@ -755,7 +887,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     const exportarPresencaBtn = document.getElementById("exportarPresenca");
-    if (exportarPresencaBtn) exportarPresencaBtn.addEventListener("click", renderizarPresenca);
+    if (exportarPresencaBtn) exportarPresencaBtn.addEventListener("click", exportarPresenca);
     
     // Vistos
     const adicionarVistoBtn = document.getElementById("adicionarVisto");
@@ -776,11 +908,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     const exportarVistosBtn = document.getElementById("exportarVistos");
-    if (exportarVistosBtn) exportarVistosBtn.addEventListener("click", renderizarVistos);
+    if (exportarVistosBtn) exportarVistosBtn.addEventListener("click", exportarVistos);
     
     // Relatórios
     const exportarRelatorioBtn = document.getElementById("exportarRelatorioGeral");
-    if (exportarRelatorioBtn) exportarRelatorioBtn.addEventListener("click", exportarRelatorioCompleto);
+    if (exportarRelatorioBtn) {
+        exportarRelatorioBtn.addEventListener("click", exportarRelatorioCompleto);
+    }
     
     // Modal
     const modalFechar = document.querySelector(".modal-fechar");
