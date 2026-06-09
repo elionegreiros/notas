@@ -130,7 +130,32 @@
 
             <div id="abaNotas" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Lançamento de Notas</h3><div class="card-actions"><button id="salvarNotas" class="btn-primary"><i class="fas fa-save"></i> Salvar Notas</button><button id="exportarNotas" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button></div></div><div class="tabela-container"><table class="tabela-profissional" id="tabelaNotas"><thead><tr><th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th>Obs</th></tr></thead><tbody id="tbodyNotas"></tbody></table></div></div></div>
 
-            <div id="abaPresenca" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-calendar-check"></i> Registro de Presença</h3><div class="card-actions"><div class="filtro-mes"><select id="mesPresenca"><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select><input type="number" id="anoPresenca" value="2026" step="1"></div><button id="adicionarAula" class="btn-primary"><i class="fas fa-plus"></i> Nova Aula</button></div></div><div id="aulasContainer" class="aulas-container"></div><div class="card-footer"><button id="salvarPresenca" class="btn-primary"><i class="fas fa-save"></i> Salvar Presenças</button><button id="exportarPresenca" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button></div></div></div>
+            <div id="abaPresenca" class="aba-conteudo">
+    <div class="content-card">
+        <div class="card-header">
+            <h3><i class="fas fa-calendar-check"></i> Registro de Presença</h3>
+            <div class="card-actions">
+                <div class="filtro-mes">
+                    <select id="mesPresenca">
+                        <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                        <option value="3">Março</option><option value="4">Abril</option>
+                        <option value="5">Maio</option><option value="6">Junho</option>
+                        <option value="7">Julho</option><option value="8">Agosto</option>
+                        <option value="9">Setembro</option><option value="10">Outubro</option>
+                        <option value="11">Novembro</option><option value="12">Dezembro</option>
+                    </select>
+                    <input type="number" id="anoPresenca" value="2026" step="1">
+                </div>
+                <button id="abrirModalAula" class="btn-primary"><i class="fas fa-plus"></i> Nova Aula</button>
+            </div>
+        </div>
+        <div id="aulasContainer" class="aulas-container"></div>
+        <div class="card-footer">
+            <button id="salvarPresenca" class="btn-primary"><i class="fas fa-save"></i> Salvar Presenças</button>
+            <button id="exportarPresenca" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button>
+        </div>
+    </div>
+</div>
 
             <div id="abaVistos" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-star"></i> Vistos de Participação</h3><button id="adicionarVisto" class="btn-primary"><i class="fas fa-plus"></i> Dar Visto</button></div><div class="tabela-container"><table class="tabela-profissional"><thead><tr><th>Aluno</th><th>Total</th><th>Última Participação</th><th>Ações</th></tr></thead><tbody id="tbodyVistos"></tbody></table></div><div class="card-footer"><button id="salvarVistos" class="btn-primary"><i class="fas fa-save"></i> Salvar Vistos</button><button id="exportarVistos" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button></div></div></div>
 
@@ -157,5 +182,46 @@
 
     <script src="script.js"></script>
     <script>function togglePassword(){const pwd=document.getElementById('loginSenha');const icon=document.querySelector('.toggle-password');if(pwd.type==='password'){pwd.type='text';icon.classList.remove('fa-eye-slash');icon.classList.add('fa-eye');}else{pwd.type='password';icon.classList.remove('fa-eye');icon.classList.add('fa-eye-slash');}}</script>
+<!-- MODAL PARA ADICIONAR AULA MANUALMENTE -->
+<div id="modalNovaAula" class="modal-profissional">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-calendar-plus"></i> Registrar Nova Aula</h3>
+            <button class="modal-fechar-aula">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="campo">
+                <label>📅 Data da Aula:</label>
+                <input type="date" id="novaAulaData" required>
+            </div>
+            <div class="campo">
+                <label>⏰ Horário:</label>
+                <select id="novaAulaHorario">
+                    <option value="07:30">07:30 - 08:30</option>
+                    <option value="08:30">08:30 - 09:30</option>
+                    <option value="09:50">09:50 - 10:50</option>
+                    <option value="10:50">10:50 - 11:50</option>
+                    <option value="11:50">11:50 - 12:50</option>
+                    <option value="12:50">12:50 - 13:50</option>
+                    <option value="13:50">13:50 - 14:50</option>
+                    <option value="15:10">15:10 - 16:10</option>
+                    <option value="16:10">16:10 - 17:10</option>
+                    <option value="18:30">18:30 - 19:25</option>
+                    <option value="19:25">19:25 - 20:20</option>
+                    <option value="20:20">20:20 - 21:25</option>
+                    <option value="21:25">21:25 - 22:20</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label>📖 Descrição da Aula (opcional):</label>
+                <input type="text" id="novaAulaDescricao" placeholder="Ex: Aula sobre POO, Revisão para prova...">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelarNovaAula" class="btn-secondary">Cancelar</button>
+            <button id="salvarNovaAula" class="btn-primary">Adicionar Aula</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
