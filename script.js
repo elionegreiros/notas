@@ -112,7 +112,10 @@ const ALUNOS_INF5 = [
     { nome: "KAIQUE JOSE LIMA LEITE", nascimento: "2006-03-31" }
 ];
 
-// Horários das aulas (baseado no PDF)
+// ============================================================================
+// HORÁRIOS CORRETOS (ATUALIZADO CONFORME SEU ARQUIVO)
+// ============================================================================
+
 const HORARIOS = {
     segunda: {
         "1adm": [],
@@ -180,6 +183,7 @@ const HORARIOS = {
         "inf5": []
     }
 };
+
 // Configuração das turmas
 const TURMAS_CONFIG = {
     "1adm": { nome: "1º Administração", alunos: ALUNOS_1ADM.map(a => a.nome), disciplinas: ["Inteligência Artificial"], tipoAvaliacao: "trimestral" },
@@ -214,10 +218,6 @@ let estado = {
 
 function formatarDataBR(data) {
     return data.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-function formatarHoraMinuto(data) {
-    return `${data.getHours().toString().padStart(2,'0')}:${data.getMinutes().toString().padStart(2,'0')}`;
 }
 
 function mostrarToast(mensagem, tipo = "success") {
@@ -343,7 +343,7 @@ function getDiaSemanaNome(data) {
 function getAulasDoDia(data) {
     const diaSemana = getDiaSemanaNome(data);
     const aulas = [];
-    for (let turmaId of ["1adm", "1amb", "2ds"]) {
+    for (let turmaId of ["1adm", "1amb", "2ds", "inf1", "inf5"]) {
         (HORARIOS[diaSemana]?.[turmaId] || []).forEach(aula => {
             aulas.push({ turmaId, turmaNome: TURMAS_CONFIG[turmaId]?.nome, disciplina: aula.disciplina, hora: aula.hora });
         });
@@ -721,19 +721,19 @@ function renderizarHorarios(dia = null) {
     document.querySelectorAll(".dia-btn").forEach(btn => btn.classList.toggle("ativo", btn.dataset.dia === dia));
     const aulasDia = HORARIOS[dia];
     if (!aulasDia) return;
-    const horariosFixos = ["07:30", "08:30", "09:50", "10:50", "11:50", "12:50", "13:50", "15:10", "16:10"];
-    let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th><th>1º Administração</th><th>1º Controle Ambiental</th><th>2º Desenvolvimento</th></tr></thead><tbody>`;
+    const horariosFixos = ["07:30", "08:30", "09:50", "10:50", "11:50", "12:50", "13:50", "15:10", "16:10", "18:30", "19:25", "20:20", "21:25", "22:20"];
+    let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th><th>1º Administração</th><th>1º Controle Ambiental</th><th>2º Desenvolvimento</th><th>Informática Mód I</th><th>Informática Mód V</th></tr></thead><tbody>`;
     for (let i = 0; i < horariosFixos.length; i++) {
         const hora = horariosFixos[i];
-        const horaAnterior = i > 0 ? horariosFixos[i-1] : null;
-        let isIntervalo = (hora === "09:50" && horaAnterior === "08:30") || (hora === "12:50" && horaAnterior === "11:50") || (hora === "15:10" && horaAnterior === "13:50");
         html += `<tr><td class="hora-col">${hora}</td>`;
-        for (let turmaId of ["1adm", "1amb", "2ds"]) {
+        for (let turmaId of ["1adm", "1amb", "2ds", "inf1", "inf5"]) {
             const aula = aulasDia[turmaId]?.find(a => a.hora === hora);
             html += `<td>${aula ? `<strong>${aula.disciplina}</strong>` : "—"}</td>`;
         }
         html += `</tr>`;
-        if (isIntervalo) html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO</td><td colspan="3">🥪 Intervalo - Recreio</td></tr>`;
+        if (hora === "09:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO<td colspan="5">🥪 Intervalo - Recreio</tr>`;
+        if (hora === "12:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">🍽️ ALMOÇO<td colspan="5">🍽️ Horário de Almoço</tr>`;
+        if (hora === "18:30") html += `<tr style="background:#e8f4f8;"><td class="hora-col">🌙 NOTURNO<td colspan="5">🌙 Início das Aulas Noturnas</tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById("gradeHorarios").innerHTML = html;
@@ -741,7 +741,7 @@ function renderizarHorarios(dia = null) {
     const agora = new Date();
     const horaMinutoAtual = agora.getHours() * 60 + agora.getMinutes();
     const todasAulas = [];
-    for (let turmaId of ["1adm", "1amb", "2ds"]) {
+    for (let turmaId of ["1adm", "1amb", "2ds", "inf1", "inf5"]) {
         (aulasDia[turmaId] || []).forEach(aula => {
             const [h, m] = aula.hora.split(":").map(Number);
             const minutosAula = h * 60 + m;
@@ -763,7 +763,7 @@ function verificarAlertasHorarios() {
     if (!aulasHoje) return;
     const horaAtual = agora.getHours() * 60 + agora.getMinutes();
     
-    for (let turmaId of ["1adm", "1amb", "2ds"]) {
+    for (let turmaId of ["1adm", "1amb", "2ds", "inf1", "inf5"]) {
         (aulasHoje[turmaId] || []).forEach(aula => {
             const [h, m] = aula.hora.split(":").map(Number);
             const minutosAula = h * 60 + m;
@@ -840,6 +840,15 @@ function renderizarAdmin() {
     });
 }
 
+function removerAluno(turmaId, alunoNome) {
+    if (!confirm(`⚠️ Remover "${alunoNome}"? Todos os dados serão excluídos!`)) return;
+    const index = TURMAS_CONFIG[turmaId].alunos.indexOf(alunoNome);
+    if (index !== -1) TURMAS_CONFIG[turmaId].alunos.splice(index, 1);
+    salvarDados();
+    renderizarAdmin();
+    mostrarToast(`"${alunoNome}" removido!`, "warning");
+}
+
 // ============================================================================
 // 12. TROCAR TURMA
 // ============================================================================
@@ -872,7 +881,6 @@ function trocarTurma(turmaId) {
     renderizarVistos();
     renderizarRelatorios();
     renderizarRanking();
-    renderizarEventos();
     renderizarDashboard();
     atualizarCardsDashboard();
 }
@@ -888,6 +896,13 @@ function atualizarCabecalhoNotas() {
 // ============================================================================
 // 13. INICIALIZAÇÃO
 // ============================================================================
+
+function iniciarHorarios() {
+    document.querySelectorAll(".dia-btn").forEach(btn => btn.addEventListener("click", () => renderizarHorarios(btn.dataset.dia)));
+    renderizarHorarios();
+    setInterval(verificarAlertasHorarios, 60000);
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
+}
 
 function iniciarSistema(usuario) {
     estado.sessaoAtual = usuario;
@@ -906,8 +921,6 @@ function iniciarSistema(usuario) {
     
     iniciarHorarios();
     setInterval(() => { if (document.getElementById("abaDashboard")?.classList.contains("active")) renderizarDashboard(); }, 60000);
-    setInterval(verificarAlertasHorarios, 60000);
-    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -932,8 +945,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`)?.classList.add("active");
         if (btn.dataset.aba === "relatorios") renderizarRelatorios();
         if (btn.dataset.aba === "ranking") renderizarRanking();
-        if (btn.dataset.aba === "calendario") renderizarEventos();
-        if (btn.dataset.aba === "admin") { renderizarAdmin(); document.getElementById("adminTurmaSelect").value = estado.turmaAtual; }
+        if (btn.dataset.aba === "admin") renderizarAdmin();
     }));
     
     document.getElementById("disciplinaNotas")?.addEventListener("change", () => { renderizarNotas(); renderizarRanking(); });
@@ -944,7 +956,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("adicionarVisto")?.addEventListener("click", () => { if (TURMAS_CONFIG[estado.turmaAtual].alunos.length > 0) abrirModalVisto(TURMAS_CONFIG[estado.turmaAtual].alunos[0]); });
     document.getElementById("salvarVistos")?.addEventListener("click", () => { salvarDados(); mostrarToast("Vistos salvos!"); });
     document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
-    
     document.getElementById("configurarAlertas")?.addEventListener("click", () => {
         const minutos = prompt("Minutos de antecedência para alertas? (5, 10, 15, 30, 60)", estado.configAlertas.minutosAntecedencia);
         if (minutos && [5,10,15,30,60].includes(parseInt(minutos))) {
@@ -960,8 +971,8 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => alertaDiv.remove(), 5000);
     });
     
-    document.querySelectorAll(".dia-btn").forEach(btn => btn.addEventListener("click", () => renderizarHorarios(btn.dataset.dia)));
-    renderizarHorarios();
-    
     document.querySelector(".nav-item-aba[data-aba='dashboard']")?.classList.add("ativo");
+    
+    // Renderizar eventos se existir a função
+    if (typeof renderizarEventos === 'function') renderizarEventos();
 });
