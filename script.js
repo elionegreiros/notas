@@ -1,8 +1,8 @@
+
 // ============================================================================
 // 1. CONFIGURAÇÕES E CONSTANTES GLOBAIS
 // ============================================================================
 
-// Usuários autorizados
 const USUARIOS = {
     "12345678900": { nome: "Prof. João Silva", senha: "123456", tipo: "professor" },
     "98765432100": { nome: "Profa. Maria Santos", senha: "123456", tipo: "professor" },
@@ -11,7 +11,7 @@ const USUARIOS = {
     "99988877766": { nome: "Administrador", senha: "admin123", tipo: "admin" }
 };
 
-// Dados dos alunos (com aniversários)
+// Dados dos alunos
 const ALUNOS_1ADM = [
     { nome: "ALICE FERREIRA DA SILVA", nascimento: "2005-03-15" },
     { nome: "CARLENE MARTINS DA SILVA", nascimento: "2006-07-22" },
@@ -113,7 +113,7 @@ const ALUNOS_INF5 = [
 ];
 
 // ============================================================================
-// HORÁRIOS CORRETOS
+// HORÁRIOS
 // ============================================================================
 
 const HORARIOS = {
@@ -711,15 +711,15 @@ function renderizarHorarios(dia = null) {
     let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th><th>1º Administração</th><th>1º Controle Ambiental</th><th>2º Desenvolvimento</th><th>Informática Mód I</th><th>Informática Mód V</th></tr></thead><tbody>`;
     for (let i = 0; i < horariosFixos.length; i++) {
         const hora = horariosFixos[i];
-        html += `<td><td class="hora-col">${hora}</td>`;
+        html += `<tr><td class="hora-col">${hora}</td>`;
         for (let turmaId of ["1adm", "1amb", "2ds", "inf1", "inf5"]) {
             const aula = aulasDia[turmaId]?.find(a => a.hora === hora);
             html += `<td>${aula ? `<strong>${aula.disciplina}</strong>` : "—"}</td>`;
         }
         html += `</tr>`;
-        if (hora === "09:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO<td colspan="5">🥪 Intervalo - Recreio</td>`;
-        if (hora === "12:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">🍽️ ALMOÇO<td colspan="5">🍽️ Horário de Almoço</td></tr>`;
-        if (hora === "18:30") html += `<tr style="background:#e8f4f8;"><td class="hora-col">🌙 NOTURNO<td colspan="5">🌙 Início das Aulas Noturnas</td></tr>`;
+        if (hora === "09:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO<td colspan="5">🥪 Intervalo - Recreio</tr>`;
+        if (hora === "12:50") html += `<tr style="background:#fef3c7;"><td class="hora-col">🍽️ ALMOÇO<td colspan="5">🍽️ Horário de Almoço</tr>`;
+        if (hora === "18:30") html += `<tr style="background:#e8f4f8;"><td class="hora-col">🌙 NOTURNO<td colspan="5">🌙 Início das Aulas Noturnas</tr>`;
     }
     html += `</tbody></table>`;
     document.getElementById("gradeHorarios").innerHTML = html;
@@ -763,7 +763,7 @@ function verificarAlertasHorarios() {
                     alertaDiv.className = "alerta-teste";
                     alertaDiv.innerHTML = `<i class="fas fa-bell"></i><div><strong>📚 Próxima Aula!</strong><br>${TURMAS_CONFIG[turmaId]?.nome}<br>${aula.disciplina} às ${aula.hora}</div><button onclick="this.parentElement.remove()">✕</button>`;
                     document.body.appendChild(alertaDiv);
-                    // Som removido para evitar erro
+                    if (estado.configAlertas.som) new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==').play().catch(() => {});
                     setTimeout(() => alertaDiv.remove(), 30000);
                     if ("Notification" in window && Notification.permission === "granted") {
                         new Notification("Próxima Aula", { body: `${TURMAS_CONFIG[turmaId]?.nome}: ${aula.disciplina} às ${aula.hora}` });
@@ -773,6 +773,7 @@ function verificarAlertasHorarios() {
         });
     }
 }
+
 // ============================================================================
 // 10. RANKING
 // ============================================================================
@@ -829,63 +830,9 @@ function removerAluno(turmaId, alunoNome) {
     if (!confirm(`⚠️ Remover "${alunoNome}"? Todos os dados serão excluídos!`)) return;
     const index = TURMAS_CONFIG[turmaId].alunos.indexOf(alunoNome);
     if (index !== -1) TURMAS_CONFIG[turmaId].alunos.splice(index, 1);
-    
-    // Remover dados do aluno
-    const disciplinas = TURMAS_CONFIG[turmaId].disciplinas;
-    disciplinas.forEach(disciplina => {
-        if (estado.dadosNotas[turmaId]?.[disciplina]) delete estado.dadosNotas[turmaId][disciplina][alunoNome];
-    });
-    if (estado.dadosVistos[turmaId]?.alunos) delete estado.dadosVistos[turmaId].alunos[alunoNome];
-    if (estado.dadosObservacoes[turmaId]) delete estado.dadosObservacoes[turmaId][alunoNome];
-    
     salvarDados();
-    if (estado.turmaAtual === turmaId) {
-        renderizarNotas();
-        renderizarPresenca();
-        renderizarVistos();
-        renderizarRelatorios();
-        renderizarDashboard();
-        atualizarCardsDashboard();
-    }
     renderizarAdmin();
     mostrarToast(`"${alunoNome}" removido!`, "warning");
-}
-
-function adicionarAluno(turmaId, alunoNome, nascimento = "") {
-    alunoNome = alunoNome.trim().toUpperCase();
-    if (!alunoNome) { mostrarToast("Digite o nome!", "warning"); return false; }
-    if (TURMAS_CONFIG[turmaId].alunos.includes(alunoNome)) { mostrarToast("Aluno já cadastrado!", "warning"); return false; }
-    
-    TURMAS_CONFIG[turmaId].alunos.push(alunoNome);
-    TURMAS_CONFIG[turmaId].alunos.sort();
-    
-    const disciplinas = TURMAS_CONFIG[turmaId].disciplinas;
-    const tipo = TURMAS_CONFIG[turmaId].tipoAvaliacao;
-    
-    disciplinas.forEach(disciplina => {
-        if (!estado.dadosNotas[turmaId]) estado.dadosNotas[turmaId] = {};
-        if (!estado.dadosNotas[turmaId][disciplina]) estado.dadosNotas[turmaId][disciplina] = {};
-        if (tipo === "trimestral") estado.dadosNotas[turmaId][disciplina][alunoNome] = { nm1: "", nm2: "", nm3: "" };
-        else estado.dadosNotas[turmaId][disciplina][alunoNome] = { nm1: "", nm2: "" };
-    });
-    
-    if (!estado.dadosVistos[turmaId]) estado.dadosVistos[turmaId] = {};
-    if (!estado.dadosVistos[turmaId].alunos) estado.dadosVistos[turmaId].alunos = {};
-    estado.dadosVistos[turmaId].alunos[alunoNome] = { total: 0, registros: [], ultima: "" };
-    
-    salvarDados();
-    
-    if (estado.turmaAtual === turmaId) {
-        renderizarNotas();
-        renderizarPresenca();
-        renderizarVistos();
-        renderizarRelatorios();
-        renderizarDashboard();
-        atualizarCardsDashboard();
-    }
-    renderizarAdmin();
-    mostrarToast(`"${alunoNome}" adicionado!`);
-    return true;
 }
 
 // ============================================================================
@@ -995,7 +942,65 @@ function restoreDados(file) {
 }
 
 // ============================================================================
-// 14. EXPORTAÇÕES
+// 14. OBSERVAÇÕES
+// ============================================================================
+
+function abrirModalObservacao(aluno) {
+    const obs = estado.dadosObservacoes[estado.turmaAtual]?.[aluno] || "";
+    document.getElementById("modalObsTexto").value = obs;
+    document.getElementById("modalObs").style.display = "flex";
+    window.alunoObsSelecionado = aluno;
+}
+
+function salvarObservacaoModal() {
+    const obs = document.getElementById("modalObsTexto").value;
+    if (window.alunoObsSelecionado) {
+        if (!estado.dadosObservacoes[estado.turmaAtual]) estado.dadosObservacoes[estado.turmaAtual] = {};
+        estado.dadosObservacoes[estado.turmaAtual][window.alunoObsSelecionado] = obs;
+        salvarDados();
+        document.getElementById("modalObs").style.display = "none";
+        mostrarToast("Observação salva!");
+    }
+}
+
+// ============================================================================
+// 15. GRÁFICO DE EVOLUÇÃO
+// ============================================================================
+
+function atualizarGraficoEvolucao() {
+    const alunoSelect = document.getElementById("graficoAlunoSelect");
+    if (!alunoSelect) return;
+    const aluno = alunoSelect.value;
+    if (!aluno) return;
+    
+    const disciplina = document.getElementById("disciplinaNotas")?.value || TURMAS_CONFIG[estado.turmaAtual].disciplinas[0];
+    const tipo = TURMAS_CONFIG[estado.turmaAtual].tipoAvaliacao;
+    const notas = estado.dadosNotas[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
+    
+    let labels = [], valores = [];
+    
+    if (tipo === "trimestral") {
+        labels = ["NM1 - 1º Trimestre", "NM2 - 2º Trimestre", "NM3 - 3º Trimestre"];
+        valores = [parseFloat(notas.nm1) || 0, parseFloat(notas.nm2) || 0, parseFloat(notas.nm3) || 0];
+    } else {
+        labels = ["NM1 - 1º Bimestre", "NM2 - 2º Bimestre"];
+        valores = [parseFloat(notas.nm1) || 0, parseFloat(notas.nm2) || 0];
+    }
+    
+    const ctx = document.getElementById("graficoEvolucao")?.getContext("2d");
+    if (!ctx) return;
+    
+    if (estado.graficoEvolucao) estado.graficoEvolucao.destroy();
+    
+    estado.graficoEvolucao = new Chart(ctx, {
+        type: 'line',
+        data: { labels: labels, datasets: [{ label: 'Evolução das Notas', data: valores, borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointBackgroundColor: '#667eea' }] },
+        options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 0, max: 10, title: { display: true, text: 'Nota' } }, x: { title: { display: true, text: 'Avaliações' } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `Nota: ${ctx.raw.toFixed(1)}` } } } }
+    });
+}
+
+// ============================================================================
+// 16. EXPORTAÇÕES
 // ============================================================================
 
 function exportarNotas() {
@@ -1074,61 +1079,48 @@ function exportarVistos() {
 }
 
 // ============================================================================
-// 15. GRÁFICO E OBSERVAÇÕES
+// 17. ADICIONAR ALUNO
 // ============================================================================
 
-function atualizarGraficoEvolucao() {
-    const alunoSelect = document.getElementById("graficoAlunoSelect");
-    if (!alunoSelect) return;
-    const aluno = alunoSelect.value;
-    if (!aluno) return;
+function adicionarAluno(turmaId, alunoNome, nascimento = "") {
+    alunoNome = alunoNome.trim().toUpperCase();
+    if (!alunoNome) { mostrarToast("Digite o nome!", "warning"); return false; }
+    if (TURMAS_CONFIG[turmaId].alunos.includes(alunoNome)) { mostrarToast("Aluno já cadastrado!", "warning"); return false; }
     
-    const disciplina = document.getElementById("disciplinaNotas")?.value || TURMAS_CONFIG[estado.turmaAtual].disciplinas[0];
-    const tipo = TURMAS_CONFIG[estado.turmaAtual].tipoAvaliacao;
-    const notas = estado.dadosNotas[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
+    TURMAS_CONFIG[turmaId].alunos.push(alunoNome);
+    TURMAS_CONFIG[turmaId].alunos.sort();
     
-    let labels = [], valores = [];
+    const disciplinas = TURMAS_CONFIG[turmaId].disciplinas;
+    const tipo = TURMAS_CONFIG[turmaId].tipoAvaliacao;
     
-    if (tipo === "trimestral") {
-        labels = ["NM1 - 1º Trimestre", "NM2 - 2º Trimestre", "NM3 - 3º Trimestre"];
-        valores = [parseFloat(notas.nm1) || 0, parseFloat(notas.nm2) || 0, parseFloat(notas.nm3) || 0];
-    } else {
-        labels = ["NM1 - 1º Bimestre", "NM2 - 2º Bimestre"];
-        valores = [parseFloat(notas.nm1) || 0, parseFloat(notas.nm2) || 0];
-    }
-    
-    const ctx = document.getElementById("graficoEvolucao")?.getContext("2d");
-    if (!ctx) return;
-    
-    if (estado.graficoEvolucao) estado.graficoEvolucao.destroy();
-    
-    estado.graficoEvolucao = new Chart(ctx, {
-        type: 'line',
-        data: { labels: labels, datasets: [{ label: 'Evolução das Notas', data: valores, borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointBackgroundColor: '#667eea' }] },
-        options: { responsive: true, maintainAspectRatio: true, scales: { y: { min: 0, max: 10, title: { display: true, text: 'Nota' } }, x: { title: { display: true, text: 'Avaliações' } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `Nota: ${ctx.raw.toFixed(1)}` } } } }
+    disciplinas.forEach(disciplina => {
+        if (!estado.dadosNotas[turmaId]) estado.dadosNotas[turmaId] = {};
+        if (!estado.dadosNotas[turmaId][disciplina]) estado.dadosNotas[turmaId][disciplina] = {};
+        if (tipo === "trimestral") estado.dadosNotas[turmaId][disciplina][alunoNome] = { nm1: "", nm2: "", nm3: "" };
+        else estado.dadosNotas[turmaId][disciplina][alunoNome] = { nm1: "", nm2: "" };
     });
-}
-
-function abrirModalObservacao(aluno) {
-    const obs = estado.dadosObservacoes[estado.turmaAtual]?.[aluno] || "";
-    document.getElementById("modalObsTexto").value = obs;
-    document.getElementById("modalObs").style.display = "flex";
-    window.alunoObsSelecionado = aluno;
-}
-
-function salvarObservacaoModal() {
-    const obs = document.getElementById("modalObsTexto").value;
-    if (window.alunoObsSelecionado) {
-        if (!estado.dadosObservacoes[estado.turmaAtual]) estado.dadosObservacoes[estado.turmaAtual] = {};
-        estado.dadosObservacoes[estado.turmaAtual][window.alunoObsSelecionado] = obs;
-        salvarDados();
-        document.getElementById("modalObs").style.display = "none";
-        mostrarToast("Observação salva!");
+    
+    if (!estado.dadosVistos[turmaId]) estado.dadosVistos[turmaId] = {};
+    if (!estado.dadosVistos[turmaId].alunos) estado.dadosVistos[turmaId].alunos = {};
+    estado.dadosVistos[turmaId].alunos[alunoNome] = { total: 0, registros: [], ultima: "" };
+    
+    salvarDados();
+    
+    if (estado.turmaAtual === turmaId) {
+        renderizarNotas();
+        renderizarPresenca();
+        renderizarVistos();
+        renderizarRelatorios();
+        renderizarDashboard();
+        atualizarCardsDashboard();
     }
+    renderizarAdmin();
+    mostrarToast(`"${alunoNome}" adicionado!`);
+    return true;
 }
 
 // ============================================================================
-// 16. TROCAR TURMA
+// 18. TROCAR TURMA
 // ============================================================================
 
 function trocarTurma(turmaId) {
@@ -1172,7 +1164,7 @@ function atualizarCabecalhoNotas() {
 }
 
 // ============================================================================
-// 17. INICIALIZAÇÃO
+// 19. HORÁRIOS INICIAL
 // ============================================================================
 
 function iniciarHorarios() {
@@ -1181,6 +1173,10 @@ function iniciarHorarios() {
     setInterval(verificarAlertasHorarios, 60000);
     if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
 }
+
+// ============================================================================
+// 20. INICIAR SISTEMA
+// ============================================================================
 
 function iniciarSistema(usuario) {
     estado.sessaoAtual = usuario;
@@ -1202,7 +1198,7 @@ function iniciarSistema(usuario) {
 }
 
 // ============================================================================
-// 18. DOM CONTENT LOADED
+// 21. INICIALIZAÇÃO DO DOM
 // ============================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1210,6 +1206,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sessao) iniciarSistema(sessao);
     else { document.getElementById("telaLogin").style.display = "flex"; document.getElementById("conteudoPrincipal").style.display = "none"; }
     
+    // Login
     document.getElementById("loginCpf")?.addEventListener("input", () => formatarCPF(document.getElementById("loginCpf")));
     document.getElementById("btnLogin")?.addEventListener("click", () => {
         const resultado = fazerLogin(document.getElementById("loginCpf").value, document.getElementById("loginSenha").value);
@@ -1219,6 +1216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("loginSenha")?.addEventListener("keypress", (e) => { if (e.key === "Enter") document.getElementById("btnLogin").click(); });
     document.getElementById("btnLogoutSidebar")?.addEventListener("click", fazerLogout);
     
+    // Navegação
     document.querySelectorAll(".nav-item[data-turma]").forEach(btn => btn.addEventListener("click", () => trocarTurma(btn.dataset.turma)));
     document.querySelectorAll(".nav-item-aba").forEach(btn => btn.addEventListener("click", () => {
         document.querySelectorAll(".nav-item-aba").forEach(b => b.classList.remove("ativo"));
@@ -1227,10 +1225,11 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`)?.classList.add("active");
         if (btn.dataset.aba === "relatorios") renderizarRelatorios();
         if (btn.dataset.aba === "ranking") renderizarRanking();
-        if (btn.dataset.aba === "calendario") renderizarEventos();
         if (btn.dataset.aba === "admin") renderizarAdmin();
+        if (btn.dataset.aba === "calendario") renderizarEventos();
     }));
     
+    // Botões principais
     document.getElementById("disciplinaNotas")?.addEventListener("change", () => { renderizarNotas(); renderizarRanking(); });
     document.getElementById("rankingDisciplina")?.addEventListener("change", renderizarRanking);
     document.getElementById("graficoAlunoSelect")?.addEventListener("change", atualizarGraficoEvolucao);
@@ -1243,7 +1242,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("salvarVistos")?.addEventListener("click", () => { salvarDados(); mostrarToast("Vistos salvos!"); });
     document.getElementById("exportarVistos")?.addEventListener("click", exportarVistos);
     document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
-    
     document.getElementById("adicionarEvento")?.addEventListener("click", () => {
         document.getElementById("eventoTitulo").value = "";
         document.getElementById("eventoData").value = "";
@@ -1254,7 +1252,6 @@ document.addEventListener("DOMContentLoaded", () => {
         adicionarEvento(document.getElementById("eventoTitulo").value, document.getElementById("eventoData").value, document.getElementById("eventoDescricao").value);
         document.getElementById("modalEvento").style.display = "none";
     });
-    
     document.getElementById("adicionarAlunoBtn")?.addEventListener("click", () => {
         document.getElementById("modalAlunoNome").value = "";
         document.getElementById("modalAlunoNascimento").value = "";
@@ -1291,6 +1288,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => alertaDiv.remove(), 5000);
     });
     
+    // Fechar modais
     document.querySelectorAll(".modal-fechar, .modal-fechar-aluno, .modal-fechar-evento, .modal-fechar-obs").forEach(btn => {
         btn.onclick = () => {
             document.getElementById("modalAluno").style.display = "none";
@@ -1301,24 +1299,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     document.getElementById("modalCancelarAluno")?.addEventListener("click", () => document.getElementById("modalAluno").style.display = "none");
     
+    // Filtros
     document.getElementById("mesPresenca")?.addEventListener("change", renderizarPresenca);
     document.getElementById("anoPresenca")?.addEventListener("change", renderizarPresenca);
     
-    window.onclick = (event) => {
-        if (event.target.classList.contains("modal-profissional")) {
-            document.getElementById("modalAluno").style.display = "none";
-            document.getElementById("modalVisto").style.display = "none";
-            document.getElementById("modalEvento").style.display = "none";
-            document.getElementById("modalObs").style.display = "none";
-        }
-    };
-    
+    // Pesquisa global
     document.getElementById("globalSearch")?.addEventListener("input", (e) => {
         const termo = e.target.value.toLowerCase();
         const alunos = TURMAS_CONFIG[estado.turmaAtual].alunos;
         const filtrados = alunos.filter(a => a.toLowerCase().includes(termo));
         if (termo.length > 0 && filtrados.length > 0) {
-            mostrarToast(`🔍 Encontrados ${filtrados.length} alunos`, "info");
+            mostrarToast(`🔍 Encontrados ${filtrados.length} alunos: ${filtrados.slice(0, 3).join(", ")}${filtrados.length > 3 ? "..." : ""}`, "info");
         }
     });
     
