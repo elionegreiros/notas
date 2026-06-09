@@ -1,0 +1,174 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f0f4f8;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: #2c5aa0;
+    color: white;
+    border-radius: 8px;
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    color: #2c5aa0;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+/* Formulário */
+.formulario {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.campo {
+    margin-bottom: 1.2rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn {
+    background-color: #2c5aa0;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #1a3c6d;
+}
+
+.btn-exportar {
+    background-color: #107c41;
+}
+
+.btn-exportar:hover {
+    background-color: #0b5c30;
+}
+
+/* Filtros */
+.filtros {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.filtro-grupo {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Lista de dados */
+.dados {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.lista-vazia {
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+.cartao-dado {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cartao-dado .info {
+    flex: 1;
+    min-width: 280px;
+}
+
+.cartao-dado .info p {
+    margin: 0.3rem 0;
+}
+
+.nota {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.nota.alta { color: #2e7d32; }
+.nota.media { color: #f57c00; }
+.nota.baixa { color: #c62828; }
+
+.acoes button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.3rem;
+}
+
+.acoes button:hover {
+    background-color: #b02a37;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .cartao-dado {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .filtro-grupo {
+        flex-direction: column;
+    }
+}
