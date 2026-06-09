@@ -763,7 +763,7 @@ function verificarAlertasHorarios() {
                     alertaDiv.className = "alerta-teste";
                     alertaDiv.innerHTML = `<i class="fas fa-bell"></i><div><strong>📚 Próxima Aula!</strong><br>${TURMAS_CONFIG[turmaId]?.nome}<br>${aula.disciplina} às ${aula.hora}</div><button onclick="this.parentElement.remove()">✕</button>`;
                     document.body.appendChild(alertaDiv);
-                    if (estado.configAlertas.som) new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==').play().catch(() => {});
+                    // Som removido para evitar erro
                     setTimeout(() => alertaDiv.remove(), 30000);
                     if ("Notification" in window && Notification.permission === "granted") {
                         new Notification("Próxima Aula", { body: `${TURMAS_CONFIG[turmaId]?.nome}: ${aula.disciplina} às ${aula.hora}` });
@@ -773,7 +773,6 @@ function verificarAlertasHorarios() {
         });
     }
 }
-
 // ============================================================================
 // 10. RANKING
 // ============================================================================
