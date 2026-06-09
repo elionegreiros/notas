@@ -1359,7 +1359,204 @@ function testarAlerta() {
         audio.play().catch(e => console.log("Áudio não suportado"));
     }
 }
+// ============================================
+// DASHBOARD - TELA INICIAL COM HORÁRIOS
+// ============================================
 
+function getDiaSemanaNome(data) {
+    const dias = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
+    return dias[data.getDay()];
+}
+
+function formatarDataBR(data) {
+    return data.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function getAulasDoDia(data) {
+    const diaSemana = getDiaSemanaNome(data);
+    const aulas = [];
+    
+    for (let turmaId of ["1adm", "1amb", "2ds"]) {
+        const aulasTurma = horarios[diaSemana]?.[turmaId] || [];
+        for (let aula of aulasTurma) {
+            aulas.push({
+                turmaId: turmaId,
+                turmaNome: turmasConfig[turmaId]?.nome || turmaId,
+                disciplina: aula.disciplina,
+                hora: aula.hora
+            });
+        }
+    }
+    
+    aulas.sort((a, b) => a.hora.localeCompare(b.hora));
+    return aulas;
+}
+
+function calcularTempoRestante(hora) {
+    const agora = new Date();
+    const [horaAula, minutoAula] = hora.split(":").map(Number);
+    const dataAula = new Date();
+    dataAula.setHours(horaAula, minutoAula, 0);
+    
+    const diffMs = dataAula - agora;
+    if (diffMs < 0) return null;
+    
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 60) return `${diffMin} minutos`;
+    const diffHoras = Math.floor(diffMin / 60);
+    const diffRestoMin = diffMin % 60;
+    return `${diffHoras}h ${diffRestoMin}min`;
+}
+
+function renderizarDashboard() {
+    const hoje = new Date();
+    const amanha = new Date(hoje);
+    amanha.setDate(amanha.getDate() + 1);
+    
+    // Saudação
+    const horaAtual = hoje.getHours();
+    let saudacao = "Bom dia";
+    if (horaAtual >= 12 && horaAtual < 18) saudacao = "Boa tarde";
+    if (horaAtual >= 18) saudacao = "Boa noite";
+    
+    const saudacaoElem = document.getElementById("saudacaoTexto");
+    if (saudacaoElem) saudacaoElem.innerHTML = `${saudacao}, ${sessaoAtual?.nome || "Professor"}! 👋`;
+    
+    const dataAtualElem = document.getElementById("dataAtual");
+    if (dataAtualElem) dataAtualElem.textContent = formatarDataBR(hoje);
+    
+    const hojeDataElem = document.getElementById("hojeData");
+    if (hojeDataElem) hojeDataElem.textContent = hoje.toLocaleDateString('pt-BR');
+    
+    const amanhaDataElem = document.getElementById("amanhaData");
+    if (amanhaDataElem) amanhaDataElem.textContent = amanha.toLocaleDateString('pt-BR');
+    
+    // Aulas de hoje
+    const aulasHoje = getAulasDoDia(hoje);
+    const aulasHojeContainer = document.getElementById("aulasHojeContainer");
+    
+    if (aulasHojeContainer) {
+        if (aulasHoje.length === 0) {
+            aulasHojeContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-check"></i> Nenhuma aula programada para hoje! 🎉</div>`;
+        } else {
+            aulasHojeContainer.innerHTML = aulasHoje.map(aula => {
+                const tempoRestante = calcularTempoRestante(aula.hora);
+                return `
+                    <div class="aula-card-dashboard">
+                        <div class="aula-hora">${aula.hora}</div>
+                        <div class="aula-info">
+                            <strong>${aula.disciplina}</strong>
+                            <small><span class="aula-badge">${aula.turmaNome}</span></small>
+                        </div>
+                        ${tempoRestante ? `<div class="aula-tempo">⏰ em ${tempoRestante}</div>` : '<div class="aula-tempo">✅ Já ocorreu</div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+    
+    // Aulas de amanhã
+    const aulasAmanha = getAulasDoDia(amanha);
+    const aulasAmanhaContainer = document.getElementById("aulasAmanhaContainer");
+    
+    if (aulasAmanhaContainer) {
+        if (aulasAmanha.length === 0) {
+            aulasAmanhaContainer.innerHTML = `<div class="empty-state"><i class="fas fa-calendar-day"></i> Nenhuma aula programada para amanhã!</div>`;
+        } else {
+            aulasAmanhaContainer.innerHTML = aulasAmanha.map(aula => `
+                <div class="aula-card-dashboard">
+                    <div class="aula-hora">${aula.hora}</div>
+                    <div class="aula-info">
+                        <strong>${aula.disciplina}</strong>
+                        <small><span class="aula-badge">${aula.turmaNome}</span></small>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // Próximas aulas
+    const todasProximas = [];
+    for (let i = 0; i < 3; i++) {
+        const dia = new Date(hoje);
+        dia.setDate(hoje.getDate() + i);
+        const aulasDia = getAulasDoDia(dia);
+        const agora = new Date();
+        for (let aula of aulasDia) {
+            const [h, m] = aula.hora.split(":");
+            const dataAula = new Date(dia);
+            dataAula.setHours(parseInt(h), parseInt(m), 0);
+            if (dataAula > agora) {
+                todasProximas.push({
+                    ...aula,
+                    data: new Date(dia),
+                    diffMin: Math.floor((dataAula - agora) / 60000)
+                });
+            }
+        }
+    }
+    
+    todasProximas.sort((a, b) => a.diffMin - b.diffMin);
+    const proximasAulasContainer = document.getElementById("proximasAulasContainer");
+    
+    if (proximasAulasContainer) {
+        if (todasProximas.length === 0) {
+            proximasAulasContainer.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i> Nenhuma aula futura agendada!</div>`;
+        } else {
+            proximasAulasContainer.innerHTML = todasProximas.slice(0, 5).map(aula => `
+                <div class="aula-card-dashboard">
+                    <div class="aula-hora">${aula.hora}</div>
+                    <div class="aula-info">
+                        <strong>${aula.disciplina}</strong>
+                        <small>
+                            <span class="aula-badge">${aula.turmaNome}</span>
+                            <span class="aula-badge">${aula.data.toLocaleDateString('pt-BR')}</span>
+                        </small>
+                    </div>
+                    <div class="aula-tempo">📅 em ${aula.diffMin < 60 ? `${aula.diffMin} min` : `${Math.floor(aula.diffMin/60)}h ${aula.diffMin%60}min`}</div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    // Estatísticas
+    const totalAulasHojeElem = document.getElementById("totalAulasHoje");
+    if (totalAulasHojeElem) totalAulasHojeElem.textContent = aulasHoje.length;
+    
+    const mesAtual = hoje.getMonth() + 1;
+    let totalVistosMes = 0;
+    for (let turmaId in dadosVistos) {
+        if (dadosVistos[turmaId]?.alunos) {
+            for (let aluno in dadosVistos[turmaId].alunos) {
+                const registros = dadosVistos[turmaId].alunos[aluno]?.registros || [];
+                registros.forEach(reg => {
+                    const dataReg = new Date(reg.data);
+                    if (dataReg.getMonth() + 1 === mesAtual) totalVistosMes++;
+                });
+            }
+        }
+    }
+    const totalVistosMesElem = document.getElementById("totalVistosMes");
+    if (totalVistosMesElem) totalVistosMesElem.textContent = totalVistosMes;
+    
+    let totalAlunos = 0;
+    for (let turmaId in turmasConfig) {
+        totalAlunos += turmasConfig[turmaId].alunos.length;
+    }
+    const totalAlunosElem = document.getElementById("totalAlunos");
+    if (totalAlunosElem) totalAlunosElem.textContent = totalAlunos;
+}
+
+let dashboardInterval = null;
+
+function iniciarDashboardAutoRefresh() {
+    if (dashboardInterval) clearInterval(dashboardInterval);
+    dashboardInterval = setInterval(() => {
+        if (document.getElementById("abaDashboard")?.classList.contains("active")) {
+            renderizarDashboard();
+        }
+    }, 60000);
+}
 // Inicializar horários
 function iniciarHorarios() {
     carregarConfigAlertas();

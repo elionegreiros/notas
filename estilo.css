@@ -394,7 +394,134 @@ body.dark-mode input, body.dark-mode select, body.dark-mode textarea { backgroun
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+/* ============================================
+   DASHBOARD - TELA INICIAL
+   ============================================ */
 
+.welcome-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.welcome-text h2 { font-size: 28px; margin-bottom: 8px; }
+.welcome-text p { opacity: 0.9; font-size: 14px; }
+.welcome-icon i { font-size: 64px; opacity: 0.8; }
+
+.dashboard-section {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.section-header h3 { font-size: 18px; color: #1e293b; }
+.section-header h3 i { color: #667eea; margin-right: 10px; }
+.data-badge { background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #64748b; }
+
+.aulas-list { display: flex; flex-direction: column; gap: 12px; }
+.aula-card-dashboard {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 16px;
+    transition: all 0.3s;
+    border-left: 4px solid #667eea;
+}
+
+.aula-card-dashboard:hover { transform: translateX(5px); background: #f1f5f9; }
+.aula-hora { min-width: 80px; font-weight: bold; color: #667eea; font-size: 18px; }
+.aula-info { flex: 1; }
+.aula-info strong { display: block; font-size: 16px; margin-bottom: 4px; }
+.aula-info small { color: #64748b; font-size: 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.aula-badge { background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 11px; }
+.aula-tempo { background: #fef3c7; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #d97706; }
+.aula-tempo.agora { background: #dcfce7; color: #15803d; }
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.stat-mini-card {
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #e2e8f0;
+}
+
+.stat-mini-card i { font-size: 32px; color: #667eea; }
+.stat-mini-card h4 { font-size: 24px; font-weight: 700; color: #1e293b; }
+.stat-mini-card p { font-size: 12px; color: #64748b; }
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+}
+
+.empty-state i { font-size: 48px; margin-bottom: 15px; display: block; }
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+}
+
+/* Dark mode para dashboard */
+body.dark-mode .dashboard-section,
+body.dark-mode .stat-mini-card,
+body.dark-mode .aula-card-dashboard {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.dark-mode .section-header h3,
+body.dark-mode .stat-mini-card h4,
+body.dark-mode .aula-info strong {
+    color: #f1f5f9;
+}
+
+body.dark-mode .aula-hora {
+    color: #a855f7;
+}
+
+body.dark-mode .aula-badge {
+    background: #334155;
+    color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+    .welcome-card { flex-direction: column; text-align: center; gap: 15px; }
+    .welcome-text h2 { font-size: 22px; }
+    .welcome-icon i { font-size: 48px; }
+    .dashboard-stats { grid-template-columns: 1fr; }
+    .aula-hora { min-width: 60px; font-size: 14px; }
+    .aula-info strong { font-size: 14px; }
+}
 @media (max-width: 768px) {
     .tabela-horarios th, .tabela-horarios td { padding: 8px; font-size: 12px; }
     .hora-col { width: 70px; }
