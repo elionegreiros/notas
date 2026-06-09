@@ -260,3 +260,38 @@ body.dark-mode .skeleton-card { background: linear-gradient(90deg, #334155 25%, 
 @media (max-width: 1024px) { .dashboard-cards { grid-template-columns: repeat(3, 1fr); } .relatorios-grid { grid-template-columns: 1fr; } }
 @media (max-width: 768px) { .sidebar { transform: translateX(-100%); position: fixed; z-index: 1000; } .main-content { margin-left: 0; } .dashboard-cards { grid-template-columns: 1fr; } .top-bar { flex-direction: column; align-items: flex-start; } .main-content { padding: 16px; } .card-header { flex-direction: column; align-items: flex-start; } .welcome-card { flex-direction: column; text-align: center; gap: 15px; } .dashboard-stats { grid-template-columns: 1fr; } .tabela-horarios th, .tabela-horarios td { padding: 8px; font-size: 12px; } .hora-col { width: 70px; } }
 @media (max-width: 480px) { .login-card { padding: 32px 24px; } .stat-card { padding: 16px; } .stat-icon { width: 48px; height: 48px; } .stat-icon i { font-size: 24px; } .stat-info h3 { font-size: 24px; } }
+/* ============================================ */
+/* SELETOR DE ESCOLA */
+/* ============================================ */
+
+.escola-selector {
+    padding: 10px 20px;
+    border-bottom: 1px solid #334155;
+    margin-bottom: 10px;
+}
+
+.escola-btn {
+    margin-bottom: 5px;
+}
+
+.escola-btn.ativo {
+    background: #667eea;
+    color: white;
+}
+
+.escola-badge {
+    background: #f1f5f9;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.escola-badge .badge i {
+    margin-right: 6px;
+}
+
+body.dark-mode .escola-badge {
+    background: #334155;
+    color: #cbd5e1;
+}
