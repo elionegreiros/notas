@@ -1,1 +1,26 @@
-
+{
+    "1adm": {
+        "nome": "1º Administração",
+        "disciplinas": ["Inteligência Artificial"],
+        "tipoAvaliacao": "trimestral"
+    },
+    "1amb": {
+        "nome": "1º Controle Ambiental",
+        "disciplinas": ["Inteligência Artificial"],
+        "tipoAvaliacao": "trimestral"
+    },
+    "2ds": {
+        "nome": "2º Desenvolvimento de Sistemas",
+        "disciplinas": [
+            "Inteligência Artificial",
+            "MENTORIAS TEC II",
+            "FUNDAMENTOS DE UI/UX",
+            "PENSAMENTO COMPUTACIONAL II",
+            "PROGRAMAÇÃO ESTRUTURADA",
+            "PROGRAMAÇÃO ORIENTADA À OBJETOS",
+            "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS",
+            "PROGRAMAÇÃO WEB FRONT-END"
+        ],
+        "tipoAvaliacao": "trimestral"
+    }
+}
