@@ -2,47 +2,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Academic Manager | Sistema de Gestão Escolar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Acadêmico - Professor</title>
     <link rel="stylesheet" href="estilo.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
-    <div id="telaLogin" class="tela-login">
-        <div class="login-wrapper">
-            <div class="login-card">
-                <div class="login-brand">
-                    <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
-                    <h1>Academic Manager Pro</h1>
-                    <p>Sistema Integrado de Gestão Escolar</p>
-                </div>
-                <div class="login-form">
-                    <div class="input-group">
-                        <i class="fas fa-id-card"></i>
-                        <input type="text" id="loginCpf" placeholder="CPF" maxlength="14" autocomplete="off">
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="loginSenha" placeholder="Senha">
-                        <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
-                    </div>
-                    <button id="btnLogin" class="btn-login"><span>Acessar Sistema</span><i class="fas fa-arrow-right"></i></button>
-                    <div id="loginError" class="login-error"></div>
-                </div>
-                <div class="login-footer"><p>© 2026 Academic Manager Pro</p></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <div id="conteudoPrincipal" class="app" style="display: none;">
+    <div class="app">
         <!-- Menu Superior -->
         <nav class="menu-superior">
             <div class="logo">
-                <h2>📚 Academic Manager</h2>
+                <h2>📚 Sistema Acadêmico</h2>
             </div>
             <div class="turmas-menu">
                 <button class="turma-btn" data-turma="1adm">1º Administração</button>
@@ -59,44 +29,17 @@
 
             <!-- Abas -->
             <div class="abas">
-                <button class="aba-btn active" data-aba="dashboard">🏠 Dashboard</button>
-                <button class="aba-btn" data-aba="notas">📝 Notas</button>
-                <button class="aba-btn" data-aba="presenca">📋 Presença</button>
-                <button class="aba-btn" data-aba="vistos">⭐ Vistos</button>
-                <button class="aba-btn" data-aba="horarios">⏰ Horários</button>
-                <button class="aba-btn" data-aba="ranking">🏆 Ranking</button>
+                <button class="aba-btn active" data-aba="notas">📝 Notas Trimestrais</button>
+                <button class="aba-btn" data-aba="presenca">📋 Lista de Presença</button>
+                <button class="aba-btn" data-aba="vistos">⭐ Vistos de Participação</button>
                 <button class="aba-btn" data-aba="relatorios">📊 Relatórios</button>
-                <button class="aba-btn" data-aba="admin">⚙️ Admin</button>
             </div>
 
-            <!-- ABA DASHBOARD -->
-            <div id="abaDashboard" class="aba-conteudo active">
+            <!-- Conteúdo das Abas -->
+            <div id="abaNotas" class="aba-conteudo active">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-calendar-day"></i> Aulas de Hoje</h3>
-                        <span id="hojeData" class="data-badge"></span>
-                    </div>
-                    <div id="aulasHojeContainer" class="aulas-list"></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-calendar-plus"></i> Aulas de Amanhã</h3>
-                        <span id="amanhaData" class="data-badge"></span>
-                    </div>
-                    <div id="aulasAmanhaContainer" class="aulas-list"></div>
-                </div>
-                <div class="stats-mini">
-                    <div class="stat-mini-card"><i class="fas fa-chalkboard"></i><div><h4 id="totalAulasHoje">0</h4><p>Aulas hoje</p></div></div>
-                    <div class="stat-mini-card"><i class="fas fa-star"></i><div><h4 id="totalVistosMes">0</h4><p>Vistos no mês</p></div></div>
-                    <div class="stat-mini-card"><i class="fas fa-users"></i><div><h4 id="totalAlunos">0</h4><p>Alunos ativos</p></div></div>
-                </div>
-            </div>
-
-            <!-- ABA NOTAS -->
-            <div id="abaNotas" class="aba-conteudo">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-line"></i> Lançamento de Notas</h3>
+                        <h3>Lançamento de Notas Trimestrais</h3>
                         <div class="disciplina-selector">
                             <label>Disciplina:</label>
                             <select id="disciplinaNotas" class="select-disciplina"></select>
@@ -105,7 +48,14 @@
                     <div class="tabela-container">
                         <table class="tabela-notas" id="tabelaNotas">
                             <thead>
-                                <tr><th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th>Obs</th></tr>
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>NM1 <span class="info-tooltip" title="Nota do 1º Trimestre">ⓘ</span></th>
+                                    <th>NM2 <span class="info-tooltip" title="Nota do 2º Trimestre">ⓘ</span></th>
+                                    <th>NM3 <span class="info-tooltip" title="Nota do 3º Trimestre">ⓘ</span></th>
+                                    <th>Média Final</th>
+                                    <th>Status</th>
+                                </tr>
                             </thead>
                             <tbody id="tbodyNotas"></tbody>
                         </table>
@@ -117,173 +67,121 @@
                 </div>
             </div>
 
-            <!-- ABA PRESENÇA -->
             <div id="abaPresenca" class="aba-conteudo">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-calendar-check"></i> Registro de Presença</h3>
+                        <h3>Lista de Presença</h3>
                         <div class="filtros-presenca">
-                            <select id="mesPresenca">
-                                <option value="1">Janeiro</option><option value="2">Fevereiro</option>
-                                <option value="3">Março</option><option value="4">Abril</option>
-                                <option value="5">Maio</option><option value="6">Junho</option>
-                                <option value="7">Julho</option><option value="8">Agosto</option>
-                                <option value="9">Setembro</option><option value="10">Outubro</option>
-                                <option value="11">Novembro</option><option value="12">Dezembro</option>
-                            </select>
-                            <input type="number" id="anoPresenca" value="2026" step="1">
+                            <div class="campo">
+                                <label>Mês:</label>
+                                <select id="mesPresenca">
+                                    <option value="1">Janeiro</option>
+                                    <option value="2">Fevereiro</option>
+                                    <option value="3">Março</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Maio</option>
+                                    <option value="6">Junho</option>
+                                    <option value="7">Julho</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                            <div class="campo">
+                                <label>Ano:</label>
+                                <input type="number" id="anoPresenca" value="2026" step="1">
+                            </div>
                             <button id="adicionarAula" class="btn btn-pequeno">➕ Nova Aula</button>
                         </div>
                     </div>
                     <div id="aulasContainer" class="aulas-container"></div>
                     <div class="acoes-card">
                         <button id="salvarPresenca" class="btn btn-salvar">💾 Salvar Presenças</button>
-                        <button id="exportarPresenca" class="btn btn-exportar">📊 Exportar</button>
+                        <button id="exportarPresenca" class="btn btn-exportar">📊 Exportar Frequência</button>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA VISTOS -->
             <div id="abaVistos" class="aba-conteudo">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-star"></i> Vistos de Participação</h3>
-                        <button id="adicionarVisto" class="btn btn-pequeno">➕ Dar Visto</button>
+                        <h3>Registro de Vistos - Participação em Aula</h3>
+                        <div class="filtros-vistos">
+                            <div class="campo">
+                                <label>Data:</label>
+                                <input type="date" id="dataVisto">
+                            </div>
+                            <div class="campo">
+                                <label>Descrição da Atividade:</label>
+                                <input type="text" id="descVisto" placeholder="Ex: Respondeu questões no quadro">
+                            </div>
+                            <button id="adicionarVisto" class="btn btn-pequeno">➕ Adicionar Visto</button>
+                        </div>
                     </div>
                     <div class="tabela-container">
-                        <table class="tabela-vistos">
-                            <thead><tr><th>Aluno</th><th>Total</th><th>Última</th><th>Ações</th></tr></thead>
+                        <table class="tabela-vistos" id="tabelaVistos">
+                            <thead>
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>Total de Vistos</th>
+                                    <th>Última Participação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
                             <tbody id="tbodyVistos"></tbody>
                         </table>
                     </div>
                     <div class="acoes-card">
                         <button id="salvarVistos" class="btn btn-salvar">💾 Salvar Vistos</button>
-                        <button id="exportarVistos" class="btn btn-exportar">📊 Exportar</button>
+                        <button id="exportarVistos" class="btn btn-exportar">📊 Exportar Vistos</button>
                     </div>
                 </div>
             </div>
 
-            <!-- ABA HORÁRIOS -->
-            <div id="abaHorarios" class="aba-conteudo">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-clock"></i> Horário de Aulas</h3>
-                        <div class="dia-buttons">
-                            <button class="dia-btn" data-dia="segunda">Segunda</button>
-                            <button class="dia-btn" data-dia="terca">Terça</button>
-                            <button class="dia-btn" data-dia="quarta">Quarta</button>
-                            <button class="dia-btn" data-dia="quinta">Quinta</button>
-                            <button class="dia-btn" data-dia="sexta">Sexta</button>
-                        </div>
-                    </div>
-                    <div id="gradeHorarios" class="grade-horarios"></div>
-                </div>
-            </div>
-
-            <!-- ABA RANKING -->
-            <div id="abaRanking" class="aba-conteudo">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-trophy"></i> Ranking de Alunos</h3>
-                        <select id="rankingDisciplina" class="select-disciplina"></select>
-                    </div>
-                    <div id="rankingContainer" class="ranking-container"></div>
-                </div>
-            </div>
-
-            <!-- ABA RELATÓRIOS -->
             <div id="abaRelatorios" class="aba-conteudo">
                 <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-pie"></i> Relatórios Gerenciais</h3>
-                        <button id="exportarRelatorioGeral" class="btn btn-exportar">📊 Exportar Completo</button>
-                    </div>
+                    <h3>Relatórios Gerenciais</h3>
                     <div class="relatorios-grid">
-                        <div class="relatorio-card"><h4>📈 Resumo de Notas</h4><div id="resumoNotas"></div></div>
-                        <div class="relatorio-card"><h4>📊 Frequência</h4><div id="resumoFrequencia"></div></div>
-                        <div class="relatorio-card"><h4>⭐ Alunos Destaque</h4><div id="alunosDestaque"></div></div>
-                        <div class="relatorio-card"><h4>⚠️ Recuperação</h4><div id="alunosRecuperacao"></div></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ABA ADMIN -->
-            <div id="abaAdmin" class="aba-conteudo">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-users-cog"></i> Administração</h3>
-                        <div class="card-actions">
-                            <select id="adminTurmaSelect" class="select-disciplina">
-                                <option value="1adm">1º Administração</option>
-                                <option value="1amb">1º Controle Ambiental</option>
-                                <option value="2ds">2º Desenvolvimento</option>
-                                <option value="inf1">Informática - Mód I</option>
-                                <option value="inf5">Informática - Mód V</option>
-                            </select>
-                            <button id="adicionarAlunoBtn" class="btn btn-pequeno">➕ Adicionar Aluno</button>
-                            <button id="backupDadosBtn" class="btn btn-pequeno">💾 Backup</button>
-                            <button id="restoreDadosBtn" class="btn btn-pequeno">📂 Restore</button>
+                        <div class="relatorio-card">
+                            <h4>📈 Resumo de Notas</h4>
+                            <div id="resumoNotas"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>📊 Frequência Geral</h4>
+                            <div id="resumoFrequencia"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>⭐ Alunos Destaque</h4>
+                            <div id="alunosDestaque"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>⚠️ Alunos em Recuperação</h4>
+                            <div id="alunosRecuperacao"></div>
                         </div>
                     </div>
-                    <div class="tabela-container">
-                        <table class="tabela-admin">
-                            <thead><tr><th>#</th><th>Nome</th><th>Status</th><th>Ações</th></tr></thead>
-                            <tbody id="tbodyAdmin"></tbody>
-                        </table>
+                    <div class="acoes-card">
+                        <button id="exportarRelatorioGeral" class="btn btn-exportar">📊 Exportar Relatório Completo</button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- MODAIS -->
-    <div id="modalAluno" class="modal">
-        <div class="modal-conteudo">
-            <span class="modal-fechar">&times;</span>
-            <h3>Adicionar Aluno</h3>
-            <input type="text" id="modalAlunoNome" placeholder="Nome completo do aluno">
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button id="modalCancelarAluno" class="btn btn-secondary">Cancelar</button>
-                <button id="modalSalvarAluno" class="btn btn-salvar">Salvar</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Modal para adicionar visto individual -->
     <div id="modalVisto" class="modal">
         <div class="modal-conteudo">
             <span class="modal-fechar">&times;</span>
-            <h3>Conceder Visto</h3>
-            <textarea id="modalDescVisto" rows="3" placeholder="Descreva a participação..."></textarea>
-            <button id="modalSalvarVisto" class="btn btn-salvar">Conceder</button>
+            <h3>Adicionar Visto para Aluno</h3>
+            <div class="campo">
+                <label>Descrição:</label>
+                <textarea id="modalDescVisto" rows="3" placeholder="Descreva a participação do aluno..."></textarea>
+            </div>
+            <button id="modalSalvarVisto" class="btn btn-salvar">Salvar Visto</button>
         </div>
     </div>
-
-    <div id="modalObs" class="modal">
-        <div class="modal-conteudo">
-            <span class="modal-fechar">&times;</span>
-            <h3>Observações do Aluno</h3>
-            <textarea id="modalObsTexto" rows="4" placeholder="Registre observações..."></textarea>
-            <button id="modalSalvarObs" class="btn btn-salvar">Salvar</button>
-        </div>
-    </div>
-
-    <div id="toastContainer" class="toast-container"></div>
 
     <script src="script.js"></script>
-    <script>
-        function togglePassword(){
-            const pwd = document.getElementById('loginSenha');
-            const icon = document.querySelector('.toggle-password');
-            if(pwd.type === 'password'){
-                pwd.type = 'text';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            } else {
-                pwd.type = 'password';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            }
-        }
-    </script>
 </body>
 </html>
