@@ -1,80 +1,549 @@
-// ============================================================================
-// 1. DADOS DOS ALUNOS (MANTIDOS IGUAIS AO PROJETO ORIGINAL)
-// ============================================================================
-const USUARIOS = {
-    "12345678900": { nome: "Prof. João Silva", senha: "123456", tipo: "professor" },
-    "98765432100": { nome: "Profa. Maria Santos", senha: "123456", tipo: "professor" },
-    "11122233344": { nome: "Prof. Carlos Lima", senha: "123456", tipo: "professor" },
-    "55566677788": { nome: "Coord. Ana Paula", senha: "admin123", tipo: "coordenador" },
-    "99988877766": { nome: "Administrador", senha: "admin123", tipo: "admin" }
+// Dados das turmas
+const turmasConfig = {
+    "1adm": { nome: "1º Administração", alunos: alunos1Adm, disciplinas: ["Inteligência Artificial"] },
+    "1amb": { nome: "1º Controle Ambiental", alunos: alunos1Amb, disciplinas: ["Inteligência Artificial"] },
+    "2ds": { nome: "2º Desenvolvimento de Sistemas", alunos: alunos2DS, disciplinas: [
+        "Inteligência Artificial", "MENTORIAS TEC II", "FUNDAMENTOS DE UI / UX OU IHC",
+        "PENSAMENTO COMPUTACIONAL II", "PROGRAMAÇÃO ESTRUTURADA", "PROGRAMAÇÃO ORIENTADA À OBJETOS - POO",
+        "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", "PROGRAMAÇÃO WEB FRONT-END", "ARQUITETURA DE MICROSSERVIÇOS",
+        "INTRODUÇÃO AO ECOSSISTEMA DEVops", "MANUTENÇÃO DE SISTEMAS"
+    ] },
+    "inf1": { nome: "Informática - Módulo I", alunos: alunosInf1, disciplinas: ["Análise e Lógica de Programação"] },
+    "inf5": { nome: "Informática - Módulo V", alunos: alunosInf5, disciplinas: ["Empreendedorismo para TI"] }
 };
 
-const ALUNOS_GENTIL_1ADM = ["ALICE FERREIRA DA SILVA","CARLENE MARTINS DA SILVA","DAVI DE ALENCAR MELO BEZERRA","ELIEZER LEAL BARBOSA","ENRICO SAMUEL PEREIRA HOSTERNO","FRANCISCA YARA GONCALVES DE SANTANA","FRANCISCO FELIX DINO JUNIOR","FRANCISCO JHONANTAN GONCALVES DA SILVA","HELOA MENDES ALVES","JOSE GUILHERME ALVES PIMENTEL","KELY FERNANDES DA SILVA","KEVEN VINICIUS ALVES DE OLVEIRA","LAVINE MARIA FERREIRA FELIX","LUCAS VINICIUS ALVES DA SILVA","LUIS ERIVAN FERNANDES DE SOUSA","MARIA ALICE FREIRE DA SILVA","MARIA CLARA DAMACENA DE SOUSA","MARIA FERNANDA DE SOUSA","MARIA ISADORA RIBEIRO DA SILVA","MARIELLE PIRES DA SILVA","MIGUEL THARL EY BATISTA BARROSA","PAULO VICTOR MOREIRA DA SILVA","PEDRO LUCAS BEZERRA DA COSTA","RANNIEL ALVES NOGUEIRA DA SILVA","RENNA DUARTE DA SILVA","THAYSSA DO NASCIMENTO SILVA"];
-const ALUNOS_GENTIL_1AMB = ["ALEXANDRA DUARTE LOPES DA ROCHA","ALICKY","ANA CLARA MOTA GOMES","ANA CLARA SOUSA SILVA","ANDRESSA OLIVEIRA DE SOUSA","ANNE VITORIA MARTINS CARVALHO","DEBORA CAMILLE OLIVEIRA DE SOUSA","DEISE MARTINS LIMA","ELICKY SOARES LOIOLA","FRANCISCO DAVID ROQUE DA SILVA","GABRIELLY BRITO PEDROSA","GEOVANNA ANTONELE RIBEIRO DE SOUSA","JANICE VIANA DE SOUSA","LARA MAYSA VITURIANO DE CARVALHO","LUIS DAVY DA SILVA RULIM","LUIS GUSTAVO GOMES DE MELO","MAYSA ALVES SILVA","SARA OLIVEIRA CRIZANTINO","STEICIE DA SILVA LIMA"];
-const ALUNOS_GENTIL_2DS = ["ANA SOPHIA GOMES DA SILVA","CARLOS MANOEL CAETANO","FRANCISCA INGRID TAINAR DA SILVA ADALBERTO","IAN BENICIO DE OLIVEIRA CARVALHO","JACKSON VICENTE DO NASCIMENTO","JOHNNATHAN RODRIGUES DA SILVA","JUAN LOIOLA DA SILVA","LEO VICTOR FERREIRA LOIOLA","MARIA BEATRIZ XAVIER DE SOUSA","MIKLENYO JOSE LUSTOSA ALVES","NICOLAS OLIVEIRA DINIZ","PABLO KAUAN DE SOUSA NASCIMENTO","SHAUANY SOUZA LOPES","TAYNARA OLIVEIRA REIS","THIAGO LEVI NUNES PEREIRA","VALTER ALEXANDRE OLIVEIRA FERNANDES"];
-const ALUNOS_INF1 = ["ALEXANDRE BARBOSA DA SILVA","ANTONIA GLENDA DA SILVA ALVES","EMANUELLY DA SILVA ALVES","FRANCISCO EDSON DA SILVA CARNEIRO","GEOVANA MARIA PEREIRA MARTINS","KELIANY VIEIRA ANDRADE","LUZANIRA ARAUJO DE SOUSA","MARIA DA CRUZ FURTUNATA DA SILVA","MARIA DE FATIMA OLIVEIRA","MARIA ISABELLY RIBEIRO MARTINA","MARIA ISLANIA DE SOUSA","MARIA KARIELY DE MELO ANDRADE","MARISANGELA VELOSO DA SILVA","RITA FRALINA ROQUE DA SILVA","SIDNEY SANTANA DA SILVA","VIVIANE DE SOUSA LOPES"];
-const ALUNOS_INF5 = ["AELTON MOTA DE SOUSA","ANDRE DE CASTRO LIMA","ANTONIA RODRIGUES MARTINS","DAYANNY MARIA OLIVEIRA FREITAS","DOUGLAS DE CARVALHO CARDOSO","EDILENE CARVALHO DA SILVA","HILTON FERNANDES DA SILVA","KAIQUE JOSE LIMA LEITE"];
+// Dados dos alunos (embutidos)
+function getAlunos1Adm() {
+    return ["ALICE FERREIRA DA SILVA", "CARLENE MARTINS DA SILVA", "DAVI DE ALENCAR MELO BEZERRA", "ELIEZER LEAL BARBOSA", "ENRICO SAMUEL PEREIRA HOSTERNO", "FRANCISCA YARA GONCALVES DE SANTANA", "FRANCISCO FELIX DINO JUNIOR", "FRANCISCO JHONANTAN GONCALVES DA SILVA", "HELOA MENDES ALVES", "JOSE GUILHERME ALVES PIMENTEL", "KELY FERNANDES DA SILVA", "KEVEN VINICIUS ALVES DE OLVEIRA", "LAVINE MARIA FERREIRA FELIX", "LUCAS VINICIUS ALVES DA SILVA", "LUIS ERIVAN FERNANDES DE SOUSA", "MARIA ALICE FREIRE DA SILVA", "MARIA CLARA DAMACENA DE SOUSA", "MARIA FERNANDA DE SOUSA", "MARIA ISADORA RIBEIRO DA SILVA", "MARIELLE PIRES DA SILVA", "MIGUEL THARL EY BATISTA BARROSA", "PAULO VICTOR MOREIRA DA SILVA", "PEDRO LUCAS BEZERRA DA COSTA", "RANNIEL ALVES NOGUEIRA DA SILVA", "RENNA DUARTE DA SILVA", "THAYSSA DO NASCIMENTO SILVA"];
+}
 
-const TURMAS_CONFIG = {
-    "1adm": { nome: "1º Administração", alunos: ALUNOS_GENTIL_1ADM, disciplinas: ["Inteligência Artificial"], tipoAvaliacao: "trimestral" },
-    "1amb": { nome: "1º Controle Ambiental", alunos: ALUNOS_GENTIL_1AMB, disciplinas: ["Inteligência Artificial"], tipoAvaliacao: "trimestral" },
-    "2ds": { nome: "2º Desenvolvimento", alunos: ALUNOS_GENTIL_2DS, disciplinas: ["Inteligência Artificial","MENTORIAS TEC II","FUNDAMENTOS DE UI/UX","PENSAMENTO COMPUTACIONAL II","PROGRAMAÇÃO ESTRUTURADA","PROGRAMAÇÃO ORIENTADA À OBJETOS","PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS","PROGRAMAÇÃO WEB FRONT-END"], tipoAvaliacao: "trimestral" },
-    "inf1": { nome: "Informática - Mód I", alunos: ALUNOS_INF1, disciplinas: ["Análise e Lógica de Programação"], tipoAvaliacao: "bimestral" },
-    "inf5": { nome: "Informática - Mód V", alunos: ALUNOS_INF5, disciplinas: ["Empreendedorismo para TI"], tipoAvaliacao: "bimestral" }
-};
+function getAlunos1Amb() {
+    return ["ALEXANDRA DUARTE LOPES DA ROCHA", "ALICKY", "ANA CLARA MOTA GOMES", "ANA CLARA SOUSA SILVA", "ANDRESSA OLIVEIRA DE SOUSA", "ANNE VITORIA MARTINS CARVALHO", "DEBORA CAMILLE OLIVEIRA DE SOUSA", "DEISE MARTINS LIMA", "ELICKY SOARES LOIOLA", "FRANCISCO DAVID ROQUE DA SILVA", "GABRIELLY BRITO PEDROSA", "GEOVANNA ANTONELE RIBEIRO DE SOUSA", "JANICE VIANA DE SOUSA", "LARA MAYSA VITURIANO DE CARVALHO", "LUIS DAVY DA SILVA RULIM", "LUIS GUSTAVO GOMES DE MELO", "MAYSA ALVES SILVA", "SARA OLIVEIRA CRIZANTINO", "STEICIE DA SILVA LIMA"];
+}
 
-const HORARIOS = {
-    segunda: { "1adm":[],"1amb":[],"2ds":[{hora:"07:30",disciplina:"PROG. ORIENTADA A OBJETOS"},{hora:"16:10",disciplina:"MOBILE"}],"inf1":[{hora:"19:25",disciplina:"INF I"}],"inf5":[{hora:"18:30",disciplina:"INF V"}] },
-    terca: { "1adm":[{hora:"15:10",disciplina:"IA"}],"1amb":[],"2ds":[{hora:"12:50",disciplina:"UI/UX"},{hora:"13:50",disciplina:"MENTORIA"}],"inf1":[{hora:"20:20",disciplina:"INF I"}],"inf5":[{hora:"21:25",disciplina:"INF V"}] },
-    quarta: { "1adm":[],"1amb":[{hora:"08:30",disciplina:"IA"}],"2ds":[{hora:"15:10",disciplina:"FRONT-END"},{hora:"16:10",disciplina:"PROG. ESTRUTURADA"}],"inf1":[],"inf5":[{hora:"18:30",disciplina:"INF V"}] },
-    quinta: { "1adm":[],"1amb":[],"2ds":[{hora:"07:30",disciplina:"POO"},{hora:"12:50",disciplina:"MOBILE"}],"inf1":[],"inf5":[] },
-    sexta: { "1adm":[],"1amb":[],"2ds":[{hora:"10:50",disciplina:"IA"},{hora:"12:50",disciplina:"UI/UX"},{hora:"16:10",disciplina:"PENS. COMPUTACIONAL"}],"inf1":[],"inf5":[] }
-};
+function getAlunos2DS() {
+    return ["ANA SOPHIA GOMES DA SILVA", "CARLOS MANOEL CAETANO", "FRANCISCA INGRID TAINAR DA SILVA ADALBERTO", "IAN BENICIO DE OLIVEIRA CARVALHO", "JACKSON VICENTE DO NASCIMENTO", "JOHNNATHAN RODRIGUES DA SILVA", "JUAN LOIOLA DA SILVA", "LEO VICTOR FERREIRA LOIOLA", "MARIA BEATRIZ XAVIER DE SOUSA", "MIKLENYO JOSE LUSTOSA ALVES", "NICOLAS OLIVEIRA DINIZ", "PABLO KAUAN DE SOUSA NASCIMENTO", "SHAUANY SOUZA LOPES", "TAYNARA OLIVEIRA REIS", "THIAGO LEVI NUNES PEREIRA", "VALTER ALEXANDRE OLIVEIRA FERNANDES"];
+}
 
+function getAlunosInf1() {
+    return ["ALEXANDRE BARBOSA DA SILVA", "ANA MARIA DE JESUS OLIVEIRA", "ANTONIA GLENDA DA SILVA ALVES", "ANTONIO MAIK BEZERRA DOS SANTOS", "DAGMA MOREIRA LIMA FERNANDES", "DANIEL RODRIGUES XAVIER", "EMANUELLY DA SILVA ALVES", "FRANCIDALVA DE LIMA NOGUEIRA", "FRANCISCO EDSON DA SILVA CARNEIRO", "FRANCISCO VINICIUS SOARES MELO", "GEANE MARIA CARDOSO SOARES", "GEOVANA MARIA PEREIRA MARTINS", "KELIANY VIEIRA ANDRADE", "LUCIANO FRANCISCO DA SILVA", "LUZANIRA ARAUJO DE SOUSA", "MAICON RODRIGO BARROS SILVA", "MARIA BEATRIZ FERREIRA DA SILVA", "MARIA DA CRUZ FURTUNATA DA SILVA", "MARIA DE FATIMA OLIVEIRA", "MARIA ISABELLY RIBEIRO MARTINA", "MARIA ISLANIA DE SOUSA", "MARIA KARIELY DE MELO ANDRADE", "MARINA FERREIRA LEAL", "MARISANGELA VELOSO DA SILVA", "MAURO SILVA MARTINS DE SOUSA", "RITA FRALINA ROQUE DA SILVA", "SIDNEY SANTANA DA SILVA", "TALYSON SOUSA CARVALHO", "VENILSON GOMES DA SILVA", "VIVIANE DE SOUSA LOPES"];
+}
+
+function getAlunosInf5() {
+    return ["AELTON MOTA DE SOUSA", "ANDRE DE CASTRO LIMA", "ANTONIA RODRIGUES MARTINS", "DAYANNY MARIA OLIVEIRA FREITAS", "DOUGLAS DE CARVALHO CARDOSO", "EDILENE CARVALHO DA SILVA", "HILTON FERNANDES DA SILVA", "KAIQUE JOSE LIMA LEITE"];
+}
+
+const alunos1Adm = getAlunos1Adm();
+const alunos1Amb = getAlunos1Amb();
+const alunos2DS = getAlunos2DS();
+const alunosInf1 = getAlunosInf1();
+const alunosInf5 = getAlunosInf5();
+
+// Estado global
 let turmaAtual = "1adm";
-let dadosNotas = {}, dadosPresenca = {}, dadosVistos = {}, dadosObservacoes = {}, dadosEventos = [], graficoEvolucao = null, sessaoAtual = null, alunoSelecionadoVisto = null;
+let dadosNotas = {};
+let dadosPresenca = {};
+let dadosVistos = {};
 
-function mostrarToast(m,t='success'){ let c=document.getElementById('toastContainer'); if(!c){c=document.createElement('div');c.id='toastContainer';c.className='toast-container';document.body.appendChild(c);} let tst=document.createElement('div');tst.className=`toast toast-${t}`; tst.innerHTML=`<i class="fas ${t==='success'?'fa-check-circle':t==='error'?'fa-times-circle':'fa-info-circle'}"></i><span>${m}</span>`; c.appendChild(tst); setTimeout(()=>tst.remove(),3000);}
-function salvarDados(){ localStorage.setItem('sistemaAcademico',JSON.stringify({notas:dadosNotas,presenca:dadosPresenca,vistos:dadosVistos,observacoes:dadosObservacoes,eventos:dadosEventos})); }
-function carregarDadosSalvos(){ let saved=localStorage.getItem('sistemaAcademico'); if(saved){ let data=JSON.parse(saved); dadosNotas=data.notas||{}; dadosPresenca=data.presenca||{}; dadosVistos=data.vistos||{}; dadosObservacoes=data.observacoes||{}; dadosEventos=data.eventos||[]; } inicializarEstruturas(); }
-function inicializarEstruturas(){ for(let tid in TURMAS_CONFIG){ if(!dadosNotas[tid])dadosNotas[tid]={}; if(!dadosPresenca[tid])dadosPresenca[tid]={}; if(!dadosVistos[tid])dadosVistos[tid]={}; if(!dadosObservacoes[tid])dadosObservacoes[tid]={}; let turma=TURMAS_CONFIG[tid]; turma.disciplinas.forEach(d=>{ if(!dadosNotas[tid][d]){ dadosNotas[tid][d]={}; turma.alunos.forEach(a=>{ dadosNotas[tid][d][a]=turma.tipoAvaliacao==='trimestral'?{nm1:"",nm2:"",nm3:""}:{nm1:"",nm2:""}; }); } }); if(!dadosVistos[tid].alunos){ dadosVistos[tid].alunos={}; turma.alunos.forEach(a=>{ if(!dadosVistos[tid].alunos[a]) dadosVistos[tid].alunos[a]={total:0,registros:[],ultima:""}; }); } } }
-function getTurma(){ return TURMAS_CONFIG[turmaAtual]; }
-function fazerLogin(c,s){ let cp=c.replace(/[.\-]/g,''); let u=USUARIOS[cp]; if(u&&u.senha===s){ sessaoAtual={cpf:cp,nome:u.nome,tipo:u.tipo,loginTime:new Date().toISOString()}; localStorage.setItem('sessaoAcademico',JSON.stringify(sessaoAtual)); return {sucesso:true}; } return {sucesso:false,erro:"CPF ou senha incorretos!"}; }
-function verificarSessao(){ let s=localStorage.getItem('sessaoAcademico'); if(!s) return null; try{ let sess=JSON.parse(s); let diff=(new Date()-new Date(sess.loginTime))/(1000*60*60); if(diff>24){ localStorage.removeItem('sessaoAcademico'); return null; } return sess; }catch(e){ return null; } }
-function fazerLogout(){ localStorage.removeItem('sessaoAcademico'); document.getElementById('telaLogin').style.display='flex'; document.getElementById('conteudoPrincipal').style.display='none'; mostrarToast('Logout realizado!'); }
-function formatarCPF(inp){ let v=inp.value.replace(/\D/g,''); if(v.length>9) v=v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/,'$1.$2.$3-$4'); else if(v.length>6) v=v.replace(/(\d{3})(\d{3})(\d{1,3})/,'$1.$2.$3'); else if(v.length>3) v=v.replace(/(\d{3})(\d{1,3})/,'$1.$2'); inp.value=v; }
+// Carregar dados do localStorage
+function carregarDadosSalvos() {
+    const saved = localStorage.getItem("sistemaAcademico");
+    if (saved) {
+        const data = JSON.parse(saved);
+        dadosNotas = data.notas || {};
+        dadosPresenca = data.presenca || {};
+        dadosVistos = data.vistos || {};
+    }
+    
+    // Inicializar estruturas para turmas que não existem
+    for (let turmaId in turmasConfig) {
+        if (!dadosNotas[turmaId]) dadosNotas[turmaId] = {};
+        if (!dadosPresenca[turmaId]) dadosPresenca[turmaId] = {};
+        if (!dadosVistos[turmaId]) dadosVistos[turmaId] = {};
+        
+        const alunos = turmasConfig[turmaId].alunos;
+        const disciplinas = turmasConfig[turmaId].disciplinas;
+        
+        // Inicializar notas
+        disciplinas.forEach(disciplina => {
+            if (!dadosNotas[turmaId][disciplina]) {
+                dadosNotas[turmaId][disciplina] = {};
+                alunos.forEach(aluno => {
+                    dadosNotas[turmaId][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
+                });
+            }
+        });
+        
+        // Inicializar vistos
+        if (!dadosVistos[turmaId].alunos) {
+            dadosVistos[turmaId].alunos = {};
+            alunos.forEach(aluno => {
+                dadosVistos[turmaId].alunos[aluno] = { total: 0, registros: [], ultima: "" };
+            });
+        }
+    }
+    
+    salvarDados();
+}
 
-function calcularMedia(n,t){ let n1=parseFloat(n.nm1)||0, n2=parseFloat(n.nm2)||0, n3=t==='trimestral'?(parseFloat(n.nm3)||0):0; return t==='trimestral'?(n1+n2+n3)/3:(n1+n2)/2; }
-function renderizarNotas(){ let d=document.getElementById("disciplinaNotas")?.value; if(!d)return; let t=getTurma(); let tipo=t.tipoAvaliacao; let alunos=t.alunos; let notasTurma=dadosNotas[turmaAtual]?.[d]||{}; let tb=document.getElementById("tbodyNotas"); if(!tb)return; tb.innerHTML=""; let header=document.getElementById("tabelaNotasHeader"); header.innerHTML=tipo==='trimestral'?`<th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th></th>`:`<th>Aluno</th><th>NM1</th><th>NM2</th><th>Média</th><th>Status</th><th></th>`; alunos.forEach(a=>{ let n=notasTurma[a]||(tipo==='trimestral'?{nm1:"",nm2:"",nm3:""}:{nm1:"",nm2:""}); let m=calcularMedia(n,tipo); let st=m>=7?"Aprovado":(m>=5?"Recuperação":"Reprovado"); let stClass=m>=7?"status-aprovado":(m>=5?"status-recuperacao":"status-reprovado"); let r=tb.insertRow(); r.insertCell(0).innerHTML=`<strong>${a}</strong>`; for(let i=1;i<=(tipo==='trimestral'?3:2);i++){ let c=r.insertCell(i); let inp=document.createElement("input"); inp.type="number"; inp.step="0.1"; inp.min="0"; inp.max="10"; inp.value=n[`nm${i}`]; inp.classList.add("nota-input"); inp.dataset.aluno=a; inp.dataset.trimestre=`nm${i}`; c.appendChild(inp); } if(tipo==='trimestral'){ r.insertCell(4).innerHTML=m.toFixed(1); r.insertCell(5).innerHTML=`<span class="${stClass}">${st}</span>`; let obsCell=r.insertCell(6); let btn=document.createElement("button"); btn.innerHTML='<i class="fas fa-comment"></i>'; btn.className="btn-secondary"; btn.onclick=()=>abrirModalObservacao(a); obsCell.appendChild(btn); }else{ r.insertCell(3).innerHTML=m.toFixed(1); r.insertCell(4).innerHTML=`<span class="${stClass}">${st}</span>`; let obsCell=r.insertCell(5); let btn=document.createElement("button"); btn.innerHTML='<i class="fas fa-comment"></i>'; btn.className="btn-secondary"; btn.onclick=()=>abrirModalObservacao(a); obsCell.appendChild(btn); } }); atualizarEstatisticas(); }
-function salvarNotas(){ let d=document.getElementById("disciplinaNotas").value; document.querySelectorAll("#tbodyNotas .nota-input").forEach(inp=>{ let a=inp.dataset.aluno; let t=inp.dataset.trimestre; let v=inp.value===""?"":parseFloat(inp.value); if(v!==""&&(isNaN(v)||v<0||v>10)) v=""; if(!dadosNotas[turmaAtual][d][a]) dadosNotas[turmaAtual][d][a]={nm1:"",nm2:"",nm3:""}; dadosNotas[turmaAtual][d][a][t]=v; }); salvarDados(); renderizarNotas(); renderizarRelatorios(); renderizarRanking(); mostrarToast("Notas salvas!"); }
-function atualizarEstatisticas(){ let d=document.getElementById("disciplinaNotas")?.value; let t=getTurma(); if(!t)return; let tipo=t.tipoAvaliacao; let aprov=0,rec=0,rep=0; t.alunos.forEach(a=>{ let m=calcularMedia(dadosNotas[turmaAtual]?.[d]?.[a]||{},tipo); if(m>=7) aprov++; else if(m>=5) rec++; else if(m>0) rep++; }); document.getElementById("statAlunos").innerText=t.alunos.length; document.getElementById("statAprovados").innerText=aprov; document.getElementById("statRecuperacao").innerText=rec; document.getElementById("statReprovados").innerText=rep; }
-function exportarNotas(){ let d=document.getElementById("disciplinaNotas")?.value; let t=getTurma(); let tipo=t.tipoAvaliacao; let data=t.alunos.map(a=>{ let n=dadosNotas[turmaAtual]?.[d]?.[a]||{}; return tipo==='trimestral'?{Aluno:a,NM1:n.nm1||"",NM2:n.nm2||"",NM3:n.nm3||""}:{Aluno:a,NM1:n.nm1||"",NM2:n.nm2||""}; }); let ws=XLSX.utils.json_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Notas"); XLSX.writeFile(wb,`Notas_${t.nome}.xlsx`); mostrarToast("Exportado!"); }
+function salvarDados() {
+    localStorage.setItem("sistemaAcademico", JSON.stringify({
+        notas: dadosNotas,
+        presenca: dadosPresenca,
+        vistos: dadosVistos
+    }));
+}
 
-function renderizarPresenca(){ let mes=document.getElementById("mesPresenca").value, ano=document.getElementById("anoPresenca").value, key=`${ano}-${mes.padStart(2,'0')}`; let aulas=dadosPresenca[turmaAtual]?.[key]||[]; let container=document.getElementById("aulasContainer"); if(!container)return; container.innerHTML=""; if(aulas.length===0){ container.innerHTML='<div class="empty-state">Nenhuma aula registrada.</div>'; return; } let turma=getTurma(); aulas.forEach((aula,idx)=>{ let card=document.createElement("div"); card.className="aula-card"; let htmlPresenca=""; turma.alunos.forEach(aluno=>{ let checked=aula.presencas&&aula.presencas[aluno]===true; htmlPresenca+=`<tr><td><strong>${aluno}</strong></td><td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${checked?"checked":""}></td></tr>`; }); card.innerHTML=`<div class="aula-header"><span class="aula-data">📅 ${new Date(aula.data).toLocaleDateString('pt-BR')}</span><button class="aula-remover" data-index="${idx}">Remover</button></div><div class="table-wrapper"><table><thead><tr><th>Aluno</th><th>Presente</th></tr></thead><tbody>${htmlPresenca}</tbody></table></div>`; container.appendChild(card); card.querySelector(".aula-remover").onclick=()=>{ dadosPresenca[turmaAtual][key].splice(idx,1); if(dadosPresenca[turmaAtual][key].length===0) delete dadosPresenca[turmaAtual][key]; salvarDados(); renderizarPresenca(); mostrarToast("Aula removida!","warning"); }; card.querySelectorAll(".presenca-check").forEach(cb=>{ cb.onchange=(e)=>{ let aluno=e.target.dataset.aluno; if(!dadosPresenca[turmaAtual][key][idx].presencas) dadosPresenca[turmaAtual][key][idx].presencas={}; dadosPresenca[turmaAtual][key][idx].presencas[aluno]=e.target.checked; salvarDados(); }; }); }); }
-function adicionarAula(){ let mes=document.getElementById("mesPresenca").value, ano=document.getElementById("anoPresenca").value, key=`${ano}-${mes.padStart(2,'0')}`; if(!dadosPresenca[turmaAtual][key]) dadosPresenca[turmaAtual][key]=[]; dadosPresenca[turmaAtual][key].push({data:new Date().toISOString().split('T')[0],presencas:{}}); salvarDados(); renderizarPresenca(); mostrarToast("Aula adicionada!"); }
+// Renderizar notas
+function renderizarNotas() {
+    const disciplina = document.getElementById("disciplinaNotas").value;
+    if (!disciplina) return;
+    
+    const alunos = turmasConfig[turmaAtual].alunos;
+    const notasTurma = dadosNotas[turmaAtual][disciplina] || {};
+    const tbody = document.getElementById("tbodyNotas");
+    tbody.innerHTML = "";
+    
+    alunos.forEach(aluno => {
+        const notas = notasTurma[aluno] || { nm1: "", nm2: "", nm3: "" };
+        const nm1 = parseFloat(notas.nm1) || 0;
+        const nm2 = parseFloat(notas.nm2) || 0;
+        const nm3 = parseFloat(notas.nm3) || 0;
+        const media = (nm1 + nm2 + nm3) / 3;
+        
+        let status = "";
+        let statusClass = "";
+        if (media >= 7) {
+            status = "✓ Aprovado";
+            statusClass = "status-aprovado";
+        } else if (media >= 5) {
+            status = "⚠️ Recuperação";
+            statusClass = "status-recuperacao";
+        } else {
+            status = "✗ Reprovado";
+            statusClass = "status-reprovado";
+        }
+        
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = aluno;
+        
+        const cell1 = row.insertCell(1);
+        const input1 = document.createElement("input");
+        input1.type = "number";
+        input1.step = "0.1";
+        input1.min = "0";
+        input1.max = "10";
+        input1.value = notas.nm1;
+        input1.classList.add("nota-input");
+        input1.dataset.aluno = aluno;
+        input1.dataset.trimestre = "nm1";
+        cell1.appendChild(input1);
+        
+        const cell2 = row.insertCell(2);
+        const input2 = document.createElement("input");
+        input2.type = "number";
+        input2.step = "0.1";
+        input2.min = "0";
+        input2.max = "10";
+        input2.value = notas.nm2;
+        input2.classList.add("nota-input");
+        input2.dataset.aluno = aluno;
+        input2.dataset.trimestre = "nm2";
+        cell2.appendChild(input2);
+        
+        const cell3 = row.insertCell(3);
+        const input3 = document.createElement("input");
+        input3.type = "number";
+        input3.step = "0.1";
+        input3.min = "0";
+        input3.max = "10";
+        input3.value = notas.nm3;
+        input3.classList.add("nota-input");
+        input3.dataset.aluno = aluno;
+        input3.dataset.trimestre = "nm3";
+        cell3.appendChild(input3);
+        
+        row.insertCell(4).textContent = media.toFixed(1);
+        row.insertCell(5).innerHTML = `<span class="${statusClass}">${status}</span>`;
+    });
+}
 
-function renderizarVistos(){ let tbody=document.getElementById("tbodyVistos"); if(!tbody)return; let turma=getTurma(); let v=dadosVistos[turmaAtual]?.alunos||{}; tbody.innerHTML=""; turma.alunos.forEach(a=>{ let dados=v[a]||{total:0,ultima:""}; let row=tbody.insertRow(); row.insertCell(0).innerHTML=`<strong>${a}</strong>`; row.insertCell(1).innerHTML=`<span class="badge-visto">${dados.total}</span>`; row.insertCell(2).innerText=dados.ultima?new Date(dados.ultima).toLocaleDateString('pt-BR'):"-"; let btnCell=row.insertCell(3); let btn=document.createElement("button"); btn.innerHTML='<i class="fas fa-star"></i> Dar Visto'; btn.className="btn-secondary"; btn.onclick=()=>abrirModalVisto(a); btnCell.appendChild(btn); }); }
-function abrirModalVisto(a){ alunoSelecionadoVisto=a; document.getElementById("modalDescVisto").value=""; document.getElementById("modalVisto").style.display="flex"; }
-function salvarVisto(){ if(!alunoSelecionadoVisto)return; let desc=document.getElementById("modalDescVisto")?.value.trim(); if(!desc){ mostrarToast("Descreva a participação!","warning"); return; } if(!dadosVistos[turmaAtual].alunos) dadosVistos[turmaAtual].alunos={}; let v=dadosVistos[turmaAtual].alunos; if(!v[alunoSelecionadoVisto]) v[alunoSelecionadoVisto]={total:0,registros:[],ultima:""}; let agora=new Date().toISOString(); v[alunoSelecionadoVisto].total++; v[alunoSelecionadoVisto].registros.push({data:agora,descricao:desc}); v[alunoSelecionadoVisto].ultima=agora; salvarDados(); renderizarVistos(); renderizarRanking(); document.getElementById("modalVisto").style.display="none"; mostrarToast("Visto concedido!"); }
+// Salvar notas
+function salvarNotas() {
+    const disciplina = document.getElementById("disciplinaNotas").value;
+    const inputs = document.querySelectorAll("#tbodyNotas .nota-input");
+    
+    inputs.forEach(input => {
+        const aluno = input.dataset.aluno;
+        const trimestre = input.dataset.trimestre;
+        let valor = input.value === "" ? "" : parseFloat(input.value);
+        if (valor !== "" && (valor < 0 || valor > 10)) valor = "";
+        
+        if (!dadosNotas[turmaAtual][disciplina][aluno]) {
+            dadosNotas[turmaAtual][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
+        }
+        dadosNotas[turmaAtual][disciplina][aluno][trimestre] = valor;
+    });
+    
+    salvarDados();
+    renderizarNotas();
+    alert("✅ Notas salvas com sucesso!");
+}
 
-function getDiaSemana(d){let dias=["domingo","segunda","terca","quarta","quinta","sexta","sabado"];return dias[d.getDay()];}
-function getAulasDoDia(data){ let dia=getDiaSemana(data); let aulas=HORARIOS[dia]||{}; let lista=[]; for(let tid of ["1adm","1amb","2ds","inf1","inf5"]){ (aulas[tid]||[]).forEach(a=>{ lista.push({turmaNome:TURMAS_CONFIG[tid].nome,disciplina:a.disciplina,hora:a.hora}); }); } lista.sort((a,b)=>a.hora.localeCompare(b.hora)); return lista; }
-function renderizarDashboard(){ let hoje=new Date(); let amanha=new Date(hoje); amanha.setDate(amanha.getDate()+1); document.getElementById("saudacaoTexto").innerHTML=`${(new Date().getHours()<12?"Bom dia":(new Date().getHours()<18?"Boa tarde":"Boa noite"))}, ${sessaoAtual?.nome||"Professor"}! 👋`; document.getElementById("dataAtual").innerText=hoje.toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); document.getElementById("hojeData").innerText=hoje.toLocaleDateString('pt-BR'); document.getElementById("amanhaData").innerText=amanha.toLocaleDateString('pt-BR'); let aulasHoje=getAulasDoDia(hoje); let container=document.getElementById("aulasHojeContainer"); container.innerHTML=aulasHoje.length? aulasHoje.map(a=>`<div class="aula-card-dashboard"><div class="aula-hora">${a.hora}</div><div><strong>${a.disciplina}</strong><br><small>${a.turmaNome}</small></div></div>`).join(''):'<div class="empty-state">Nenhuma aula hoje</div>'; let aulasAmanha=getAulasDoDia(amanha); document.getElementById("aulasAmanhaContainer").innerHTML=aulasAmanha.length? aulasAmanha.map(a=>`<div class="aula-card-dashboard"><div class="aula-hora">${a.hora}</div><div><strong>${a.disciplina}</strong><br><small>${a.turmaNome}</small></div></div>`).join(''):'<div class="empty-state">Nenhuma aula amanhã</div>'; document.getElementById("totalAulasHoje").innerText=aulasHoje.length; let totalV=0; for(let tid in dadosVistos) if(dadosVistos[tid]?.alunos) for(let a in dadosVistos[tid].alunos) totalV+=dadosVistos[tid].alunos[a]?.total||0; document.getElementById("totalVistosMes").innerText=totalV; let totalAlunos=0; for(let tid in TURMAS_CONFIG) totalAlunos+=TURMAS_CONFIG[tid].alunos.length; document.getElementById("totalAlunos").innerText=totalAlunos; }
+// Renderizar presença
+function renderizarPresenca() {
+    const mes = document.getElementById("mesPresenca").value;
+    const ano = document.getElementById("anoPresenca").value;
+    const key = `${ano}-${mes.padStart(2,'0')}`;
+    const aulas = dadosPresenca[turmaAtual][key] || [];
+    const container = document.getElementById("aulasContainer");
+    container.innerHTML = "";
+    
+    if (aulas.length === 0) {
+        container.innerHTML = '<div class="lista-vazia">Nenhuma aula registrada neste mês. Clique em "+ Nova Aula" para começar.</div>';
+        return;
+    }
+    
+    aulas.forEach((aula, idx) => {
+        const aulaCard = document.createElement("div");
+        aulaCard.className = "aula-card";
+        aulaCard.innerHTML = `
+            <div class="aula-header">
+                <span class="aula-data">📅 ${new Date(aula.data).toLocaleDateString('pt-BR')}</span>
+                <button class="aula-remover" data-index="${idx}">🗑️ Remover</button>
+            </div>
+            <table class="tabela-presenca">
+                <thead>
+                    <tr><th>Aluno</th><th>Presente?</th></tr>
+                </thead>
+                <tbody>
+                    ${turmasConfig[turmaAtual].alunos.map(aluno => `
+                        <tr>
+                            <td>${aluno}</td>
+                            <td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${aula.presencas && aula.presencas[aluno] ? 'checked' : ''}></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        container.appendChild(aulaCard);
+        
+        aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
+        
+        aulaCard.querySelectorAll(".presenca-check").forEach(checkbox => {
+            checkbox.onchange = (e) => {
+                const aluno = e.target.dataset.aluno;
+                if (!dadosPresenca[turmaAtual][key][idx].presencas) {
+                    dadosPresenca[turmaAtual][key][idx].presencas = {};
+                }
+                dadosPresenca[turmaAtual][key][idx].presencas[aluno] = e.target.checked;
+                salvarDados();
+            };
+        });
+    });
+}
 
-function renderizarRanking(){ let disc=document.getElementById("rankingDisciplina")?.value; if(!disc)return; let t=getTurma(); let tipo=t.tipoAvaliacao; let rankings=t.alunos.map(a=>{ let m=calcularMedia(dadosNotas[turmaAtual]?.[disc]?.[a]||{},tipo); let v=dadosVistos[turmaAtual]?.alunos?.[a]?.total||0; return {a,m,v}; }).sort((x,y)=>y.m-x.m); document.getElementById("rankingContainer").innerHTML=rankings.map((r,i)=>`<div class="ranking-item"><div class="ranking-position ${i===0?"gold":i===1?"silver":i===2?"bronze":""}">${i+1}</div><div><strong>${r.a}</strong><br><span>⭐ ${r.v} vistos</span></div><div class="ranking-nota">${r.m.toFixed(1)}</div></div>`).join(''); }
+function removerAula(key, index) {
+    if (confirm("Remover esta aula?")) {
+        dadosPresenca[turmaAtual][key].splice(index, 1);
+        if (dadosPresenca[turmaAtual][key].length === 0) {
+            delete dadosPresenca[turmaAtual][key];
+        }
+        salvarDados();
+        renderizarPresenca();
+    }
+}
 
-function renderizarRelatorios(){ let disc=document.getElementById("disciplinaNotas")?.value; let t=getTurma(); let tipo=t.tipoAvaliacao; let aprov=0,rec=0,rep=0,soma=0; t.alunos.forEach(a=>{ let m=calcularMedia(dadosNotas[turmaAtual]?.[disc]?.[a]||{},tipo); if(m>=7) aprov++; else if(m>=5) rec++; else if(m>0) rep++; soma+=m; }); let media=soma/t.alunos.length||0; document.getElementById("resumoNotas").innerHTML=`<p>📊 Média: ${media.toFixed(1)}</p><p>✅ Aprovados: ${aprov}</p><p>⚠️ Recuperação: ${rec}</p><p>❌ Reprovados: ${rep}</p>`; let totalAulas=0,totalPres=0; for(let key in dadosPresenca[turmaAtual]) if(Array.isArray(dadosPresenca[turmaAtual][key])) dadosPresenca[turmaAtual][key].forEach(a=>{ totalAulas++; totalPres+=Object.values(a.presencas||{}).filter(v=>v===true).length; }); let freq=totalAulas?((totalPres/(totalAulas*t.alunos.length))*100).toFixed(1):0; document.getElementById("resumoFrequencia").innerHTML=`<p>📅 Total aulas: ${totalAulas}</p><p>📈 Frequência: ${freq}%</p>`; let destaques=[]; t.alunos.forEach(a=>{ let v=dadosVistos[turmaAtual]?.alunos?.[a]?.total||0; if(v>=3) destaques.push({a,v}); }); destaques.sort((x,y)=>y.v-x.v); document.getElementById("alunosDestaque").innerHTML=destaques.length? destaques.slice(0,5).map(d=>`<p>⭐ ${d.a} - ${d.v} vistos</p>`).join(''):"<p>Nenhum destaque</p>"; let recup=[]; t.alunos.forEach(a=>{ let m=calcularMedia(dadosNotas[turmaAtual]?.[disc]?.[a]||{},tipo); if(m>=5&&m<7) recup.push(a); }); document.getElementById("alunosRecuperacao").innerHTML=recup.length? recup.map(r=>`<p>⚠️ ${r}</p>`).join(''):"<p>Nenhum</p>"; }
+function adicionarAula() {
+    const mes = document.getElementById("mesPresenca").value;
+    const ano = document.getElementById("anoPresenca").value;
+    const key = `${ano}-${mes.padStart(2,'0')}`;
+    
+    const hoje = new Date().toISOString().split('T')[0];
+    const novaAula = {
+        data: hoje,
+        presencas: {}
+    };
+    
+    if (!dadosPresenca[turmaAtual][key]) {
+        dadosPresenca[turmaAtual][key] = [];
+    }
+    
+    dadosPresenca[turmaAtual][key].push(novaAula);
+    salvarDados();
+    renderizarPresenca();
+}
 
-function renderizarHorarios(dia=null){ if(!dia){ let dias=["segunda","terca","quarta","quinta","sexta"]; let hoje=new Date(); dia=dias[hoje.getDay()-1]||"segunda"; } document.querySelectorAll(".dia-btn").forEach(b=>b.classList.toggle("ativo",b.dataset.dia===dia)); let aulas=HORARIOS[dia]||{}; let horariosFixos=["07:30","08:30","09:50","10:50","11:50","12:50","13:50","15:10","16:10","18:30","19:25","20:20","21:25","22:20"]; let html=`<div class="cards-grid image-grid">`; for(let hora of horariosFixos){ for(let tid of ["1adm","1amb","2ds","inf1","inf5"]){ let aula= (aulas[tid]||[]).find(a=>a.hora===hora); if(aula){ html+=`<div class="aula-card-dashboard"><div class="aula-hora">${hora}</div><div><strong>${aula.disciplina}</strong><br><small>${TURMAS_CONFIG[tid].nome}</small></div></div>`; } } } html+=`</div>`; document.getElementById("gradeHorarios").innerHTML=html||'<div class="empty-state">Nenhuma aula</div>'; }
+// Renderizar vistos
+let alunoSelecionadoVisto = null;
 
-function renderizarAdmin(){ let t=getTurma(); let tb=document.getElementById("tbodyAdmin"); if(!tb)return; tb.innerHTML=""; t.alunos.forEach((a,i)=>{ let obs=dadosObservacoes[turmaAtual]?.[a]||""; let row=tb.insertRow(); row.insertCell(0).innerText=i+1; row.insertCell(1).innerHTML=`<strong>${a}</strong>`; row.insertCell(2).innerHTML='<span style="color:#22c55e">✓ Ativo</span>'; row.insertCell(3).innerHTML=obs?`<i class="fas fa-comment"></i> ${obs.substring(0,30)}`:"-"; let btnCell=row.insertCell(4); let btn=document.createElement("button"); btn.innerHTML='<i class="fas fa-trash"></i>'; btn.className="btn-secondary"; btn.onclick=()=>{ if(confirm(`Remover ${a}?`)){ let idx=t.alunos.indexOf(a); if(idx!==-1) t.alunos.splice(idx,1); salvarDados(); renderizarAdmin(); renderizarNotas(); renderizarDashboard(); mostrarToast("Removido!","warning"); } }; btnCell.appendChild(btn); }); }
-function adicionarAluno(){ let nome=document.getElementById("modalAlunoNome")?.value.trim().toUpperCase(); if(!nome){mostrarToast("Digite o nome!","warning");return;} let t=getTurma(); if(t.alunos.includes(nome)){mostrarToast("Aluno já existe!","warning");return;} t.alunos.push(nome); t.alunos.sort(); salvarDados(); renderizarAdmin(); renderizarNotas(); renderizarDashboard(); document.getElementById("modalAluno").style.display="none"; mostrarToast(`"${nome}" adicionado!`); }
-function abrirModalObservacao(a){ document.getElementById("modalObsTexto").value=dadosObservacoes[turmaAtual]?.[a]||""; document.getElementById("modalObs").style.display="flex"; window.alunoObsSelecionado=a; }
-function salvarObservacaoModal(){ let obs=document.getElementById("modalObsTexto").value; if(window.alunoObsSelecionado){ if(!dadosObservacoes[turmaAtual]) dadosObservacoes[turmaAtual]={}; dadosObservacoes[turmaAtual][window.alunoObsSelecionado]=obs; salvarDados(); document.getElementById("modalObs").style.display="none"; mostrarToast("Observação salva!"); } }
-function atualizarGrafico(){ let aluno=document.getElementById("graficoAlunoSelect")?.value; if(!aluno)return; let disc=document.getElementById("disciplinaNotas")?.value; let t=getTurma(); let tipo=t.tipoAvaliacao; let notas=dadosNotas[turmaAtual]?.[disc]?.[aluno]||{}; let labels=tipo==='trimestral'?["NM1","NM2","NM3"]:["NM1","NM2"]; let values=labels.map((_,i)=>parseFloat(notas[`nm${i+1}`])||0); let ctx=document.getElementById("graficoEvolucao")?.getContext("2d"); if(graficoEvolucao) graficoEvolucao.destroy(); if(ctx) graficoEvolucao=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Evolução',data:values,borderColor:'#667eea',backgroundColor:'rgba(102,126,234,0.1)',fill:true,tension:0.3}]},options:{responsive:true,scales:{y:{min:0,max:10,title:{display:true,text:'Nota'}}}}}); }
+function renderizarVistos() {
+    const vistosTurma = dadosVistos[turmaAtual].alunos;
+    const tbody = document.getElementById("tbodyVistos");
+    tbody.innerHTML = "";
+    
+    turmasConfig[turmaAtual].alunos.forEach(aluno => {
+        const dados = vistosTurma[aluno] || { total: 0, ultima: "" };
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = aluno;
+        row.insertCell(1).innerHTML = `<strong>${dados.total}</strong> visto(s)`;
+        row.insertCell(2).textContent = dados.ultima ? new Date(dados.ultima).toLocaleDateString('pt-BR') : "-";
+        
+        const btnCell = row.insertCell(3);
+        const btn = document.createElement("button");
+        btn.textContent = "➕ Dar Visto";
+        btn.className = "btn btn-pequeno";
+        btn.onclick = () => abrirModalVisto(aluno);
+        btnCell.appendChild(btn);
+    });
+}
 
-function trocarTurma(tid){ turmaAtual=tid; document.querySelectorAll(".nav-item[data-turma]").forEach(b=>b.classList.toggle("ativo",b.dataset.turma===tid)); let t=TURMAS_CONFIG[tid]; document.getElementById("pageTitle").innerText=t.nome; document.getElementById("currentTurmaNome").innerText=t.nome; let sel=document.getElementById("disciplinaNotas"); sel.innerHTML=""; t.disciplinas.forEach(d=>{let opt=document.createElement("option");opt.value=d;opt.innerText=d;sel.appendChild(opt);}); let rankSel=document.getElementById("rankingDisciplina"); rankSel.innerHTML=""; t.disciplinas.forEach(d=>{let opt=document.createElement("option");opt.value=d;opt.innerText=d;rankSel.appendChild(opt);}); let grafSel=document.getElementById("graficoAlunoSelect"); grafSel.innerHTML='<option value="">Selecione</option>'; t.alunos.forEach(a=>{let opt=document.createElement("option");opt.value=a;opt.innerText=a;grafSel.appendChild(opt);}); renderizarNotas(); renderizarPresenca(); renderizarVistos(); renderizarRelatorios(); renderizarRanking(); renderizarHorarios(); renderizarDashboard(); renderizarAdmin(); atualizarEstatisticas(); atualizarGrafico(); }
+function abrirModalVisto(aluno) {
+    alunoSelecionadoVisto = aluno;
+    document.getElementById("modalDescVisto").value = "";
+    document.getElementById("modalVisto").style.display = "block";
+}
 
-function iniciarSistema(usuario){ sessaoAtual=usuario; document.getElementById("sidebarUserName").innerText=usuario.nome; document.getElementById("usuarioLogado").innerText=usuario.nome; document.getElementById("telaLogin").style.display="none"; document.getElementById("conteudoPrincipal").style.display="block"; carregarDadosSalvos(); trocarTurma("1adm"); document.getElementById("toggleDarkMode").onclick=()=>document.body.classList.toggle("dark-mode"); document.getElementById("btnLogoutHeader").onclick=fazerLogout; document.querySelectorAll(".nav-item").forEach(item=>{item.onclick=()=>{ document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active")); item.classList.add("active"); document.querySelectorAll(".page").forEach(p=>p.classList.remove("active")); document.getElementById(`page${item.dataset.page.charAt(0).toUpperCase()+item.dataset.page.slice(1)}`).classList.add("active"); document.getElementById("pageTitle").innerText=item.querySelector("span").innerText; }; }); document.getElementById("salvarNotas").onclick=salvarNotas; document.getElementById("exportarNotas").onclick=exportarNotas; document.getElementById("adicionarAula").onclick=adicionarAula; document.getElementById("salvarPresenca").onclick=()=>{salvarDados();mostrarToast("Presenças salvas!");}; document.getElementById("adicionarVisto").onclick=()=>{let t=getTurma(); if(t.alunos.length) abrirModalVisto(t.alunos[0]);}; document.getElementById("salvarVistos").onclick=()=>{salvarDados();mostrarToast("Vistos salvos!");}; document.getElementById("exportarRelatorioGeral").onclick=exportarNotas; document.getElementById("adicionarAlunoBtn").onclick=()=>document.getElementById("modalAluno").style.display="flex"; document.getElementById("backupDadosBtn").onclick=()=>{let backup={notas:dadosNotas,presenca:dadosPresenca,vistos:dadosVistos,observacoes:dadosObservacoes,eventos:dadosEventos}; let a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(backup)],{type:"application/json"})); a.download=`backup_${new Date().toISOString()}.json`; a.click();mostrarToast("Backup!");}; document.getElementById("restoreDadosBtn").onclick=()=>{let i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=e=>{let f=e.target.files[0];let r=new FileReader();r.onload=ev=>{let bk=JSON.parse(ev.target.result); if(bk.notas)dadosNotas=bk.notas; if(bk.presenca)dadosPresenca=bk.presenca; if(bk.vistos)dadosVistos=bk.vistos; if(bk.observacoes)dadosObservacoes=bk.observacoes; if(bk.eventos)dadosEventos=bk.eventos; salvarDados(); renderizarNotas();renderizarPresenca();renderizarVistos();renderizarRelatorios();renderizarRanking();renderizarDashboard();mostrarToast("Restaurado!");};r.readAsText(f);};i.click();}; document.getElementById("modalCancelarAluno").onclick=()=>document.getElementById("modalAluno").style.display="none"; document.getElementById("modalSalvarAluno").onclick=adicionarAluno; document.getElementById("modalSalvarVisto").onclick=salvarVisto; document.getElementById("modalSalvarObs").onclick=salvarObservacaoModal; document.querySelectorAll(".modal-close, .modal-fechar").forEach(b=>b.onclick=()=>{document.getElementById("modalAluno").style.display="none";document.getElementById("modalVisto").style.display="none";document.getElementById("modalObs").style.display="none";}); document.getElementById("disciplinaNotas").onchange=()=>{renderizarNotas();renderizarRanking();atualizarGrafico();}; document.getElementById("rankingDisciplina").onchange=renderizarRanking; document.getElementById("graficoAlunoSelect").onchange=atualizarGrafico; document.getElementById("mesPresenca").onchange=renderizarPresenca; document.getElementById("anoPresenca").onchange=renderizarPresenca; document.querySelectorAll(".dia-btn").forEach(b=>b.onclick=()=>renderizarHorarios(b.dataset.dia)); document.getElementById("turmaSelect").innerHTML=""; for(let tid in TURMAS_CONFIG){ let opt=document.createElement("option");opt.value=tid;opt.innerText=TURMAS_CONFIG[tid].nome; document.getElementById("turmaSelect").appendChild(opt); } document.getElementById("turmaSelect").onchange=e=>trocarTurma(e.target.value); document.querySelectorAll(".nav-item[data-turma]").forEach(b=>b.onclick=()=>trocarTurma(b.dataset.turma)); renderizarHorarios(); mostrarToast("Sistema pronto!"); }
+function salvarVisto() {
+    if (!alunoSelecionadoVisto) return;
+    
+    const descricao = document.getElementById("modalDescVisto").value.trim();
+    if (!descricao) {
+        alert("Por favor, descreva a participação do aluno!");
+        return;
+    }
+    
+    const vistosTurma = dadosVistos[turmaAtual].alunos;
+    if (!vistosTurma[alunoSelecionadoVisto]) {
+        vistosTurma[alunoSelecionadoVisto] = { total: 0, registros: [], ultima: "" };
+    }
+    
+    const agora = new Date().toISOString();
+    vistosTurma[alunoSelecionadoVisto].total++;
+    vistosTurma[alunoSelecionadoVisto].registros.push({
+        data: agora,
+        descricao: descricao
+    });
+    vistosTurma[alunoSelecionadoVisto].ultima = agora;
+    
+    salvarDados();
+    renderizarVistos();
+    document.getElementById("modalVisto").style.display = "none";
+    alert(`✅ Visto concedido para ${alunoSelecionadoVisto}!`);
+}
 
-document.addEventListener("DOMContentLoaded",()=>{ let sess=verificarSessao(); if(sess) iniciarSistema(sess); else{document.getElementById("telaLogin").style.display="flex";document.getElementById("conteudoPrincipal").style.display="none";} document.getElementById("loginCpf").addEventListener("input",function(){formatarCPF(this);}); document.getElementById("btnLogin").onclick=()=>{ let res=fazerLogin(document.getElementById("loginCpf").value,document.getElementById("loginSenha").value); if(res.sucesso) iniciarSistema(sessaoAtual); else document.getElementById("loginError").innerText=res.erro; }; document.getElementById("loginSenha").addEventListener("keypress",e=>{if(e.key==="Enter") document.getElementById("btnLogin").click();}); });
+// Renderizar relatórios
+function renderizarRelatorios() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value || turmasConfig[turmaAtual].disciplinas[0];
+    const alunos = turmasConfig[turmaAtual].alunos;
+    
+    // Resumo de Notas
+    let aprovados = 0, recuperacao = 0, reprovados = 0;
+    let somaMedias = 0;
+    
+    alunos.forEach(aluno => {
+        const notas = dadosNotas[turmaAtual][disciplina]?.[aluno] || { nm1: "", nm2: "", nm3: "" };
+        const nm1 = parseFloat(notas.nm1) || 0;
+        const nm2 = parseFloat(notas.nm2) || 0;
+        const nm3 = parseFloat(notas.nm3) || 0;
+        const media = (nm1 + nm2 + nm3) / 3;
+        
+        if (media >= 7) aprovados++;
+        else if (media >= 5) recuperacao++;
+        else reprovados++;
+        somaMedias += media;
+    });
+    
+    const mediaGeral = alunos.length ? (somaMedias / alunos.length).toFixed(1) : 0;
+    
+    document.getElementById("resumoNotas").innerHTML = `
+        <ul>
+            <li>📊 Média Geral da Turma: <strong>${mediaGeral}</strong></li>
+            <li>✅ Aprovados: <strong style="color:#2e7d32">${aprovados}</strong></li>
+            <li>⚠️ Recuperação: <strong style="color:#f57c00">${recuperacao}</strong></li>
+            <li>❌ Reprovados: <strong style="color:#c62828">${reprovados}</strong></li>
+        </ul>
+    `;
+    
+    // Frequência Geral
+    let totalPresencas = 0;
+    let totalAulas = 0;
+    
+    for (let key in dadosPresenca[turmaAtual]) {
+        dadosPresenca[turmaAtual][key].forEach(aula => {
+            totalAulas++;
+            const presentes = Object.values(aula.presencas || {}).filter(v => v === true).length;
+            totalPresencas += presentes;
+        });
+    }
+    
+    const frequenciaMedia = totalAulas ? ((totalPresencas / (totalAulas * alunos.length)) * 100).toFixed(1) : 0;
+    
+    document.getElementById("resumoFrequencia").innerHTML = `
+        <ul>
+            <li>📅 Total de Aulas: <strong>${totalAulas}</strong></li>
+            <li>👥 Total de Presenças: <strong>${totalPresencas}</strong></li>
+            <li>📈 Frequência Média: <strong>${frequenciaMedia}%</strong></li>
+        </ul>
+    `;
+    
+    // Alunos Destaque
+    const destaques = [];
+    alunos.forEach(aluno => {
+        const vistos = dadosVistos[turmaAtual].alunos[aluno]?.total || 0;
+        if (vistos >= 5) {
+            destaques.push({ aluno, vistos });
+        }
+    });
+    destaques.sort((a, b) => b.vistos - a.vistos);
+    
+    document.getElementById("alunosDestaque").innerHTML = destaques.length ? `
+        <ul>
+            ${destaques.slice(0,5).map(d => `<li>⭐ ${d.aluno} - ${d.vistos} vistos</li>`).join('')}
+        </ul>
+    ` : "<p>Nenhum aluno com destaque ainda</p>";
+    
+    // Alunos em Recuperação
+    const recuperacaoList = [];
+    alunos.forEach(aluno => {
+        const notas = dadosNotas[turmaAtual][disciplina]?.[aluno] || { nm1: "", nm2: "", nm3: "" };
+        const nm1 = parseFloat(notas.nm1) || 0;
+        const nm2 = parseFloat(notas.nm2) || 0;
+        const nm3 = parseFloat(notas.nm3) || 0;
+        const media = (nm1 + nm2 + nm3) / 3;
+        if (media >= 5 && media < 7) {
+            recuperacaoList.push({ aluno, media });
+        }
+    });
+    
+    document.getElementById("alunosRecuperacao").innerHTML = recuperacaoList.length ? `
+        <ul>
+            ${recuperacaoList.map(r => `<li>⚠️ ${r.aluno} - Média: ${r.media.toFixed(1)}</li>`).join('')}
+        </ul>
+    ` : "<p>Nenhum aluno em recuperação</p>";
+}
+
+// Exportar relatório completo
+function exportarRelatorioCompleto() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value || turmasConfig[turmaAtual].disciplinas[0];
+    const alunos = turmasConfig[turmaAtual].alunos;
+    
+    const dadosExport = alunos.map(aluno => {
+        const notas = dadosNotas[turmaAtual][disciplina]?.[aluno] || {};
+        const nm1 = parseFloat(notas.nm1) || 0;
+        const nm2 = parseFloat(notas.nm2) || 0;
+        const nm3 = parseFloat(notas.nm3) || 0;
+        const mediaFinal = (nm1 + nm2 + nm3) / 3;
+        const status = mediaFinal >= 7 ? "Aprovado" : (mediaFinal >= 5 ? "Recuperação" : "Reprovado");
+        const vistos = dadosVistos[turmaAtual].alunos[aluno]?.total || 0;
+        
+        return {
+            "Aluno": aluno,
+            "NM1": nm1,
+            "NM2": nm2,
+            "NM3": nm3,
+            "Média Final": mediaFinal.toFixed(1),
+            "Status": status,
+            "Vistos de Participação": vistos
+        };
+    });
+    
+    const planilha = XLSX.utils.json_to_sheet(dadosExport);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turmasConfig[turmaAtual].nome}`);
+    XLSX.writeFile(livro, `Relatorio_${turmasConfig[turmaAtual].nome}_${new Date().toLocaleDateString()}.xlsx`);
+}
+
+// Trocar turma
+function trocarTurma(turmaId) {
+    turmaAtual = turmaId;
+    
+    document.querySelectorAll(".turma-btn").forEach(btn => {
+        btn.classList.toggle("ativo", btn.dataset.turma === turmaId);
+    });
+    
+    document.getElementById("turmaTitulo").innerHTML = `<h1>📚 ${turmasConfig[turmaId].nome}</h1>`;
+    
+    const selectDisciplina = document.getElementById("disciplinaNotas");
+    selectDisciplina.innerHTML = "";
+    turmasConfig[turmaId].disciplinas.forEach(disciplina => {
+        const option = document.createElement("option");
+        option.value = disciplina;
+        option.textContent = disciplina;
+        selectDisciplina.appendChild(option);
+    });
+    
+    renderizarNotas();
+    renderizarPresenca();
+    renderizarVistos();
+    renderizarRelatorios();
+}
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", () => {
+    carregarDadosSalvos();
+    
+    document.querySelectorAll(".turma-btn").forEach(btn => {
+        btn.addEventListener("click", () => trocarTurma(btn.dataset.turma));
+    });
+    
+    document.querySelectorAll(".aba-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".aba-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".aba-conteudo").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`).classList.add("active");
+            if (btn.dataset.aba === "relatorios") renderizarRelatorios();
+        });
+    });
+    
+    document.getElementById("disciplinaNotas").addEventListener("change", renderizarNotas);
+    document.getElementById("salvarNotas").addEventListener("click", salvarNotas);
+    document.getElementById("exportarNotas").addEventListener("click", () => {
+        const disciplina = document.getElementById("disciplinaNotas").value;
+        const dados = turmasConfig[turmaAtual].alunos.map(aluno => {
+            const notas = dadosNotas[turmaAtual][disciplina]?.[aluno] || {};
+            return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" };
+        });
+        const planilha = XLSX.utils.json_to_sheet(dados);
+        const livro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(livro, planilha, "Notas");
+        XLSX.writeFile(livro, `Notas_${turmasConfig[turmaAtual].nome}.xlsx`);
+    });
+    
+    document.getElementById("adicionarAula").addEventListener("click", adicionarAula);
+    document.getElementById("salvarPresenca").addEventListener("click", () => {
+        salvarDados();
+        alert("✅ Presenças salvas!");
+    });
+    document.getElementById("exportarPresenca").addEventListener("click", renderizarPresenca);
+    
+    document.getElementById("adicionarVisto").addEventListener("click", () => {
+        if (turmasConfig[turmaAtual].alunos.length === 0) return;
+        abrirModalVisto(turmasConfig[turmaAtual].alunos[0]);
+    });
+    document.getElementById("salvarVistos").addEventListener("click", () => {
+        salvarDados();
+        alert("✅ Vistos salvos!");
+    });
+    document.getElementById("exportarVistos").addEventListener("click", renderizarVistos);
+    
+    document.getElementById("exportarRelatorioGeral").addEventListener("click", exportarRelatorioCompleto);
+    
+    document.querySelector(".modal-fechar").addEventListener("click", () => {
+        document.getElementById("modalVisto").style.display = "none";
+    });
+    document.getElementById("modalSalvarVisto").addEventListener("click", salvarVisto);
+    
+    window.onclick = (event) => {
+        if (event.target === document.getElementById("modalVisto")) {
+            document.getElementById("modalVisto").style.display = "none";
+        }
+    };
+    
+    document.getElementById("mesPresenca").addEventListener("change", renderizarPresenca);
+    document.getElementById("anoPresenca").addEventListener("change", renderizarPresenca);
+    document.getElementById("dataVisto").valueAsDate = new Date();
+    
+    trocarTurma("1adm");
+});
