@@ -72,36 +72,33 @@
                     <div class="card-header">
                         <h3>Lista de Presença</h3>
                         <div class="filtros-presenca">
-                            <div class="campo">
-                                <label>Mês:</label>
-                                <select id="mesPresenca">
-                                    <option value="1">Janeiro</option>
-                                    <option value="2">Fevereiro</option>
-                                    <option value="3">Março</option>
-                                    <option value="4">Abril</option>
-                                    <option value="5">Maio</option>
-                                    <option value="6">Junho</option>
-                                    <option value="7">Julho</option>
-                                    <option value="8">Agosto</option>
-                                    <option value="9">Setembro</option>
-                                    <option value="10">Outubro</option>
-                                    <option value="11">Novembro</option>
-                                    <option value="12">Dezembro</option>
-                                </select>
-                            </div>
-                            <div class="campo">
-                                <label>Ano:</label>
-                                <input type="number" id="anoPresenca" value="2026" step="1">
-                            </div>
-                            <button id="adicionarAula" class="btn btn-pequeno">➕ Nova Aula</button>
-                        </div>
-                    </div>
-                    <div id="aulasContainer" class="aulas-container"></div>
-                    <div class="acoes-card">
-                        <button id="salvarPresenca" class="btn btn-salvar">💾 Salvar Presenças</button>
-                        <button id="exportarPresenca" class="btn btn-exportar">📊 Exportar Frequência</button>
-                    </div>
-                </div>
+    <div class="campo">
+        <label>Data da Aula:</label>
+        <input type="date" id="dataAula" value="">
+    </div>
+    <div class="campo">
+        <label>Mês para filtro:</label>
+        <select id="mesPresenca">
+            <option value="1">Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+        </select>
+    </div>
+    <div class="campo">
+        <label>Ano:</label>
+        <input type="number" id="anoPresenca" value="2026" step="1">
+    </div>
+    <button id="adicionarAula" class="btn btn-pequeno">➕ Nova Aula</button>
+</div>
             </div>
 
             <div id="abaVistos" class="aba-conteudo">

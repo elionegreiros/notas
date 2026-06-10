@@ -206,7 +206,7 @@ function salvarNotas() {
     alert("✅ Notas salvas com sucesso!");
 }
 
-// Renderizar presença
+// Renderizar presença (atualizada)
 function renderizarPresenca() {
     const mes = document.getElementById("mesPresenca").value;
     const ano = document.getElementById("anoPresenca").value;
@@ -275,14 +275,80 @@ function removerAula(key, index) {
     }
 }
 
+// Ordenar aulas por data (mais antiga primeiro)
+    aulas.sort((a, b) => new Date(a.data) - new Date(b.data));
+    
+    aulas.forEach((aula, idx) => {
+        const aulaCard = document.createElement("div");
+        aulaCard.className = "aula-card";
+        
+        // Formatar data para exibição
+        const dataObj = new Date(aula.data);
+        const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+        
+        aulaCard.innerHTML = `
+            <div class="aula-header">
+                <span class="aula-data">📅 ${dataFormatada}</span>
+                <button class="aula-remover" data-index="${idx}">🗑️ Remover</button>
+            </div>
+            <table class="tabela-presenca">
+                <thead>
+                    <tr><th>Aluno</th><th>Presente?</th></tr>
+                </thead>
+                <tbody>
+                    ${turma.alunos.map(aluno => `
+                        <tr>
+                            <td>${aluno}</td>
+                            <td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${aula.presencas && aula.presencas[aluno] ? 'checked' : ''}></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        container.appendChild(aulaCard);
+        
+        aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
+        
+        aulaCard.querySelectorAll(".presenca-check").forEach(checkbox => {
+            checkbox.onchange = (e) => {
+                const aluno = e.target.dataset.aluno;
+                if (!dadosPresenca[turmaAtual][key][idx].presencas) {
+                    dadosPresenca[turmaAtual][key][idx].presencas = {};
+                }
+                dadosPresenca[turmaAtual][key][idx].presencas[aluno] = e.target.checked;
+                salvarDados();
+            };
+        });
+    });
+}
+
+// Adicionar nova aula com data manual (corrigida)
 function adicionarAula() {
+    const dataAula = document.getElementById("dataAula").value;
+    
+    // Validar se a data foi selecionada
+    if (!dataAula) {
+        alert("⚠️ Por favor, selecione a data da aula antes de adicionar!");
+        return;
+    }
+    
     const mes = document.getElementById("mesPresenca").value;
     const ano = document.getElementById("anoPresenca").value;
     const key = `${ano}-${mes.padStart(2,'0')}`;
     
-    const hoje = new Date().toISOString().split('T')[0];
+    // Verificar se a data pertence ao mês/ano selecionado
+    const dataObj = new Date(dataAula);
+    const dataMes = (dataObj.getMonth() + 1).toString();
+    const dataAno = dataObj.getFullYear().toString();
+    
+    if (dataMes !== mes || dataAno !== ano) {
+        if (!confirm(`⚠️ A data selecionada (${dataObj.toLocaleDateString('pt-BR')}) está fora do mês/ano filtrado (${mes}/${ano}).\n\nDeseja adicionar mesmo assim?`)) {
+            return;
+        }
+    }
+    
     const novaAula = {
-        data: hoje,
+        data: dataAula,  // Agora usa a data manual selecionada
         presencas: {}
     };
     
@@ -290,50 +356,22 @@ function adicionarAula() {
         dadosPresenca[turmaAtual][key] = [];
     }
     
+    // Verificar se já existe aula nesta data
+    const aulaExistente = dadosPresenca[turmaAtual][key].find(aula => aula.data === dataAula);
+    if (aulaExistente) {
+        alert(`⚠️ Já existe uma aula registrada para o dia ${dataObj.toLocaleDateString('pt-BR')}!`);
+        return;
+    }
+    
     dadosPresenca[turmaAtual][key].push(novaAula);
     salvarDados();
     renderizarPresenca();
+    
+    // Limpar o campo de data para a próxima aula
+    document.getElementById("dataAula").value = "";
+    
+    alert(`✅ Aula adicionada com sucesso para o dia ${dataObj.toLocaleDateString('pt-BR')}!`);
 }
-
-// Exportar presença/frequência
-function exportarPresenca() {
-    const turma = turmasConfig[turmaAtual];
-    if (!turma || !turma.alunos) return;
-    
-    const dadosFrequencia = [];
-    
-    // Coletar todos os alunos e calcular percentual de frequência
-    turma.alunos.forEach(aluno => {
-        let totalAulas = 0;
-        let totalPresencas = 0;
-        
-        for (let key in dadosPresenca[turmaAtual]) {
-            dadosPresenca[turmaAtual][key].forEach(aula => {
-                totalAulas++;
-                if (aula.presencas && aula.presencas[aluno]) {
-                    totalPresencas++;
-                }
-            });
-        }
-        
-        const percentual = totalAulas > 0 ? ((totalPresencas / totalAulas) * 100).toFixed(1) : 0;
-        
-        dadosFrequencia.push({
-            "Aluno": aluno,
-            "Total de Aulas": totalAulas,
-            "Presenças": totalPresencas,
-            "Faltas": totalAulas - totalPresencas,
-            "Frequência (%)": percentual
-        });
-    });
-    
-    const planilha = XLSX.utils.json_to_sheet(dadosFrequencia);
-    const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Frequencia_${turma.nome}`);
-    XLSX.writeFile(livro, `Frequencia_${turma.nome}_${new Date().toLocaleDateString()}.xlsx`);
-    alert("✅ Frequência exportada com sucesso!");
-}
-
 // Renderizar vistos
 let alunoSelecionadoVisto = null;
 
@@ -648,7 +686,20 @@ async function trocarTurma(turmaId) {
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", async () => {
-    // Mostrar loading
+// Dentro do DOMContentLoaded, após carregar os dados, adicione:
+
+// Configurar data padrão para nova aula (amanhã ou data atual)
+const dataAulaInput = document.getElementById("dataAula");
+if (dataAulaInput) {
+    // Define a data de hoje como padrão
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    dataAulaInput.value = `${ano}-${mes}-${dia}`;
+}    
+
+// Mostrar loading
     console.log("Carregando sistema...");
     
     // Carregar todos os alunos dos JSONs
