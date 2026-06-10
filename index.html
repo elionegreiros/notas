@@ -5,225 +5,341 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="AcadManager">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3EAM%3C/text%3E%3C/svg%3E">
-    <title>Academic Manager Pro | Sistema de Gestão Escolar</title>
+    <title>Academic Manager | Dashboard</title>
     <link rel="stylesheet" href="estilo.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
-    <div id="telaLogin" class="tela-login">
-        <div class="login-wrapper">
-            <div class="login-card">
-                <div class="login-brand">
-                    <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
-                    <h1>Academic Manager Pro</h1>
-                    <p>Sistema Integrado de Gestão Escolar</p>
-                </div>
-                <div class="login-form">
-                    <div class="input-group">
-                        <i class="fas fa-id-card"></i>
-                        <input type="text" id="loginCpf" placeholder="CPF" maxlength="14" autocomplete="off">
-                    </div>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="loginSenha" placeholder="Senha">
-                        <i class="fas fa-eye-slash toggle-password" onclick="togglePassword()"></i>
-                    </div>
-                    <button id="btnLogin" class="btn-login"><span>Acessar Sistema</span><i class="fas fa-arrow-right"></i></button>
-                    <div id="loginError" class="login-error"></div>
-                </div>
-                <div class="login-footer"><p>© 2026 Academic Manager Pro</p></div>
+    <div class="app-moderno">
+        <!-- TOP BAR -->
+        <header class="top-bar-moderno">
+            <div class="logo-area">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Academic<span class="highlight">Manager</span></span>
             </div>
-        </div>
-    </div>
+            <div class="user-area">
+                <div class="escola-badge" id="escolaBadge">
+                    <i class="fas fa-sun"></i> CETI Gentil
+                </div>
+                <div class="user-info">
+                    <span id="usuarioLogado">Professor</span>
+                    <div class="avatar"><i class="fas fa-user"></i></div>
+                </div>
+                <button id="btnLogout" class="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </header>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toastContainer" class="toast-container"></div>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <div id="conteudoPrincipal" class="app" style="display: none;">
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo"><i class="fas fa-graduation-cap"></i><span>Academic<span class="highlight">Pro</span></span></div>
-                <div class="sidebar-actions">
-                    <button id="toggleDarkMode" class="dark-mode-btn" title="Modo Escuro"><i class="fas fa-moon"></i></button>
-                    <button id="toggleSidebar" class="toggle-sidebar"><i class="fas fa-chevron-left"></i></button>
+        <!-- SIDEBAR MODERNO -->
+        <aside class="sidebar-moderno">
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="notas">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Notas</span>
+                </div>
+                <div class="menu-item" data-page="presenca">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Presença</span>
+                </div>
+                <div class="menu-item" data-page="vistos">
+                    <i class="fas fa-star"></i>
+                    <span>Vistos</span>
+                </div>
+                <div class="menu-item" data-page="horarios">
+                    <i class="fas fa-clock"></i>
+                    <span>Horários</span>
+                </div>
+                <div class="menu-item" data-page="ranking">
+                    <i class="fas fa-trophy"></i>
+                    <span>Ranking</span>
+                </div>
+                <div class="menu-item" data-page="relatorios">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Relatórios</span>
+                </div>
+                <div class="menu-item" data-page="eventos">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Eventos</span>
+                </div>
+                <div class="menu-item" data-page="admin">
+                    <i class="fas fa-cog"></i>
+                    <span>Admin</span>
                 </div>
             </div>
-            <div class="user-profile">
-                <div class="user-avatar"><i class="fas fa-user-tie"></i></div>
-                <div class="user-info-sidebar"><h4 id="sidebarUserName">Professor</h4><p id="sidebarUserType">Carregando...</p></div>
-                <button id="btnLogoutSidebar" class="logout-icon" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
             
-            <div class="search-global">
-                <i class="fas fa-search"></i>
-                <input type="text" id="globalSearch" placeholder="Pesquisar aluno...">
-            </div>
-            
-            <!-- SELETOR DE ESCOLA -->
-            <div class="escola-selector">
-                <div class="nav-label">ESCOLA</div>
-                <!-- Botões serão carregados dinamicamente -->
-            </div>
-            
-            <nav class="sidebar-nav">
-                <div class="nav-turmas" id="turmasContainer">
-                    <div class="nav-label">TURMAS</div>
-                </div>
-                <div class="nav-modulos">
-                    <div class="nav-label">MÓDULOS</div>
-                    <button class="nav-item-aba" data-aba="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></button>
-                    <button class="nav-item-aba" data-aba="notas"><i class="fas fa-chart-line"></i><span>Notas</span></button>
-                    <button class="nav-item-aba" data-aba="presenca"><i class="fas fa-calendar-check"></i><span>Presença</span></button>
-                    <button class="nav-item-aba" data-aba="vistos"><i class="fas fa-star"></i><span>Vistos</span></button>
-                    <button class="nav-item-aba" data-aba="horarios"><i class="fas fa-clock"></i><span>Horários</span></button>
-                    <button class="nav-item-aba" data-aba="ranking"><i class="fas fa-trophy"></i><span>Ranking</span></button>
-                    <button class="nav-item-aba" data-aba="relatorios"><i class="fas fa-file-alt"></i><span>Relatórios</span></button>
-                    <button class="nav-item-aba" data-aba="calendario"><i class="fas fa-calendar-alt"></i><span>Eventos</span></button>
-                    <button class="nav-item-aba" data-aba="admin"><i class="fas fa-cog"></i><span>Admin</span></button>
-                </div>
-                <button id="gerarQRBtn" class="btn-secondary" style="margin-top: 20px; width: 100%;">
-                    <i class="fas fa-qrcode"></i> QR Code da Turma
+            <div class="sidebar-footer">
+                <button id="toggleDarkMode" class="dark-mode-btn">
+                    <i class="fas fa-moon"></i>
+                    <span>Modo Escuro</span>
                 </button>
-            </nav>
+            </div>
         </aside>
 
         <!-- MAIN CONTENT -->
-        <main class="main-content">
-            <header class="top-bar">
-                <div class="page-title">
-                    <h2 id="pageTitle">1º Administração</h2>
-                    <p id="pageSubtitle">Avaliação Trimestral</p>
+        <main class="main-moderno">
+            <div class="page-header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="turma-selector">
+                    <select id="escolaSelect" class="select-moderno">
+                        <option value="gentil">🏫 CETI Gentil (Diurno)</option>
+                        <option value="eneas">🌙 Eneas Nogueira (Noturno)</option>
+                    </select>
+                    <select id="turmaSelect" class="select-moderno"></select>
                 </div>
-                <div class="top-bar-actions">
-                    <div class="escola-badge" id="escolaBadge">
-                        <span class="badge"><i class="fas fa-sun"></i> CETI Gentil (Diurno)</span>
-                    </div>
-                    <div class="disciplina-selector-top">
-                        <label>Disciplina:</label>
-                        <select id="disciplinaNotas" class="select-profissional"></select>
-                    </div>
-                    <div class="user-info-top">
-                        <span id="usuarioLogado" class="user-name"></span>
-                        <div class="user-avatar-small"><i class="fas fa-user"></i></div>
-                    </div>
-                </div>
-            </header>
-
-            <div id="notificacoesContainer" class="notificacoes-container"></div>
-
-            <!-- DASHBOARD CARDS -->
-            <div class="dashboard-cards">
-                <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-users"></i></div><div class="stat-info"><h3 id="statAlunos">0</h3><p>Alunos Matriculados</p></div></div>
-                <div class="stat-card"><div class="stat-icon green"><i class="fas fa-chart-simple"></i></div><div class="stat-info"><h3 id="statAprovados">0</h3><p>Aprovados</p></div></div>
-                <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-info"><h3 id="statRecuperacao">0</h3><p>Recuperação</p></div></div>
-                <div class="stat-card"><div class="stat-icon red"><i class="fas fa-times-circle"></i></div><div class="stat-info"><h3 id="statReprovados">0</h3><p>Reprovados</p></div></div>
-                <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-birthday-cake"></i></div><div class="stat-info"><h3 id="statAniversariantes">0</h3><p>Aniversariantes</p></div></div>
             </div>
 
-            <!-- ABAS -->
-            <div id="abaDashboard" class="aba-conteudo active">
-                <div class="welcome-card"><div class="welcome-text"><h2 id="saudacaoTexto">Bom dia, Professor!</h2><p id="dataAtual"></p></div><div class="welcome-icon"><i class="fas fa-chalkboard-teacher"></i></div></div>
-                <div class="dashboard-section"><div class="section-header"><h3><i class="fas fa-calendar-day"></i> Aulas de Hoje</h3><span id="hojeData" class="data-badge"></span></div><div id="aulasHojeContainer" class="aulas-list"><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div>
-                <div class="dashboard-section"><div class="section-header"><h3><i class="fas fa-calendar-plus"></i> Aulas de Amanhã</h3><span id="amanhaData" class="data-badge"></span></div><div id="aulasAmanhaContainer" class="aulas-list"><div class="skeleton-card"></div><div class="skeleton-card"></div></div></div>
-                <div class="dashboard-section"><div class="section-header"><h3><i class="fas fa-clock"></i> Próximas Aulas</h3><span>Em ordem cronológica</span></div><div id="proximasAulasContainer" class="aulas-list"></div></div>
-                <div class="dashboard-stats"><div class="stat-mini-card"><i class="fas fa-chalkboard"></i><div><h4 id="totalAulasHoje">0</h4><p>Aulas hoje</p></div></div><div class="stat-mini-card"><i class="fas fa-star"></i><div><h4 id="totalVistosMes">0</h4><p>Vistos no mês</p></div></div><div class="stat-mini-card"><i class="fas fa-users"></i><div><h4 id="totalAlunos">0</h4><p>Alunos ativos</p></div></div></div>
-            </div>
-
-            <div id="abaNotas" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-chart-line"></i> Lançamento de Notas</h3><div class="card-actions"><button id="salvarNotas" class="btn-primary"><i class="fas fa-save"></i> Salvar Notas</button><button id="exportarNotas" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button></div></div><div class="tabela-container"><table class="tabela-profissional" id="tabelaNotas"><thead><tr><th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th>Obs</th></tr></thead><tbody id="tbodyNotas"></tbody></table></div></div></div>
-
-            <div id="abaPresenca" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-calendar-check"></i> Registro de Presença</h3><div class="card-actions"><div class="filtro-mes"><select id="mesPresenca"><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select><input type="number" id="anoPresenca" value="2026" step="1"></div><button id="adicionarAula" class="btn-primary"><i class="fas fa-plus"></i> Nova Aula</button></div></div><div id="aulasContainer" class="aulas-container"></div><div class="card-footer"><button id="salvarPresenca" class="btn-primary"><i class="fas fa-save"></i> Salvar Presenças</button><button id="exportarPresenca" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button></div></div></div>
-
-            <div id="abaVistos" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-star"></i> Vistos de Participação</h3><button id="adicionarVisto" class="btn-primary"><i class="fas fa-plus"></i> Dar Visto</button></div><div class="tabela-container"><table class="tabela-profissional"><thead><tr><th>Aluno</th><th>Total</th><th>Última Participação</th><th>Ações</th></tr></thead><tbody id="tbodyVistos"></tbody></table></div><div class="card-footer"><button id="salvarVistos" class="btn-primary"><i class="fas fa-save"></i> Salvar Vistos</button><button id="exportarVistos" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button></div></div></div>
-
-            <div id="abaHorarios" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-clock"></i> Horário de Aulas</h3><div class="card-actions"><button id="configurarAlertas" class="btn-secondary"><i class="fas fa-bell"></i> Configurar Alertas</button><button id="testarAlerta" class="btn-secondary"><i class="fas fa-volume-up"></i> Testar Alerta</button></div></div><div id="alertasHoje" class="alertas-hoje"></div><div class="dia-selector"><button class="dia-btn" data-dia="segunda">Segunda</button><button class="dia-btn" data-dia="terca">Terça</button><button class="dia-btn" data-dia="quarta">Quarta</button><button class="dia-btn" data-dia="quinta">Quinta</button><button class="dia-btn" data-dia="sexta">Sexta</button></div><div id="gradeHorarios" class="grade-horarios"></div><div class="proximas-aulas"><h4><i class="fas fa-calendar-week"></i> Próximas Aulas</h4><div id="proximasAulas" class="proximas-aulas-lista"></div></div></div></div>
-
-            <div id="abaRanking" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-trophy"></i> Ranking de Alunos</h3><div class="card-actions"><select id="rankingDisciplina" class="select-profissional"></select></div></div><div id="rankingContainer" class="ranking-container"></div></div></div>
-
-            <div id="abaRelatorios" class="aba-conteudo">
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-chart-pie"></i> Relatórios Gerenciais</h3>
-                        <div class="card-actions">
-                            <button id="exportarRelatorioGeral" class="btn-primary"><i class="fas fa-download"></i> Exportar Completo</button>
-                            <button id="exportarPDF" class="btn-primary" style="background: #dc2626;"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+            <!-- CONTEÚDO DAS PÁGINAS -->
+            <div id="pageDashboard" class="page-content active">
+                <!-- Cards de estatísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statAlunos">0</h3>
+                            <p>Alunos</p>
                         </div>
                     </div>
-                    <div class="relatorios-grid">
-                        <div class="relatorio-card"><div class="relatorio-header"><i class="fas fa-chart-simple"></i><h4>Resumo de Notas</h4></div><div id="resumoNotas"></div></div>
-                        <div class="relatorio-card"><div class="relatorio-header"><i class="fas fa-calendar-week"></i><h4>Frequência Geral</h4></div><div id="resumoFrequencia"></div></div>
-                        <div class="relatorio-card"><div class="relatorio-header"><i class="fas fa-trophy"></i><h4>Alunos Destaque</h4></div><div id="alunosDestaque"></div></div>
-                        <div class="relatorio-card"><div class="relatorio-header"><i class="fas fa-book-open"></i><h4>Alunos em Recuperação</h4></div><div id="alunosRecuperacao"></div></div>
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statAprovados">0</h3>
+                            <p>Aprovados</p>
+                        </div>
                     </div>
-                    <div style="margin-top:30px"><h4><i class="fas fa-chart-line"></i> Evolução de Notas</h4><select id="graficoAlunoSelect" class="select-profissional" style="margin:15px 0;width:300px"></select><canvas id="graficoEvolucao" style="max-height:300px"></canvas></div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statRecuperacao">0</h3>
+                            <p>Recuperação</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statReprovados">0</h3>
+                            <p>Reprovados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aulas de Hoje -->
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-day"></i> Aulas de Hoje</h3>
+                        <span id="hojeData" class="data-badge"></span>
+                    </div>
+                    <div id="aulasHojeContainer" class="aulas-list-moderno"></div>
+                </div>
+
+                <!-- Próximas Aulas -->
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock"></i> Próximas Aulas</h3>
+                    </div>
+                    <div id="proximasAulasContainer" class="aulas-list-moderno"></div>
                 </div>
             </div>
 
-            <div id="abaCalendario" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-calendar-alt"></i> Calendário de Eventos</h3><button id="adicionarEvento" class="btn-primary"><i class="fas fa-plus"></i> Adicionar Evento</button></div><div id="eventosContainer" class="eventos-container"></div></div></div>
+            <div id="pageNotas" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Lançamento de Notas</h3>
+                        <div class="card-actions">
+                            <select id="disciplinaNotas" class="select-moderno-sm"></select>
+                            <button id="salvarNotas" class="btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                            <button id="exportarNotas" class="btn-secondary"><i class="fas fa-download"></i> Exportar</button>
+                        </div>
+                    </div>
+                    <div class="tabela-container">
+                        <table class="tabela-moderna">
+                            <thead id="tabelaNotasHeader">
+                                <tr><th>Aluno</th><th>NM1</th><th>NM2</th><th>Média</th><th>Status</th><th></th></tr>
+                            </thead>
+                            <tbody id="tbodyNotas"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <div id="abaAdmin" class="aba-conteudo"><div class="content-card"><div class="card-header"><h3><i class="fas fa-users-cog"></i> Administração</h3><div class="card-actions"><select id="adminTurmaSelect" class="select-profissional"></select><button id="adicionarAlunoBtn" class="btn-primary"><i class="fas fa-user-plus"></i> Adicionar</button><button id="backupDadosBtn" class="btn-secondary"><i class="fas fa-download"></i> Backup</button><button id="restoreDadosBtn" class="btn-secondary"><i class="fas fa-upload"></i> Restore</button><button id="backupIndexedDBBtn" class="btn-secondary" style="background: #8b5cf6;"><i class="fas fa-database"></i> Backup DB</button><button id="restoreIndexedDBBtn" class="btn-secondary" style="background: #8b5cf6;"><i class="fas fa-undo"></i> Restaurar DB</button></div></div><div class="tabela-container"><table class="tabela-profissional"><thead><tr><th>#</th><th>Nome</th><th>Status</th><th>Observações</th><th>Ações</th></tr></thead><tbody id="tbodyAdmin"></tbody></table></div><div class="alert-warning"><i class="fas fa-exclamation-triangle"></i><span>Atenção: Ao remover um aluno, todos os dados serão excluídos.</span></div></div></div>
+            <div id="pagePresenca" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-check"></i> Registro de Presença</h3>
+                        <div class="card-actions">
+                            <select id="mesPresenca" class="select-moderno-sm">
+                                <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                                <option value="3">Março</option><option value="4">Abril</option>
+                                <option value="5">Maio</option><option value="6">Junho</option>
+                                <option value="7">Julho</option><option value="8">Agosto</option>
+                                <option value="9">Setembro</option><option value="10">Outubro</option>
+                                <option value="11">Novembro</option><option value="12">Dezembro</option>
+                            </select>
+                            <input type="number" id="anoPresenca" value="2026" class="input-small">
+                            <button id="adicionarAula" class="btn-primary"><i class="fas fa-plus"></i> Nova Aula</button>
+                            <button id="salvarPresenca" class="btn-secondary"><i class="fas fa-save"></i> Salvar</button>
+                        </div>
+                    </div>
+                    <div id="aulasContainer" class="aulas-container-moderno"></div>
+                </div>
+            </div>
+
+            <div id="pageVistos" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-star"></i> Vistos de Participação</h3>
+                        <button id="adicionarVisto" class="btn-primary"><i class="fas fa-plus"></i> Dar Visto</button>
+                    </div>
+                    <div class="tabela-container">
+                        <table class="tabela-moderna">
+                            <thead><tr><th>Aluno</th><th>Total</th><th>Última</th><th></th></tr></thead>
+                            <tbody id="tbodyVistos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pageHorarios" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock"></i> Horário de Aulas</h3>
+                        <div class="dia-selector-moderno">
+                            <button class="dia-btn" data-dia="segunda">Seg</button>
+                            <button class="dia-btn" data-dia="terca">Ter</button>
+                            <button class="dia-btn" data-dia="quarta">Qua</button>
+                            <button class="dia-btn" data-dia="quinta">Qui</button>
+                            <button class="dia-btn" data-dia="sexta">Sex</button>
+                        </div>
+                    </div>
+                    <div id="gradeHorarios" class="grade-horarios-moderno"></div>
+                </div>
+            </div>
+
+            <div id="pageRanking" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-trophy"></i> Ranking de Alunos</h3>
+                        <select id="rankingDisciplina" class="select-moderno-sm"></select>
+                    </div>
+                    <div id="rankingContainer" class="ranking-container-moderno"></div>
+                </div>
+            </div>
+
+            <div id="pageRelatorios" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Relatórios</h3>
+                        <div class="card-actions">
+                            <button id="exportarRelatorioGeral" class="btn-primary"><i class="fas fa-download"></i> Excel</button>
+                            <button id="exportarPDF" class="btn-primary" style="background:#dc2626"><i class="fas fa-file-pdf"></i> PDF</button>
+                        </div>
+                    </div>
+                    <div class="relatorios-grid-moderno">
+                        <div class="relatorio-card">
+                            <h4>📈 Resumo de Notas</h4>
+                            <div id="resumoNotas"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>📊 Frequência</h4>
+                            <div id="resumoFrequencia"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>⭐ Alunos Destaque</h4>
+                            <div id="alunosDestaque"></div>
+                        </div>
+                        <div class="relatorio-card">
+                            <h4>⚠️ Em Recuperação</h4>
+                            <div id="alunosRecuperacao"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top:30px">
+                        <h4>📈 Evolução do Aluno</h4>
+                        <select id="graficoAlunoSelect" class="select-moderno-sm" style="width:300px"></select>
+                        <canvas id="graficoEvolucao" style="max-height:300px; margin-top:20px"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pageEventos" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Eventos</h3>
+                        <button id="adicionarEvento" class="btn-primary"><i class="fas fa-plus"></i> Adicionar</button>
+                    </div>
+                    <div id="eventosContainer" class="eventos-container-moderno"></div>
+                </div>
+            </div>
+
+            <div id="pageAdmin" class="page-content">
+                <div class="card-moderno">
+                    <div class="card-header">
+                        <h3><i class="fas fa-users-cog"></i> Administração</h3>
+                        <div class="card-actions">
+                            <button id="adicionarAlunoBtn" class="btn-primary"><i class="fas fa-user-plus"></i> Aluno</button>
+                            <button id="backupDadosBtn" class="btn-secondary"><i class="fas fa-download"></i> Backup</button>
+                            <button id="restoreDadosBtn" class="btn-secondary"><i class="fas fa-upload"></i> Restore</button>
+                        </div>
+                    </div>
+                    <div class="tabela-container">
+                        <table class="tabela-moderna">
+                            <thead><tr><th>#</th><th>Nome</th><th>Status</th><th>Ações</th></tr></thead>
+                            <tbody id="tbodyAdmin"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <!-- MODAIS -->
-    <div id="modalAluno" class="modal-profissional"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-user-plus"></i> Adicionar Aluno</h3><button class="modal-fechar-aluno">&times;</button></div><div class="modal-body"><div class="campo"><label>Nome completo:</label><input type="text" id="modalAlunoNome" placeholder="Nome do aluno"></div><div class="campo"><label>Turma:</label><select id="modalAlunoTurma"></select></div><div class="campo"><label>Data de Nascimento:</label><input type="date" id="modalAlunoNascimento"></div></div><div class="modal-footer"><button id="modalCancelarAluno" class="btn-secondary">Cancelar</button><button id="modalSalvarAluno" class="btn-primary">Salvar</button></div></div></div>
-
-    <div id="modalVisto" class="modal-profissional"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-star"></i> Conceder Visto</h3><button class="modal-fechar">&times;</button></div><div class="modal-body"><div class="campo"><label>Descrição:</label><textarea id="modalDescVisto" rows="3" placeholder="Descreva a participação..."></textarea></div></div><div class="modal-footer"><button id="modalSalvarVisto" class="btn-primary">Conceder</button></div></div></div>
-
-    <div id="modalEvento" class="modal-profissional"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-calendar-plus"></i> Adicionar Evento</h3><button class="modal-fechar-evento">&times;</button></div><div class="modal-body"><div class="campo"><label>Título:</label><input type="text" id="eventoTitulo" placeholder="Ex: Prova Bimestral"></div><div class="campo"><label>Data:</label><input type="date" id="eventoData"></div><div class="campo"><label>Descrição:</label><textarea id="eventoDescricao" rows="2"></textarea></div></div><div class="modal-footer"><button id="modalSalvarEvento" class="btn-primary">Adicionar</button></div></div></div>
-
-    <div id="modalObs" class="modal-profissional"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-edit"></i> Observações</h3><button class="modal-fechar-obs">&times;</button></div><div class="modal-body"><textarea id="modalObsTexto" rows="4" placeholder="Registre observações..."></textarea></div><div class="modal-footer"><button id="modalSalvarObs" class="btn-primary">Salvar</button></div></div></div>
-
-    <!-- MODAL QR CODE -->
-    <div id="modalQR" class="modal-profissional">
-        <div class="modal-content" style="max-width: 350px;">
+    <div id="modalAluno" class="modal-moderno">
+        <div class="modal-content-moderno">
             <div class="modal-header">
-                <h3><i class="fas fa-qrcode"></i> QR Code da Turma</h3>
-                <button class="modal-fechar-qr">&times;</button>
+                <h3>Adicionar Aluno</h3>
+                <button class="modal-fechar">&times;</button>
             </div>
-            <div class="modal-body" style="text-align: center;">
-                <div id="qrcodeContainer" style="display: flex; justify-content: center; margin: 20px 0;"></div>
-                <p id="qrLinkText" style="font-size: 12px; word-break: break-all;"></p>
-                <button id="copiarLinkBtn" class="btn-secondary"><i class="fas fa-copy"></i> Copiar Link</button>
+            <div class="modal-body">
+                <input type="text" id="modalAlunoNome" placeholder="Nome completo">
+                <button id="modalSalvarAluno" class="btn-primary">Salvar</button>
             </div>
         </div>
     </div>
 
+    <div id="modalVisto" class="modal-moderno">
+        <div class="modal-content-moderno">
+            <div class="modal-header">
+                <h3>Conceder Visto</h3>
+                <button class="modal-fechar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="modalDescVisto" rows="3" placeholder="Descreva a participação..."></textarea>
+                <button id="modalSalvarVisto" class="btn-primary">Conceder</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEvento" class="modal-moderno">
+        <div class="modal-content-moderno">
+            <div class="modal-header">
+                <h3>Adicionar Evento</h3>
+                <button class="modal-fechar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="eventoTitulo" placeholder="Título">
+                <input type="date" id="eventoData">
+                <textarea id="eventoDescricao" rows="2" placeholder="Descrição"></textarea>
+                <button id="modalSalvarEvento" class="btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
     <script src="script.js"></script>
-    <script>
-        function togglePassword(){
-            const pwd = document.getElementById('loginSenha');
-            const icon = document.querySelector('.toggle-password');
-            if(pwd.type === 'password'){
-                pwd.type = 'text';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            } else {
-                pwd.type = 'password';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            }
-        }
-        
-        // Registrar Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('ServiceWorker registrado:', reg.scope))
-                    .catch(err => console.log('Falha no ServiceWorker:', err));
-            });
-        }
-    </script>
 </body>
 </html>
