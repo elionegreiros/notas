@@ -453,3 +453,29 @@ input[type="checkbox"] {
     content: "🎓";
     font-size: 1.8rem;
 }
+/* Filtros simplificados - para a seção de presença */
+.filtros-presenca {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filtros-presenca .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filtros-presenca label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.filtros-presenca input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}

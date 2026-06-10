@@ -1,8 +1,8 @@
-// Configuração das turmas (agora sem dados de alunos embutidos)
+// Configuração das turmas
 const turmasConfig = {
     "1adm": { 
         nome: "1º Administração", 
-        alunos: [],  // Será carregado do JSON
+        alunos: [],
         disciplinas: ["Inteligência Artificial"],
         arquivoAlunos: "alunos_1_adm.json"
     },
@@ -47,7 +47,7 @@ let isLoading = false;
 // Função para carregar alunos de um arquivo JSON
 async function carregarAlunos(turmaId) {
     const turma = turmasConfig[turmaId];
-    if (!turma || turma.arquivoAlunos) {
+    if (turma && turma.arquivoAlunos) {
         try {
             const response = await fetch(`dados/${turma.arquivoAlunos}`);
             if (response.ok) {
@@ -82,7 +82,7 @@ function carregarDadosSalvos() {
         }
     }
     
-    // Inicializar estruturas para turmas que não existem
+    // Inicializar estruturas para turmas
     for (let turmaId in turmasConfig) {
         if (!dadosNotas[turmaId]) dadosNotas[turmaId] = {};
         if (!dadosPresenca[turmaId]) dadosPresenca[turmaId] = {};
@@ -93,7 +93,6 @@ function carregarDadosSalvos() {
         const disciplinas = turma.disciplinas;
         
         if (alunos && alunos.length > 0) {
-            // Inicializar notas
             disciplinas.forEach(disciplina => {
                 if (!dadosNotas[turmaId][disciplina]) {
                     dadosNotas[turmaId][disciplina] = {};
@@ -103,7 +102,6 @@ function carregarDadosSalvos() {
                 }
             });
             
-            // Inicializar vistos
             if (!dadosVistos[turmaId].alunos) {
                 dadosVistos[turmaId].alunos = {};
                 alunos.forEach(aluno => {
@@ -206,149 +204,158 @@ function salvarNotas() {
     alert("✅ Notas salvas com sucesso!");
 }
 
-// Renderizar presença (atualizada)
+// Renderizar presença
 function renderizarPresenca() {
-    const mes = document.getElementById("mesPresenca").value;
-    const ano = document.getElementById("anoPresenca").value;
-    const key = `${ano}-${mes.padStart(2,'0')}`;
-    const aulas = dadosPresenca[turmaAtual][key] || [];
+    const todasAulas = [];
+    
+    for (let key in dadosPresenca[turmaAtual]) {
+        const aulas = dadosPresenca[turmaAtual][key];
+        if (aulas && aulas.length > 0) {
+            aulas.forEach(aula => {
+                todasAulas.push({
+                    ...aula,
+                    key: key
+                });
+            });
+        }
+    }
+    
+    todasAulas.sort((a, b) => {
+        if (a.data < b.data) return -1;
+        if (a.data > b.data) return 1;
+        return 0;
+    });
+    
     const container = document.getElementById("aulasContainer");
     if (!container) return;
     
     container.innerHTML = "";
     
     const turma = turmasConfig[turmaAtual];
-    if (!turma || !turma.alunos) return;
-    
-    if (aulas.length === 0) {
-        container.innerHTML = '<div class="lista-vazia" style="padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">📭 Nenhuma aula registrada neste mês. Clique em "+ Nova Aula" para começar.</div>';
+    if (!turma || !turma.alunos || turma.alunos.length === 0) {
+        container.innerHTML = '<div class="lista-vazia" style="padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">📭 Carregando alunos...</div>';
         return;
     }
     
-    aulas.forEach((aula, idx) => {
-        const aulaCard = document.createElement("div");
-        aulaCard.className = "aula-card";
-        aulaCard.innerHTML = `
-            <div class="aula-header">
-                <span class="aula-data">📅 ${new Date(aula.data).toLocaleDateString('pt-BR')}</span>
-                <button class="aula-remover" data-index="${idx}">🗑️ Remover</button>
-            </div>
-            <table class="tabela-presenca">
-                <thead>
-                    <tr><th>Aluno</th><th>Presente?</th></tr>
-                </thead>
-                <tbody>
-                    ${turma.alunos.map(aluno => `
-                        <tr>
-                            <td>${aluno}</td>
-                            <td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${aula.presencas && aula.presencas[aluno] ? 'checked' : ''}></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-        container.appendChild(aulaCard);
-        
-        aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
-        
-        aulaCard.querySelectorAll(".presenca-check").forEach(checkbox => {
-            checkbox.onchange = (e) => {
-                const aluno = e.target.dataset.aluno;
-                if (!dadosPresenca[turmaAtual][key][idx].presencas) {
-                    dadosPresenca[turmaAtual][key][idx].presencas = {};
-                }
-                dadosPresenca[turmaAtual][key][idx].presencas[aluno] = e.target.checked;
-                salvarDados();
-            };
-        });
-    });
-}
-
-function removerAula(key, index) {
-    if (confirm("Remover esta aula?")) {
-        dadosPresenca[turmaAtual][key].splice(index, 1);
-        if (dadosPresenca[turmaAtual][key].length === 0) {
-            delete dadosPresenca[turmaAtual][key];
-        }
-        salvarDados();
-        renderizarPresenca();
+    if (todasAulas.length === 0) {
+        container.innerHTML = '<div class="lista-vazia" style="padding: 20px; text-align: center; background: #f8f9fa; border-radius: 8px;">📭 Nenhuma aula registrada. Clique em "+ Nova Aula" para começar.</div>';
+        return;
     }
-}
-
-// Ordenar aulas por data (mais antiga primeiro)
-    aulas.sort((a, b) => new Date(a.data) - new Date(b.data));
     
-    aulas.forEach((aula, idx) => {
+    todasAulas.forEach((aula) => {
         const aulaCard = document.createElement("div");
         aulaCard.className = "aula-card";
         
-        // Formatar data para exibição
-        const dataObj = new Date(aula.data);
-        const dataFormatada = dataObj.toLocaleDateString('pt-BR');
+        const [ano, mes, dia] = aula.data.split('-');
+        const dataFormatada = `${dia}/${mes}/${ano}`;
         
-        aulaCard.innerHTML = `
+        let tabelaHTML = `
             <div class="aula-header">
                 <span class="aula-data">📅 ${dataFormatada}</span>
-                <button class="aula-remover" data-index="${idx}">🗑️ Remover</button>
+                <button class="aula-remover" data-key="${aula.key}" data-data="${aula.data}">🗑️ Remover</button>
             </div>
-            <table class="tabela-presenca">
-                <thead>
-                    <tr><th>Aluno</th><th>Presente?</th></tr>
-                </thead>
-                <tbody>
-                    ${turma.alunos.map(aluno => `
+            <div class="tabela-container">
+                <table class="tabela-presenca">
+                    <thead>
                         <tr>
-                            <td>${aluno}</td>
-                            <td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${aula.presencas && aula.presencas[aluno] ? 'checked' : ''}></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+                            <th style="width: 70%;">Aluno</th>
+                            <th style="width: 30%;">Presente?</th>
+                         </tr>
+                    </thead>
+                    <tbody>
         `;
+        
+        turma.alunos.forEach(aluno => {
+            const isChecked = aula.presencas && aula.presencas[aluno] ? 'checked' : '';
+            tabelaHTML += `
+                <tr>
+                    <td>${aluno}</td>
+                    <td style="text-align: center;">
+                        <input type="checkbox" class="presenca-check" data-aluno="${aluno}" data-key="${aula.key}" data-data="${aula.data}" ${isChecked}>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tabelaHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        aulaCard.innerHTML = tabelaHTML;
         container.appendChild(aulaCard);
         
-        aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
+        const removerBtn = aulaCard.querySelector(".aula-remover");
+        removerBtn.onclick = () => {
+            const key = removerBtn.dataset.key;
+            const data = removerBtn.dataset.data;
+            const aulasList = dadosPresenca[turmaAtual][key];
+            if (aulasList) {
+                const idx = aulasList.findIndex(a => a.data === data);
+                if (idx !== -1) {
+                    const [anoR, mesR, diaR] = data.split('-');
+                    const dataFormatadaRemover = `${diaR}/${mesR}/${anoR}`;
+                    if (confirm(`Remover a aula do dia ${dataFormatadaRemover}?`)) {
+                        aulasList.splice(idx, 1);
+                        if (aulasList.length === 0) {
+                            delete dadosPresenca[turmaAtual][key];
+                        }
+                        salvarDados();
+                        renderizarPresenca();
+                    }
+                }
+            }
+        };
         
         aulaCard.querySelectorAll(".presenca-check").forEach(checkbox => {
-            checkbox.onchange = (e) => {
+            checkbox.addEventListener('change', (e) => {
                 const aluno = e.target.dataset.aluno;
-                if (!dadosPresenca[turmaAtual][key][idx].presencas) {
-                    dadosPresenca[turmaAtual][key][idx].presencas = {};
+                const key = e.target.dataset.key;
+                const data = e.target.dataset.data;
+                const aulasList = dadosPresenca[turmaAtual][key];
+                if (aulasList) {
+                    const aulaIndex = aulasList.findIndex(a => a.data === data);
+                    if (aulaIndex !== -1) {
+                        if (!dadosPresenca[turmaAtual][key][aulaIndex].presencas) {
+                            dadosPresenca[turmaAtual][key][aulaIndex].presencas = {};
+                        }
+                        dadosPresenca[turmaAtual][key][aulaIndex].presencas[aluno] = e.target.checked;
+                        salvarDados();
+                    }
                 }
-                dadosPresenca[turmaAtual][key][idx].presencas[aluno] = e.target.checked;
-                salvarDados();
-            };
+            });
         });
     });
 }
 
-// Adicionar nova aula com data manual (corrigida)
+// Adicionar nova aula (CORRIGIDA - sem código duplicado)
 function adicionarAula() {
     const dataAula = document.getElementById("dataAula").value;
     
-    // Validar se a data foi selecionada
     if (!dataAula) {
         alert("⚠️ Por favor, selecione a data da aula antes de adicionar!");
         return;
     }
     
-    const mes = document.getElementById("mesPresenca").value;
-    const ano = document.getElementById("anoPresenca").value;
-    const key = `${ano}-${mes.padStart(2,'0')}`;
+    const [ano, mes, dia] = dataAula.split('-');
+    const anoNum = parseInt(ano);
+    const mesNum = parseInt(mes);
+    const diaNum = parseInt(dia);
     
-    // Verificar se a data pertence ao mês/ano selecionado
-    const dataObj = new Date(dataAula);
-    const dataMes = (dataObj.getMonth() + 1).toString();
-    const dataAno = dataObj.getFullYear().toString();
+    const key = `${anoNum}-${String(mesNum).padStart(2, '0')}`;
+    const dataFormatada = `${String(diaNum).padStart(2, '0')}/${String(mesNum).padStart(2, '0')}/${anoNum}`;
     
-    if (dataMes !== mes || dataAno !== ano) {
-        if (!confirm(`⚠️ A data selecionada (${dataObj.toLocaleDateString('pt-BR')}) está fora do mês/ano filtrado (${mes}/${ano}).\n\nDeseja adicionar mesmo assim?`)) {
-            return;
-        }
+    const aulasExistentes = dadosPresenca[turmaAtual][key] || [];
+    const aulaExistente = aulasExistentes.find(aula => aula.data === dataAula);
+    
+    if (aulaExistente) {
+        alert(`⚠️ Já existe uma aula registrada para o dia ${dataFormatada}!`);
+        return;
     }
     
     const novaAula = {
-        data: dataAula,  // Agora usa a data manual selecionada
+        data: dataAula,
         presencas: {}
     };
     
@@ -356,22 +363,58 @@ function adicionarAula() {
         dadosPresenca[turmaAtual][key] = [];
     }
     
-    // Verificar se já existe aula nesta data
-    const aulaExistente = dadosPresenca[turmaAtual][key].find(aula => aula.data === dataAula);
-    if (aulaExistente) {
-        alert(`⚠️ Já existe uma aula registrada para o dia ${dataObj.toLocaleDateString('pt-BR')}!`);
-        return;
-    }
-    
     dadosPresenca[turmaAtual][key].push(novaAula);
     salvarDados();
     renderizarPresenca();
     
-    // Limpar o campo de data para a próxima aula
-    document.getElementById("dataAula").value = "";
+    alert(`✅ Aula adicionada com sucesso para o dia ${dataFormatada}!`);
     
-    alert(`✅ Aula adicionada com sucesso para o dia ${dataObj.toLocaleDateString('pt-BR')}!`);
+    // Avançar para o próximo dia
+    const proximaData = new Date(anoNum, mesNum - 1, diaNum + 1);
+    const anoProx = proximaData.getFullYear();
+    const mesProx = String(proximaData.getMonth() + 1).padStart(2, '0');
+    const diaProx = String(proximaData.getDate()).padStart(2, '0');
+    document.getElementById("dataAula").value = `${anoProx}-${mesProx}-${diaProx}`;
 }
+
+// Exportar presença/frequência
+function exportarPresenca() {
+    const turma = turmasConfig[turmaAtual];
+    if (!turma || !turma.alunos) return;
+    
+    const dadosFrequencia = [];
+    
+    turma.alunos.forEach(aluno => {
+        let totalAulas = 0;
+        let totalPresencas = 0;
+        
+        for (let key in dadosPresenca[turmaAtual]) {
+            dadosPresenca[turmaAtual][key].forEach(aula => {
+                totalAulas++;
+                if (aula.presencas && aula.presencas[aluno]) {
+                    totalPresencas++;
+                }
+            });
+        }
+        
+        const percentual = totalAulas > 0 ? ((totalPresencas / totalAulas) * 100).toFixed(1) : 0;
+        
+        dadosFrequencia.push({
+            "Aluno": aluno,
+            "Total de Aulas": totalAulas,
+            "Presenças": totalPresencas,
+            "Faltas": totalAulas - totalPresencas,
+            "Frequência (%)": percentual
+        });
+    });
+    
+    const planilha = XLSX.utils.json_to_sheet(dadosFrequencia);
+    const livro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(livro, planilha, `Frequencia_${turma.nome}`);
+    XLSX.writeFile(livro, `Frequencia_${turma.nome}_${new Date().toLocaleDateString()}.xlsx`);
+    alert("✅ Frequência exportada com sucesso!");
+}
+
 // Renderizar vistos
 let alunoSelecionadoVisto = null;
 
@@ -450,13 +493,9 @@ function adicionarVistoRapido() {
     }
     
     if (turmasConfig[turmaAtual].alunos.length === 0) return;
-    
-    // Para este exemplo, vamos dar visto para todos os alunos? 
-    // Melhor: abrir modal para selecionar aluno
     abrirModalVisto(turmasConfig[turmaAtual].alunos[0]);
 }
 
-// Exportar vistos
 function exportarVistos() {
     const turma = turmasConfig[turmaAtual];
     if (!turma || !turma.alunos) return;
@@ -486,7 +525,6 @@ function renderizarRelatorios() {
     const disciplina = document.getElementById("disciplinaNotas")?.value || turma.disciplinas[0];
     const alunos = turma.alunos;
     
-    // Resumo de Notas
     let aprovados = 0, recuperacao = 0, reprovados = 0, semNotas = 0;
     let somaMedias = 0;
     let alunosComNota = 0;
@@ -524,7 +562,6 @@ function renderizarRelatorios() {
         `;
     }
     
-    // Frequência Geral
     let totalPresencas = 0;
     let totalAulas = 0;
     
@@ -549,7 +586,6 @@ function renderizarRelatorios() {
         `;
     }
     
-    // Alunos Destaque (mais vistos)
     const destaques = [];
     alunos.forEach(aluno => {
         const vistos = dadosVistos[turmaAtual].alunos[aluno]?.total || 0;
@@ -568,7 +604,6 @@ function renderizarRelatorios() {
         ` : "<p>Nenhum aluno com destaque ainda</p>";
     }
     
-    // Alunos em Recuperação
     const recuperacaoList = [];
     alunos.forEach(aluno => {
         const notas = dadosNotas[turmaAtual][disciplina]?.[aluno] || { nm1: "", nm2: "", nm3: "" };
@@ -591,7 +626,6 @@ function renderizarRelatorios() {
     }
 }
 
-// Exportar relatório completo
 function exportarRelatorioCompleto() {
     const turma = turmasConfig[turmaAtual];
     if (!turma || !turma.alunos) return;
@@ -611,7 +645,6 @@ function exportarRelatorioCompleto() {
         }
         const vistos = dadosVistos[turmaAtual].alunos[aluno]?.total || 0;
         
-        // Calcular frequência do aluno
         let totalAulas = 0;
         let totalPresencas = 0;
         for (let key in dadosPresenca[turmaAtual]) {
@@ -656,14 +689,16 @@ async function trocarTurma(turmaId) {
     const turma = turmasConfig[turmaId];
     if (!turma) return;
     
-    // Garantir que os alunos estão carregados
     if (turma.alunos.length === 0) {
         isLoading = true;
         await carregarAlunos(turmaId);
         isLoading = false;
     }
     
-    document.getElementById("turmaTitulo").innerHTML = `<h1>📚 ${turma.nome}</h1>`;
+    const tituloDiv = document.getElementById("turmaTitulo");
+    if (tituloDiv) {
+        tituloDiv.innerHTML = `<h1>📚 ${turma.nome}</h1>`;
+    }
     
     const selectDisciplina = document.getElementById("disciplinaNotas");
     if (selectDisciplina) {
@@ -676,7 +711,6 @@ async function trocarTurma(turmaId) {
         });
     }
     
-    // Recarregar dados para a nova turma
     carregarDadosSalvos();
     renderizarNotas();
     renderizarPresenca();
@@ -686,34 +720,24 @@ async function trocarTurma(turmaId) {
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", async () => {
-// Dentro do DOMContentLoaded, após carregar os dados, adicione:
-
-// Configurar data padrão para nova aula (amanhã ou data atual)
-const dataAulaInput = document.getElementById("dataAula");
-if (dataAulaInput) {
-    // Define a data de hoje como padrão
-    const hoje = new Date();
-    const ano = hoje.getFullYear();
-    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-    const dia = String(hoje.getDate()).padStart(2, '0');
-    dataAulaInput.value = `${ano}-${mes}-${dia}`;
-}    
-
-// Mostrar loading
-    console.log("Carregando sistema...");
+    console.log("📚 Sistema Acadêmico - Inicializando...");
     
-    // Carregar todos os alunos dos JSONs
+    const dataAulaInput = document.getElementById("dataAula");
+    if (dataAulaInput) {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        dataAulaInput.value = `${ano}-${mes}-${dia}`;
+    }
+    
     await carregarTodosAlunos();
-    
-    // Carregar dados salvos
     carregarDadosSalvos();
     
-    // Configurar eventos dos botões de turma
     document.querySelectorAll(".turma-btn").forEach(btn => {
         btn.addEventListener("click", () => trocarTurma(btn.dataset.turma));
     });
     
-    // Configurar eventos das abas
     document.querySelectorAll(".aba-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".aba-btn").forEach(b => b.classList.remove("active"));
@@ -726,7 +750,6 @@ if (dataAulaInput) {
         });
     });
     
-    // Configurar eventos dos botões
     const disciplinaNotas = document.getElementById("disciplinaNotas");
     if (disciplinaNotas) disciplinaNotas.addEventListener("change", renderizarNotas);
     
@@ -781,7 +804,6 @@ if (dataAulaInput) {
     const exportarRelatorio = document.getElementById("exportarRelatorioGeral");
     if (exportarRelatorio) exportarRelatorio.addEventListener("click", exportarRelatorioCompleto);
     
-    // Modal events
     const modalFechar = document.querySelector(".modal-fechar");
     if (modalFechar) {
         modalFechar.addEventListener("click", () => {
@@ -799,15 +821,10 @@ if (dataAulaInput) {
         }
     };
     
-    const mesPresenca = document.getElementById("mesPresenca");
-    if (mesPresenca) mesPresenca.addEventListener("change", renderizarPresenca);
-    
-    const anoPresenca = document.getElementById("anoPresenca");
-    if (anoPresenca) anoPresenca.addEventListener("change", renderizarPresenca);
-    
     const dataVisto = document.getElementById("dataVisto");
     if (dataVisto) dataVisto.valueAsDate = new Date();
     
-    // Inicializar com a primeira turma
     await trocarTurma("1adm");
+    
+    console.log("✅ Sistema inicializado com sucesso!");
 });
