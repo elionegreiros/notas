@@ -1,4 +1,4 @@
-// Dados dos alunos EMBUTIDOS (para funcionar no GitHub Pages)
+// ==================== DADOS DOS ALUNOS EMBUTIDOS ====================
 const alunos1Adm = [
     "ALICE FERREIRA DA SILVA", "CARLENE MARTINS DA SILVA", "DAVI DE ALENCAR MELO BEZERRA",
     "ELIEZER LEAL BARBOSA", "ENRICO SAMUEL PEREIRA HOSTERNO", "FRANCISCA YARA GONCALVES DE SANTANA",
@@ -47,50 +47,29 @@ const alunosInf5 = [
     "HILTON FERNANDES DA SILVA", "KAIQUE JOSE LIMA LEITE"
 ];
 
-// Configuração das turmas (COM ALUNOS EMBUTIDOS)
+// ==================== CONFIGURAÇÃO DAS TURMAS ====================
 const turmasConfig = {
-    "1adm": { 
-        nome: "1º Administração", 
-        alunos: alunos1Adm,
-        disciplinas: ["Inteligência Artificial"]
-    },
-    "1amb": { 
-        nome: "1º Controle Ambiental", 
-        alunos: alunos1Amb,
-        disciplinas: ["Inteligência Artificial"]
-    },
-    "2ds": { 
-        nome: "2º Desenvolvimento de Sistemas", 
-        alunos: alunos2DS,
-        disciplinas: [
-            "Inteligência Artificial", "MENTORIAS TEC II", "FUNDAMENTOS DE UI / UX OU IHC",
-            "PENSAMENTO COMPUTACIONAL II", "PROGRAMAÇÃO ESTRUTURADA", "PROGRAMAÇÃO ORIENTADA À OBJETOS - POO",
-            "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", "PROGRAMAÇÃO WEB FRONT-END", "ARQUITETURA DE MICROSSERVIÇOS",
-            "INTRODUÇÃO AO ECOSSISTEMA DEVops", "MANUTENÇÃO DE SISTEMAS"
-        ]
-    },
-    "inf1": { 
-        nome: "Informática - Módulo I", 
-        alunos: alunosInf1,
-        disciplinas: ["Análise e Lógica de Programação"]
-    },
-    "inf5": { 
-        nome: "Informática - Módulo V", 
-        alunos: alunosInf5,
-        disciplinas: ["Empreendedorismo para TI"]
-    }
+    "1adm": { nome: "1º Administração", alunos: alunos1Adm, disciplinas: ["Inteligência Artificial"] },
+    "1amb": { nome: "1º Controle Ambiental", alunos: alunos1Amb, disciplinas: ["Inteligência Artificial"] },
+    "2ds": { nome: "2º Desenvolvimento de Sistemas", alunos: alunos2DS, disciplinas: [
+        "Inteligência Artificial", "MENTORIAS TEC II", "FUNDAMENTOS DE UI / UX OU IHC",
+        "PENSAMENTO COMPUTACIONAL II", "PROGRAMAÇÃO ESTRUTURADA", "PROGRAMAÇÃO ORIENTADA À OBJETOS - POO",
+        "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", "PROGRAMAÇÃO WEB FRONT-END", "ARQUITETURA DE MICROSSERVIÇOS",
+        "INTRODUÇÃO AO ECOSSISTEMA DEVops", "MANUTENÇÃO DE SISTEMAS"
+    ] },
+    "inf1": { nome: "Informática - Módulo I", alunos: alunosInf1, disciplinas: ["Análise e Lógica de Programação"] },
+    "inf5": { nome: "Informática - Módulo V", alunos: alunosInf5, disciplinas: ["Empreendedorismo para TI"] }
 };
 
-// Estado global
+// ==================== ESTADO GLOBAL ====================
 let turmaAtual = "1adm";
 let dadosNotas = {};
 let dadosPresenca = {};
 let dadosVistos = {};
 let dadosComentarios = {};
-let dadosArquivos = {};
 let limiteFaltasPercentual = 25;
 
-// Carregar dados do localStorage
+// ==================== FUNÇÕES PRINCIPAIS ====================
 function carregarDadosSalvos() {
     const saved = localStorage.getItem("sistemaAcademico");
     if (saved) {
@@ -100,79 +79,70 @@ function carregarDadosSalvos() {
             dadosPresenca = data.presenca || {};
             dadosVistos = data.vistos || {};
             dadosComentarios = data.comentarios || {};
-            dadosArquivos = data.arquivos || {};
-        } catch (e) {
-            console.error("Erro ao carregar dados salvos:", e);
-        }
+        } catch (e) { console.error("Erro:", e); }
     }
     
-    // Inicializar estruturas
     for (let turmaId in turmasConfig) {
         if (!dadosNotas[turmaId]) dadosNotas[turmaId] = {};
         if (!dadosPresenca[turmaId]) dadosPresenca[turmaId] = {};
         if (!dadosVistos[turmaId]) dadosVistos[turmaId] = {};
         if (!dadosComentarios[turmaId]) dadosComentarios[turmaId] = {};
-        if (!dadosArquivos[turmaId]) dadosArquivos[turmaId] = {};
         
         const turma = turmasConfig[turmaId];
-        const alunos = turma.alunos;
         const disciplinas = turma.disciplinas;
         
-        if (alunos && alunos.length > 0) {
-            disciplinas.forEach(disciplina => {
-                if (!dadosNotas[turmaId][disciplina]) {
-                    dadosNotas[turmaId][disciplina] = {};
-                    alunos.forEach(aluno => {
-                        dadosNotas[turmaId][disciplina][aluno] = { nm1: "", nm2: "", nm3: "", exame: "" };
-                    });
-                }
-            });
-            
-            if (!dadosVistos[turmaId].alunos) {
-                dadosVistos[turmaId].alunos = {};
-                alunos.forEach(aluno => {
-                    dadosVistos[turmaId].alunos[aluno] = { 
-                        total: 0, advertencias: 0, suspensoes: 0, registros: [], ultima: ""
-                    };
+        disciplinas.forEach(disciplina => {
+            if (!dadosNotas[turmaId][disciplina]) {
+                dadosNotas[turmaId][disciplina] = {};
+                turma.alunos.forEach(aluno => {
+                    dadosNotas[turmaId][disciplina][aluno] = { nm1: "", nm2: "", nm3: "", exame: "" };
                 });
             }
-            
-            alunos.forEach(aluno => {
-                if (!dadosComentarios[turmaId][aluno]) {
-                    dadosComentarios[turmaId][aluno] = { observacoes: "", historico: [] };
-                }
+        });
+        
+        if (!dadosVistos[turmaId].alunos) {
+            dadosVistos[turmaId].alunos = {};
+            turma.alunos.forEach(aluno => {
+                dadosVistos[turmaId].alunos[aluno] = { total: 0, advertencias: 0, suspensoes: 0, registros: [], ultima: "" };
             });
         }
+        
+        turma.alunos.forEach(aluno => {
+            if (!dadosComentarios[turmaId][aluno]) {
+                dadosComentarios[turmaId][aluno] = { observacoes: "", historico: [] };
+            }
+        });
     }
     salvarDados();
 }
 
 function salvarDados() {
     localStorage.setItem("sistemaAcademico", JSON.stringify({
-        notas: dadosNotas,
-        presenca: dadosPresenca,
-        vistos: dadosVistos,
-        comentarios: dadosComentarios,
-        arquivos: dadosArquivos
+        notas: dadosNotas, presenca: dadosPresenca, vistos: dadosVistos, comentarios: dadosComentarios
     }));
 }
 
-// Renderizar notas
+function calcularSelo(totalVistos, advertencias, suspensoes) {
+    let pontuacao = totalVistos - (advertencias * 2) - (suspensoes * 5);
+    if (pontuacao >= 20) return "diamante";
+    if (pontuacao >= 10) return "ouro";
+    if (pontuacao >= 5) return "prata";
+    return "bronze";
+}
+
+// ==================== NOTAS ====================
 function renderizarNotas() {
-    const disciplina = document.getElementById("disciplinaNotas").value;
+    const disciplina = document.getElementById("disciplinaNotas")?.value;
     if (!disciplina) return;
     
     const turma = turmasConfig[turmaAtual];
-    if (!turma || !turma.alunos) return;
-    
-    const alunos = turma.alunos;
     const notasTurma = dadosNotas[turmaAtual][disciplina] || {};
     const tbody = document.getElementById("tbodyNotas");
     if (!tbody) return;
     
     tbody.innerHTML = "";
     
-    alunos.forEach(aluno => {
+    turma.alunos.forEach(aluno => {
         const notas = notasTurma[aluno] || { nm1: "", nm2: "", nm3: "", exame: "" };
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
@@ -184,8 +154,8 @@ function renderizarNotas() {
         
         let status = "", statusClass = "";
         if (exame > 0) {
-            if (media >= 5) { status = "✓ Aprovado por Exame"; statusClass = "status-aprovado"; }
-            else { status = "✗ Reprovado por Exame"; statusClass = "status-reprovado"; }
+            status = media >= 5 ? "✓ Aprovado por Exame" : "✗ Reprovado por Exame";
+            statusClass = media >= 5 ? "status-aprovado" : "status-reprovado";
         } else if (media >= 7) { status = "✓ Aprovado"; statusClass = "status-aprovado"; }
         else if (media >= 5) { status = "⚠️ Recuperação"; statusClass = "status-recuperacao"; }
         else if (media > 0) { status = "✗ Reprovado"; statusClass = "status-reprovado"; }
@@ -226,6 +196,7 @@ function renderizarNotas() {
     
     document.querySelectorAll(".exame-input").forEach(input => {
         input.addEventListener("change", (e) => {
+            const disciplina = document.getElementById("disciplinaNotas").value;
             const aluno = e.target.dataset.aluno;
             let valor = e.target.value === "" ? "" : parseFloat(e.target.value);
             if (valor !== "" && (isNaN(valor) || valor < 0 || valor > 10)) valor = "";
@@ -260,7 +231,7 @@ function salvarNotas() {
     alert("✅ Notas salvas com sucesso!");
 }
 
-// Renderizar presença
+// ==================== PRESENÇA ====================
 function renderizarPresenca() {
     const todasAulas = [];
     for (let key in dadosPresenca[turmaAtual]) {
@@ -276,13 +247,8 @@ function renderizarPresenca() {
     container.innerHTML = "";
     
     const turma = turmasConfig[turmaAtual];
-    if (!turma || !turma.alunos || turma.alunos.length === 0) {
-        container.innerHTML = '<div class="lista-vazia">📭 Carregando alunos...</div>';
-        return;
-    }
-    
     if (todasAulas.length === 0) {
-        container.innerHTML = '<div class="lista-vazia">📭 Nenhuma aula registrada. Clique em "+ Nova Aula" para começar.</div>';
+        container.innerHTML = '<div class="lista-vazia" style="padding:20px;text-align:center">📭 Nenhuma aula registrada. Clique em "+ Nova Aula" para começar.</div>';
         return;
     }
     
@@ -365,24 +331,12 @@ function adicionarAula() {
     dadosPresenca[turmaAtual][key].push({ data: dataAula, presencas: {} });
     salvarDados();
     renderizarPresenca();
-    
-    const proximaData = new Date(parseInt(ano), parseInt(mes)-1, parseInt(dia) + 1);
-    document.getElementById("dataAula").value = `${proximaData.getFullYear()}-${String(proximaData.getMonth()+1).padStart(2,'0')}-${String(proximaData.getDate()).padStart(2,'0')}`;
     alert(`✅ Aula ${dataFormatada} adicionada!`);
 }
 
-function calcularSelo(totalVistos, advertencias, suspensoes) {
-    let pontuacao = totalVistos - (advertencias * 2) - (suspensoes * 5);
-    if (pontuacao >= 20) return "diamante";
-    if (pontuacao >= 10) return "ouro";
-    if (pontuacao >= 5) return "prata";
-    return "bronze";
-}
-
+// ==================== VISTOS E PUNIÇÕES ====================
 function renderizarVistos() {
     const turma = turmasConfig[turmaAtual];
-    if (!turma || !turma.alunos) return;
-    
     const vistosTurma = dadosVistos[turmaAtual].alunos || {};
     const tbody = document.getElementById("tbodyVistos");
     if (!tbody) return;
@@ -407,25 +361,26 @@ function renderizarVistos() {
         const btnVisto = document.createElement("button");
         btnVisto.textContent = "⭐ +Visto"; btnVisto.className = "btn-pequeno";
         btnVisto.style.background = "#2e7d32"; btnVisto.style.marginRight = "5px";
-        btnVisto.onclick = () => adicionarRegistro(aluno, "visto", "Participação positiva");
+        btnVisto.onclick = () => adicionarRegistro(aluno, "visto");
         btnCell.appendChild(btnVisto);
         
         const btnAdv = document.createElement("button");
         btnAdv.textContent = "⚠️ Adv"; btnAdv.className = "btn-pequeno";
         btnAdv.style.background = "#f57c00"; btnAdv.style.marginRight = "5px";
-        btnAdv.onclick = () => adicionarRegistro(aluno, "advertencia", "Comportamento inadequado");
+        btnAdv.onclick = () => adicionarRegistro(aluno, "advertencia");
         btnCell.appendChild(btnAdv);
         
         const btnSus = document.createElement("button");
         btnSus.textContent = "🚫 Susp"; btnSus.className = "btn-pequeno";
         btnSus.style.background = "#c62828";
-        btnSus.onclick = () => adicionarRegistro(aluno, "suspensao", "Medida disciplinar");
+        btnSus.onclick = () => adicionarRegistro(aluno, "suspensao");
         btnCell.appendChild(btnSus);
     });
 }
 
-function adicionarRegistro(aluno, tipo, descricaoPadrao) {
-    const descricao = prompt(`Descrição:`, descricaoPadrao);
+function adicionarRegistro(aluno, tipo) {
+    const tipos = { visto: "visto", advertencia: "advertência", suspensao: "suspensão" };
+    const descricao = prompt(`Descrição da ${tipos[tipo]}:`, tipo === "visto" ? "Participação positiva" : (tipo === "advertencia" ? "Comportamento inadequado" : "Medida disciplinar"));
     if (!descricao) return;
     
     const vistosTurma = dadosVistos[turmaAtual].alunos;
@@ -443,9 +398,10 @@ function adicionarRegistro(aluno, tipo, descricaoPadrao) {
     
     salvarDados();
     renderizarVistos();
-    alert(`✅ Registrado para ${aluno}!`);
+    alert(`✅ ${tipos[tipo]} registrada para ${aluno}!`);
 }
 
+// ==================== MODAIS ====================
 let alunoSelecionado = null;
 
 function abrirModalComentario(aluno) {
@@ -481,10 +437,9 @@ function salvarComentario() {
     alert("✅ Observação salva!");
 }
 
+// ==================== RELATÓRIOS ====================
 function renderizarRelatorios() {
     const turma = turmasConfig[turmaAtual];
-    if (!turma || !turma.alunos) return;
-    
     const disciplina = document.getElementById("disciplinaNotas")?.value || turma.disciplinas[0];
     const alunos = turma.alunos;
     
@@ -508,7 +463,7 @@ function renderizarRelatorios() {
             rankingNotas.push({ aluno, media });
         }
     });
-    rankingNotas.sort((a,b) => b.media - a.media);
+    rankingNotas.sort((a, b) => b.media - a.media);
     
     let totalPresencas = 0, totalAulas = 0;
     for (let key in dadosPresenca[turmaAtual]) {
@@ -534,7 +489,7 @@ function renderizarRelatorios() {
     const vistosAlunos = alunos.map(aluno => {
         const v = dadosVistos[turmaAtual].alunos[aluno] || { total: 0 };
         return { aluno, total: v.total };
-    }).sort((a,b) => b.total - a.total);
+    }).sort((a, b) => b.total - a.total);
     
     document.getElementById("resumoNotas").innerHTML = `
         <ul>
@@ -544,7 +499,7 @@ function renderizarRelatorios() {
             <li>📝 Sem notas: ${semNotas}</li>
         </ul>
         <h4>🏆 Top 5</h4>
-        <ul>${rankingNotas.slice(0,5).map((r,i) => `<li>${i+1}º - ${r.aluno}: ${r.media.toFixed(1)}</li>`).join('')}</ul>
+        <ul>${rankingNotas.slice(0,5).map((r, i) => `<li>${i+1}º - ${r.aluno}: ${r.media.toFixed(1)}</li>`).join('')}</ul>
     `;
     
     document.getElementById("resumoFrequencia").innerHTML = `
@@ -558,7 +513,7 @@ function renderizarRelatorios() {
         `<h4>🚨 ALERTAS</h4><ul>${baixaFrequencia.map(a => `<li>⚠️ ${a.aluno}: ${a.perc.toFixed(1)}%</li>`).join('')}</ul>` : "";
     
     document.getElementById("alunosDestaque").innerHTML = `
-        <ul>${vistosAlunos.slice(0,5).map((v,i) => `<li>${i+1}º - ${v.aluno}: ${v.total} vistos</li>`).join('')}</ul>
+        <ul>${vistosAlunos.slice(0,5).map((v, i) => `<li>${i+1}º - ${v.aluno}: ${v.total} vistos</li>`).join('')}</ul>
     `;
     
     document.getElementById("rankingParticipacao").innerHTML = `
@@ -584,9 +539,8 @@ function renderizarRelatorios() {
 function exportarRelatorioCompleto() {
     const turma = turmasConfig[turmaAtual];
     const disciplina = document.getElementById("disciplinaNotas")?.value || turma.disciplinas[0];
-    const alunos = turma.alunos;
     
-    const dadosExport = alunos.map(aluno => {
+    const dadosExport = turma.alunos.map(aluno => {
         const notas = dadosNotas[turmaAtual][disciplina]?.[aluno] || {};
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
@@ -617,19 +571,15 @@ function exportarRelatorioCompleto() {
     
     const planilha = XLSX.utils.json_to_sheet(dadosExport);
     const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Relatorio`);
+    XLSX.utils.book_append_sheet(livro, planilha, "Relatorio");
     XLSX.writeFile(livro, `Relatorio_${turma.nome}_${new Date().toLocaleDateString()}.xlsx`);
-    alert("✅ Exportado!");
-}
-
-function exportarPDF() {
-    const element = document.querySelector(".relatorios-grid");
-    html2pdf().set({ margin: 0.5, filename: `Relatorio_${turmasConfig[turmaAtual].nome}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } }).from(element).save();
+    alert("✅ Relatório exportado!");
 }
 
 function toggleTema() {
     document.body.classList.toggle("tema-escuro");
     localStorage.setItem("tema", document.body.classList.contains("tema-escuro") ? "escuro" : "claro");
+    document.getElementById("btnTema").innerHTML = document.body.classList.contains("tema-escuro") ? "☀️ Tema Claro" : "🌙 Tema Escuro";
 }
 
 function trocarTurma(turmaId) {
@@ -655,9 +605,12 @@ function trocarTurma(turmaId) {
     renderizarRelatorios();
 }
 
-// Inicialização
+// ==================== INICIALIZAÇÃO ====================
 document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("tema") === "escuro") document.body.classList.add("tema-escuro");
+    if (localStorage.getItem("tema") === "escuro") {
+        document.body.classList.add("tema-escuro");
+        document.getElementById("btnTema").innerHTML = "☀️ Tema Claro";
+    }
     
     document.getElementById("dataAula").valueAsDate = new Date();
     document.getElementById("dataVisto").valueAsDate = new Date();
@@ -673,31 +626,29 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".aba-btn").forEach(b => b.classList.remove("active"));
             document.querySelectorAll(".aba-conteudo").forEach(c => c.classList.remove("active"));
             btn.classList.add("active");
-            document.getElementById(`aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`).classList.add("active");
+            const abaId = `aba${btn.dataset.aba.charAt(0).toUpperCase() + btn.dataset.aba.slice(1)}`;
+            document.getElementById(abaId).classList.add("active");
             if (btn.dataset.aba === "relatorios") renderizarRelatorios();
         });
     });
     
-    document.getElementById("btnTema")?.addEventListener("click", toggleTema);
-    document.getElementById("disciplinaNotas")?.addEventListener("change", renderizarNotas);
-    document.getElementById("salvarNotas")?.addEventListener("click", salvarNotas);
-    document.getElementById("exportarNotas")?.addEventListener("click", exportarRelatorioCompleto);
-    document.getElementById("adicionarAula")?.addEventListener("click", adicionarAula);
-    document.getElementById("salvarPresenca")?.addEventListener("click", () => { salvarDados(); alert("✅ Salvo!"); });
-    document.getElementById("exportarPresenca")?.addEventListener("click", exportarRelatorioCompleto);
-    document.getElementById("salvarVistos")?.addEventListener("click", () => { salvarDados(); alert("✅ Salvo!"); });
-    document.getElementById("exportarVistos")?.addEventListener("click", exportarRelatorioCompleto);
-    document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
-    document.getElementById("exportarPDF")?.addEventListener("click", exportarPDF);
+    document.getElementById("btnTema").addEventListener("click", toggleTema);
+    document.getElementById("disciplinaNotas").addEventListener("change", renderizarNotas);
+    document.getElementById("salvarNotas").addEventListener("click", salvarNotas);
+    document.getElementById("exportarNotas").addEventListener("click", exportarRelatorioCompleto);
+    document.getElementById("adicionarAula").addEventListener("click", adicionarAula);
+    document.getElementById("salvarPresenca").addEventListener("click", () => { salvarDados(); alert("✅ Presenças salvas!"); });
+    document.getElementById("exportarPresenca").addEventListener("click", exportarRelatorioCompleto);
+    document.getElementById("salvarVistos").addEventListener("click", () => { salvarDados(); alert("✅ Dados salvos!"); });
+    document.getElementById("exportarVistos").addEventListener("click", exportarRelatorioCompleto);
+    document.getElementById("exportarRelatorioGeral").addEventListener("click", exportarRelatorioCompleto);
     
-    document.getElementById("adicionarVisto")?.addEventListener("click", () => {
-        const data = document.getElementById("dataVisto").value;
-        const desc = document.getElementById("descVisto").value.trim();
-        const tipo = document.getElementById("tipoRegistro")?.value || "visto";
-        if (!data) { alert("Selecione a data!"); return; }
-        if (!desc) { alert("Digite a descrição!"); return; }
+    document.getElementById("adicionarVisto").addEventListener("click", () => {
+        const descricao = document.getElementById("descVisto").value.trim();
+        const tipo = document.getElementById("tipoRegistro").value;
+        if (!descricao) { alert("Digite uma descrição!"); return; }
         if (turmasConfig[turmaAtual].alunos.length) {
-            adicionarRegistro(turmasConfig[turmaAtual].alunos[0], tipo, desc);
+            adicionarRegistro(turmasConfig[turmaAtual].alunos[0], tipo);
             document.getElementById("descVisto").value = "";
         }
     });
@@ -705,10 +656,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".modal-fechar").forEach(btn => {
         btn.onclick = () => {
             document.getElementById("modalComentario").style.display = "none";
-            document.getElementById("modalVisto")?.style.display = "none";
         };
     });
-    document.getElementById("modalSalvarComentario")?.addEventListener("click", salvarComentario);
+    document.getElementById("modalSalvarComentario").addEventListener("click", salvarComentario);
     
     window.onclick = (event) => {
         if (event.target.classList.contains("modal")) event.target.style.display = "none";
