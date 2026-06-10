@@ -1,1 +1,12 @@
-
+{
+    "inf1": {
+        "nome": "Informática - Módulo I",
+        "disciplinas": ["Análise e Lógica de Programação"],
+        "tipoAvaliacao": "bimestral"
+    },
+    "inf5": {
+        "nome": "Informática - Módulo V",
+        "disciplinas": ["Empreendedorismo para TI"],
+        "tipoAvaliacao": "bimestral"
+    }
+}

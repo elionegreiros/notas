@@ -1,0 +1,22 @@
+{
+    "segunda": {
+        "inf1": [{ "hora": "19:25", "disciplina": "INF - MÓDULO I" }],
+        "inf5": [{ "hora": "18:30", "disciplina": "INF - MÓDULO V" }]
+    },
+    "terca": {
+        "inf1": [{ "hora": "20:20", "disciplina": "INF - MÓDULO I" }],
+        "inf5": [{ "hora": "21:25", "disciplina": "INF - MÓDULO V" }]
+    },
+    "quarta": {
+        "inf1": [],
+        "inf5": [{ "hora": "18:30", "disciplina": "INF - MÓDULO V" }]
+    },
+    "quinta": {
+        "inf1": [],
+        "inf5": []
+    },
+    "sexta": {
+        "inf1": [],
+        "inf5": []
+    }
+}
