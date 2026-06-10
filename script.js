@@ -170,7 +170,6 @@ function carregarDadosSalvos() {
 }
 
 function inicializarEstruturas() {
-    console.log("Inicializando estruturas...");
     for (let escolaId in ESCOLAS) {
         if (!estado.dadosNotas[escolaId]) estado.dadosNotas[escolaId] = {};
         if (!estado.dadosPresenca[escolaId]) estado.dadosPresenca[escolaId] = {};
@@ -198,11 +197,14 @@ function inicializarEstruturas() {
             });
         }
     }
-    console.log("Estruturas inicializadas com sucesso!");
 }
 
 function getTurmaConfig() {
     return ESCOLAS[estado.escolaAtual]?.turmas[estado.turmaAtual] || null;
+}
+
+function getEscolaAtual() {
+    return ESCOLAS[estado.escolaAtual];
 }
 
 function getHorariosAtuais() {
@@ -253,35 +255,59 @@ function formatarCPF(input) {
 }
 
 // ============================================================================
-// RENDERIZAÇÃO DO SIDEBAR E TURMAS
+// RENDERIZAÇÃO DO SIDEBAR
 // ============================================================================
 
-function carregarTurmasSidebar() {
-    const container = document.getElementById("turmasContainer");
-    if (!container) return;
+function carregarSidebar() {
+    const escolasPermitidas = estado.sessaoAtual?.escola === "ambas" ? Object.keys(ESCOLAS) : [estado.sessaoAtual?.escola];
     
-    let html = '<div class="nav-label">TURMAS</div>';
-    for (let escolaId in ESCOLAS) {
-        const escola = ESCOLAS[escolaId];
-        for (let turmaId in escola.turmas) {
-            const turma = escola.turmas[turmaId];
-            const activeClass = (estado.escolaAtual === escolaId && estado.turmaAtual === turmaId) ? "ativo" : "";
-            html += `<button class="nav-item turma-item ${activeClass}" data-escola="${escolaId}" data-turma="${turmaId}"><i class="fas ${escola.icone}"></i><span>${turma.nome}</span></button>`;
+    const escolasContainer = document.querySelector(".escola-selector");
+    if (escolasContainer) {
+        let escolasHtml = '<div class="nav-label">ESCOLA</div>';
+        for (let escolaId of escolasPermitidas) {
+            const escola = ESCOLAS[escolaId];
+            const activeClass = estado.escolaAtual === escolaId ? "ativo" : "";
+            escolasHtml += `<button class="nav-item escola-btn ${activeClass}" data-escola="${escolaId}"><i class="fas ${escola.icone}"></i><span>${escola.nome} (${escola.turno})</span></button>`;
         }
-    }
-    container.innerHTML = html;
-    
-    document.querySelectorAll(".turma-item").forEach(btn => {
-        btn.addEventListener("click", () => {
-            trocarEscolaTurma(btn.dataset.escola, btn.dataset.turma);
+        escolasContainer.innerHTML = escolasHtml;
+        
+        document.querySelectorAll(".escola-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const novaEscola = btn.dataset.escola;
+                const primeiraTurma = Object.keys(ESCOLAS[novaEscola].turmas)[0];
+                trocarEscolaTurma(novaEscola, primeiraTurma);
+            });
         });
-    });
+    }
+    
+    const turmasContainer = document.getElementById("turmasContainer");
+    if (turmasContainer) {
+        let turmasHtml = '<div class="nav-label">TURMAS</div>';
+        for (let escolaId of escolasPermitidas) {
+            const escola = ESCOLAS[escolaId];
+            for (let turmaId in escola.turmas) {
+                const turma = escola.turmas[turmaId];
+                const activeClass = (estado.escolaAtual === escolaId && estado.turmaAtual === turmaId) ? "ativo" : "";
+                turmasHtml += `<button class="nav-item turma-item ${activeClass}" data-escola="${escolaId}" data-turma="${turmaId}"><i class="fas ${escola.icone}"></i><span>${turma.nome}</span></button>`;
+            }
+        }
+        turmasContainer.innerHTML = turmasHtml;
+        
+        document.querySelectorAll(".turma-item").forEach(btn => {
+            btn.addEventListener("click", () => {
+                trocarEscolaTurma(btn.dataset.escola, btn.dataset.turma);
+            });
+        });
+    }
 }
 
 function trocarEscolaTurma(escolaId, turmaId) {
     estado.escolaAtual = escolaId;
     estado.turmaAtual = turmaId;
     
+    document.querySelectorAll(".escola-btn").forEach(btn => {
+        btn.classList.toggle("ativo", btn.dataset.escola === escolaId);
+    });
     document.querySelectorAll(".turma-item").forEach(btn => {
         btn.classList.toggle("ativo", btn.dataset.turma === turmaId && btn.dataset.escola === escolaId);
     });
@@ -337,7 +363,7 @@ function trocarEscolaTurma(escolaId, turmaId) {
         }
     }
     
-    // Recarregar todas as abas
+    atualizarCabecalhoNotas();
     renderizarNotas();
     renderizarPresenca();
     renderizarVistos();
@@ -363,10 +389,10 @@ function calcularMedia(notas, tipo) {
 function renderizarNotas() {
     const disciplina = document.getElementById("disciplinaNotas")?.value;
     if (!disciplina) return;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const tipo = turmaConfig.tipoAvaliacao;
-    const alunos = turmaConfig.alunos;
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    const alunos = turma.alunos;
     const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
     const tbody = document.getElementById("tbodyNotas");
     if (!tbody) return;
@@ -405,6 +431,7 @@ function renderizarNotas() {
     });
     
     atualizarEstatisticas();
+    atualizarGraficoEvolucao();
 }
 
 function salvarNotas() {
@@ -427,12 +454,47 @@ function salvarNotas() {
     mostrarToast("Notas salvas com sucesso!");
 }
 
+function atualizarEstatisticas() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value;
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    let aprovados = 0, recuperacao = 0, reprovados = 0;
+    
+    turma.alunos.forEach(aluno => {
+        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
+        const media = calcularMedia(notas, tipo);
+        if (media >= 7) aprovados++;
+        else if (media >= 5) recuperacao++;
+        else reprovados++;
+    });
+    
+    document.getElementById("statAlunos").textContent = turma.alunos.length;
+    document.getElementById("statAprovados").textContent = aprovados;
+    document.getElementById("statRecuperacao").textContent = recuperacao;
+    document.getElementById("statReprovados").textContent = reprovados;
+    document.getElementById("statAniversariantes").textContent = "0";
+}
+
+function atualizarCabecalhoNotas() {
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    const thead = document.querySelector("#tabelaNotas thead tr");
+    if (!thead) return;
+    if (tipo === "trimestral") {
+        thead.innerHTML = `<th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th>Obs</th>`;
+    } else {
+        thead.innerHTML = `<th>Aluno</th><th>NM1</th><th>NM2</th><th>Média</th><th>Status</th><th>Obs</th>`;
+    }
+}
+
 function exportarNotas() {
     const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const tipo = turmaConfig.tipoAvaliacao;
-    const dados = turmaConfig.alunos.map(aluno => {
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    const dados = turma.alunos.map(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
         if (tipo === "trimestral") {
             return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" };
@@ -441,37 +503,9 @@ function exportarNotas() {
     });
     const planilha = XLSX.utils.json_to_sheet(dados);
     const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Notas_${turmaConfig.nome}`);
-    XLSX.writeFile(livro, `Notas_${turmaConfig.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+    XLSX.utils.book_append_sheet(livro, planilha, `Notas_${turma.nome}`);
+    XLSX.writeFile(livro, `Notas_${turma.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
     mostrarToast("Notas exportadas!");
-}
-
-function atualizarEstatisticas() {
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const disciplina = document.getElementById("disciplinaNotas")?.value || turmaConfig.disciplinas[0];
-    const tipo = turmaConfig.tipoAvaliacao;
-    let aprovados = 0, recuperacao = 0, reprovados = 0;
-    
-    turmaConfig.alunos.forEach(aluno => {
-        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        const media = calcularMedia(notas, tipo);
-        if (media >= 7) aprovados++;
-        else if (media >= 5) recuperacao++;
-        else reprovados++;
-    });
-    
-    document.getElementById("statAlunos").textContent = turmaConfig.alunos.length;
-    document.getElementById("statAprovados").textContent = aprovados;
-    document.getElementById("statRecuperacao").textContent = recuperacao;
-    document.getElementById("statReprovados").textContent = reprovados;
-    
-    // Aniversariantes do mês
-    const hoje = new Date();
-    const mesAtual = hoje.getMonth() + 1;
-    let anivCount = 0;
-    turmaConfig.alunos.forEach(() => { anivCount = Math.floor(Math.random() * 3); }); // Placeholder
-    document.getElementById("statAniversariantes").textContent = anivCount;
 }
 
 // ============================================================================
@@ -492,18 +526,18 @@ function renderizarPresenca() {
         return;
     }
     
-    const turmaConfig = getTurmaConfig();
+    const turma = getTurmaAtual();
     aulas.forEach((aula, idx) => {
         const aulaCard = document.createElement("div");
         aulaCard.className = "aula-card";
         let presencasHtml = "";
-        turmaConfig.alunos.forEach(aluno => {
+        turma.alunos.forEach(aluno => {
             const isChecked = aula.presencas && aula.presencas[aluno] === true;
             presencasHtml += `<tr><td><strong>${aluno}</strong></td><td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${isChecked ? 'checked' : ''}></td></tr>`;
         });
         aulaCard.innerHTML = `
             <div class="aula-header"><span class="aula-data"><i class="fas fa-calendar-alt"></i> ${new Date(aula.data).toLocaleDateString('pt-BR')}</span><button class="aula-remover" data-index="${idx}"><i class="fas fa-trash"></i> Remover</button></div>
-            <div class="tabela-container"><table class="tabela-presenca"><thead><tr><th>Aluno</th><th>Presente?</th></tr></thead><tbody>${presencasHtml}</tbody><td></div>
+            <div class="tabela-container"><table class="tabela-presenca"><thead><tr><th>Aluno</th><th>Presente?</th><tr></thead><tbody>${presencasHtml}</tbody></table></div>
         `;
         container.appendChild(aulaCard);
         aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
@@ -549,13 +583,12 @@ function adicionarAula() {
 }
 
 function exportarPresenca() {
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const alunos = turmaConfig.alunos;
+    const turma = getTurmaAtual();
+    if (!turma) return;
     const presencasTurma = estado.dadosPresenca[estado.escolaAtual]?.[estado.turmaAtual] || {};
     const dadosExport = [];
     
-    for (const aluno of alunos) {
+    for (const aluno of turma.alunos) {
         let totalPresencas = 0, totalAulas = 0;
         for (let key in presencasTurma) {
             if (Array.isArray(presencasTurma[key])) {
@@ -571,8 +604,8 @@ function exportarPresenca() {
     
     const planilha = XLSX.utils.json_to_sheet(dadosExport);
     const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Presenca_${turmaConfig.nome}`);
-    XLSX.writeFile(livro, `Presenca_${turmaConfig.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+    XLSX.utils.book_append_sheet(livro, planilha, `Presenca_${turma.nome}`);
+    XLSX.writeFile(livro, `Presenca_${turma.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
     mostrarToast("Presenças exportadas!");
 }
 
@@ -583,12 +616,12 @@ function exportarPresenca() {
 function renderizarVistos() {
     const tbody = document.getElementById("tbodyVistos");
     if (!tbody) return;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
+    const turma = getTurmaAtual();
+    if (!turma) return;
     const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
     tbody.innerHTML = "";
     
-    turmaConfig.alunos.forEach(aluno => {
+    turma.alunos.forEach(aluno => {
         const dados = vistosTurma[aluno] || { total: 0, ultima: "" };
         const row = tbody.insertRow();
         row.insertCell(0).innerHTML = `<strong>${aluno}</strong>`;
@@ -631,10 +664,10 @@ function salvarVisto() {
 }
 
 function exportarVistos() {
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
+    const turma = getTurmaAtual();
+    if (!turma) return;
     const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
-    const dadosExport = turmaConfig.alunos.map(aluno => {
+    const dadosExport = turma.alunos.map(aluno => {
         const dados = vistosTurma[aluno] || { total: 0, registros: [] };
         return {
             Aluno: aluno,
@@ -645,8 +678,8 @@ function exportarVistos() {
     });
     const planilha = XLSX.utils.json_to_sheet(dadosExport);
     const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Vistos_${turmaConfig.nome}`);
-    XLSX.writeFile(livro, `Vistos_${turmaConfig.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+    XLSX.utils.book_append_sheet(livro, planilha, `Vistos_${turma.nome}`);
+    XLSX.writeFile(livro, `Vistos_${turma.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
     mostrarToast("Vistos exportados!");
 }
 
@@ -656,12 +689,12 @@ function exportarVistos() {
 
 function renderizarRelatorios() {
     const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const tipo = turmaConfig.tipoAvaliacao;
+    const turma = getTurmaAtual();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
     let aprovados = 0, recuperacao = 0, reprovados = 0, somaMedias = 0;
     
-    turmaConfig.alunos.forEach(aluno => {
+    turma.alunos.forEach(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
         const media = calcularMedia(notas, tipo);
         if (media >= 7) aprovados++;
@@ -669,7 +702,7 @@ function renderizarRelatorios() {
         else reprovados++;
         somaMedias += media;
     });
-    const mediaGeral = turmaConfig.alunos.length ? (somaMedias / turmaConfig.alunos.length).toFixed(1) : 0;
+    const mediaGeral = turma.alunos.length ? (somaMedias / turma.alunos.length).toFixed(1) : 0;
     
     document.getElementById("resumoNotas").innerHTML = `
         <ul>
@@ -690,7 +723,7 @@ function renderizarRelatorios() {
             });
         }
     }
-    const freqMedia = totalAulas ? ((totalPresencas / (totalAulas * turmaConfig.alunos.length)) * 100).toFixed(1) : 0;
+    const freqMedia = totalAulas ? ((totalPresencas / (totalAulas * turma.alunos.length)) * 100).toFixed(1) : 0;
     document.getElementById("resumoFrequencia").innerHTML = `
         <ul>
             <li>📅 Total Aulas: <strong>${totalAulas}</strong></li>
@@ -700,7 +733,7 @@ function renderizarRelatorios() {
     
     const destaques = [];
     const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
-    turmaConfig.alunos.forEach(aluno => {
+    turma.alunos.forEach(aluno => {
         const v = vistosTurma[aluno]?.total || 0;
         if (v >= 3) destaques.push({ aluno, vistos: v });
     });
@@ -710,7 +743,7 @@ function renderizarRelatorios() {
         "<p>Nenhum aluno com destaque ainda</p>";
     
     const recuperacaoList = [];
-    turmaConfig.alunos.forEach(aluno => {
+    turma.alunos.forEach(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
         const media = calcularMedia(notas, tipo);
         if (media >= 5 && media < 7) recuperacaoList.push({ aluno, media });
@@ -722,13 +755,13 @@ function renderizarRelatorios() {
 
 function exportarRelatorioCompleto() {
     const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const tipo = turmaConfig.tipoAvaliacao;
+    const turma = getTurmaAtual();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
     const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
     const presencasTurma = estado.dadosPresenca[estado.escolaAtual]?.[estado.turmaAtual] || {};
     
-    const dadosExport = turmaConfig.alunos.map(aluno => {
+    const dadosExport = turma.alunos.map(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
         const nm1 = parseFloat(notas.nm1) || 0;
         const nm2 = parseFloat(notas.nm2) || 0;
@@ -756,9 +789,85 @@ function exportarRelatorioCompleto() {
     
     const planilha = XLSX.utils.json_to_sheet(dadosExport);
     const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turmaConfig.nome}`);
-    XLSX.writeFile(livro, `Relatorio_${turmaConfig.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+    XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turma.nome}`);
+    XLSX.writeFile(livro, `Relatorio_${turma.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
     mostrarToast("Relatório completo exportado!");
+}
+
+// PDF Export
+function exportarBoletimPDF() {
+    const turma = getTurmaAtual();
+    if (!turma) {
+        mostrarToast("Selecione uma turma primeiro!", "warning");
+        return;
+    }
+    
+    const element = document.createElement('div');
+    element.style.padding = '20px';
+    element.style.fontFamily = 'Arial, sans-serif';
+    
+    element.innerHTML = `
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #667eea;">Academic Manager Pro</h1>
+            <h2>${turma.nome}</h2>
+            <p>${getEscolaAtual().nome} - ${getEscolaAtual().turno}</p>
+            <p>Data de emissão: ${new Date().toLocaleDateString('pt-BR')}</p>
+            <hr style="margin: 20px 0;">
+        </div>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">Aluno</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">NM1</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">NM2</th>
+                    ${turma.tipoAvaliacao === "trimestral" ? '<th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">NM3</th>' : ''}
+                    <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">Média</th>
+                    <th style="border: 1px solid #ddd; padding: 8px; background: #667eea; color: white;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    const disciplina = document.getElementById("disciplinaNotas")?.value || turma.disciplinas[0];
+    turma.alunos.forEach(aluno => {
+        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
+        const nm1 = parseFloat(notas.nm1) || 0;
+        const nm2 = parseFloat(notas.nm2) || 0;
+        const nm3 = turma.tipoAvaliacao === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+        const media = turma.tipoAvaliacao === "trimestral" ? (nm1 + nm2 + nm3) / 3 : (nm1 + nm2) / 2;
+        const status = media >= 7 ? "Aprovado" : (media >= 5 ? "Recuperação" : "Reprovado");
+        const statusColor = media >= 7 ? "#22c55e" : (media >= 5 ? "#f97316" : "#ef4444");
+        
+        element.innerHTML += `
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px;">${aluno}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${nm1.toFixed(1)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${nm2.toFixed(1)}</td>
+                ${turma.tipoAvaliacao === "trimestral" ? `<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${nm3.toFixed(1)}</td>` : ''}
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${media.toFixed(1)}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: ${statusColor};">${status}</td>
+            </tr>
+        `;
+    });
+    
+    element.innerHTML += `
+            </tbody>
+        </table>
+        <div style="margin-top: 30px; text-align: center;">
+            <p>© ${new Date().getFullYear()} Academic Manager Pro - Todos os direitos reservados</p>
+        </div>
+    `;
+    
+    const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `Boletim_${turma.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+    mostrarToast("PDF gerado com sucesso!", "success");
 }
 
 // ============================================================================
@@ -767,13 +876,13 @@ function exportarRelatorioCompleto() {
 
 function renderizarRanking() {
     const disciplina = document.getElementById("rankingDisciplina")?.value;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const tipo = turmaConfig.tipoAvaliacao;
+    const turma = getTurmaAtual();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
     const container = document.getElementById("rankingContainer");
     if (!container) return;
     
-    const rankings = turmaConfig.alunos.map(aluno => {
+    const rankings = turma.alunos.map(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
         const media = calcularMedia(notas, tipo);
         const vistos = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual]?.[aluno]?.total || 0;
@@ -823,13 +932,13 @@ function renderizarHorarios(dia = null) {
     const aulasDia = horariosAtuais[dia];
     if (!aulasDia) return;
     
-    const turmasDaEscola = ESCOLAS[estado.escolaAtual].turmas;
-    const turmasLista = Object.keys(turmasDaEscola);
+    const escola = getEscolaAtual();
+    const turmasLista = Object.keys(escola.turmas);
     const horariosFixos = estado.escolaAtual === "gentil" 
         ? ["07:30", "08:30", "09:50", "10:50", "11:50", "12:50", "13:50", "15:10", "16:10"]
         : ["18:30", "19:25", "20:20", "21:25", "22:20"];
     
-    let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th>${turmasLista.map(t => `<th>${turmasDaEscola[t].nome}</th>`).join('')}</thead><tbody>`;
+    let html = `<table class="tabela-horarios"><thead><tr><th>Horário</th>${turmasLista.map(t => `<th>${escola.turmas[t].nome}</th>`).join('')}</thead><tbody>`;
     
     for (let i = 0; i < horariosFixos.length; i++) {
         const hora = horariosFixos[i];
@@ -850,7 +959,6 @@ function renderizarHorarios(dia = null) {
     html += `</tbody></table>`;
     document.getElementById("gradeHorarios").innerHTML = html;
     
-    // Próximas aulas
     const agora = new Date();
     const horaMinutoAtual = agora.getHours() * 60 + agora.getMinutes();
     const todasAulas = [];
@@ -859,7 +967,7 @@ function renderizarHorarios(dia = null) {
             const [h, m] = aula.hora.split(":").map(Number);
             const minutosAula = h * 60 + m;
             if (minutosAula > horaMinutoAtual) {
-                todasAulas.push({ turmaNome: turmasDaEscola[turmaId].nome, ...aula, minutosRestantes: minutosAula - horaMinutoAtual });
+                todasAulas.push({ turmaNome: escola.turmas[turmaId].nome, ...aula, minutosRestantes: minutosAula - horaMinutoAtual });
             }
         });
     }
@@ -877,39 +985,6 @@ function renderizarHorarios(dia = null) {
     document.getElementById("proximasAulas").innerHTML = proximasHtml || '<div class="lista-vazia">Nenhuma aula programada</div>';
 }
 
-function verificarAlertasHorarios() {
-    if (!estado.configAlertas.notificar) return;
-    const agora = new Date();
-    const dias = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
-    const diaSemana = dias[agora.getDay()];
-    if (diaSemana === "domingo" || diaSemana === "sabado") return;
-    const horariosAtuais = getHorariosAtuais();
-    const aulasHoje = horariosAtuais[diaSemana];
-    if (!aulasHoje) return;
-    const horaAtual = agora.getHours() * 60 + agora.getMinutes();
-    const turmasDaEscola = ESCOLAS[estado.escolaAtual].turmas;
-    
-    for (let turmaId in turmasDaEscola) {
-        (aulasHoje[turmaId] || []).forEach(aula => {
-            const [h, m] = aula.hora.split(":").map(Number);
-            const minutosAula = h * 60 + m;
-            const minutosAteAula = minutosAula - horaAtual;
-            if (minutosAteAula === estado.configAlertas.minutosAntecedencia || (minutosAteAula > 0 && minutosAteAula <= estado.configAlertas.minutosAntecedencia)) {
-                const chave = `${estado.escolaAtual}_${turmaId}_${aula.disciplina}_${aula.hora}_${new Date().toDateString()}`;
-                if (!localStorage.getItem(chave)) {
-                    localStorage.setItem(chave, "true");
-                    setTimeout(() => localStorage.removeItem(chave), 60000);
-                    mostrarToast(`📚 Próxima aula: ${turmasDaEscola[turmaId].nome} - ${aula.disciplina} às ${aula.hora}`, "info");
-                    if (estado.configAlertas.som) {
-                        const audio = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
-                        audio.play().catch(() => {});
-                    }
-                }
-            }
-        });
-    }
-}
-
 function configurarAlertas() {
     const minutos = prompt("Minutos de antecedência para alertas? (5, 10, 15, 30, 60)", estado.configAlertas.minutosAntecedencia);
     if (minutos && [5,10,15,30,60].includes(parseInt(minutos))) {
@@ -920,6 +995,39 @@ function configurarAlertas() {
 
 function testarAlerta() {
     mostrarToast("🔔 Teste de Alerta! Você receberá notificações dos horários das aulas.", "info");
+}
+
+function verificarAlertasHorarios() {
+    if (!estado.configAlertas.notificar) return;
+    const agora = new Date();
+    const dias = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
+    const diaSemana = dias[agora.getDay()];
+    if (diaSemana === "domingo" || diaSemana === "sabado") return;
+    const horariosAtuais = getHorariosAtuais();
+    const aulasHoje = horariosAtuais[diaSemana];
+    if (!aulasHoje) return;
+    const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+    const escola = getEscolaAtual();
+    
+    for (let turmaId in escola.turmas) {
+        (aulasHoje[turmaId] || []).forEach(aula => {
+            const [h, m] = aula.hora.split(":").map(Number);
+            const minutosAula = h * 60 + m;
+            const minutosAteAula = minutosAula - horaAtual;
+            if (minutosAteAula === estado.configAlertas.minutosAntecedencia || (minutosAteAula > 0 && minutosAteAula <= estado.configAlertas.minutosAntecedencia)) {
+                const chave = `${estado.escolaAtual}_${turmaId}_${aula.disciplina}_${aula.hora}_${new Date().toDateString()}`;
+                if (!localStorage.getItem(chave)) {
+                    localStorage.setItem(chave, "true");
+                    setTimeout(() => localStorage.removeItem(chave), 60000);
+                    mostrarToast(`📚 Próxima aula: ${escola.turmas[turmaId].nome} - ${aula.disciplina} às ${aula.hora}`, "info");
+                    if (estado.configAlertas.som) {
+                        const audio = new Audio('data:audio/wav;base64,U3RlYWx0aCBzb3VuZA==');
+                        audio.play().catch(() => {});
+                    }
+                }
+            }
+        });
+    }
 }
 
 function iniciarHorarios() {
@@ -947,10 +1055,10 @@ function getAulasDoDia(data) {
     const horariosAtuais = getHorariosAtuais();
     const aulasDia = horariosAtuais[diaSemana] || {};
     const aulas = [];
-    const turmasDaEscola = ESCOLAS[estado.escolaAtual].turmas;
-    for (let turmaId in turmasDaEscola) {
+    const escola = getEscolaAtual();
+    for (let turmaId in escola.turmas) {
         (aulasDia[turmaId] || []).forEach(aula => {
-            aulas.push({ turmaNome: turmasDaEscola[turmaId].nome, disciplina: aula.disciplina, hora: aula.hora });
+            aulas.push({ turmaNome: escola.turmas[turmaId].nome, disciplina: aula.disciplina, hora: aula.hora });
         });
     }
     aulas.sort((a, b) => a.hora.localeCompare(b.hora));
@@ -1022,10 +1130,9 @@ function renderizarDashboard() {
     if (totalAulasHojeElem) totalAulasHojeElem.textContent = aulasHoje.length;
     
     const totalAlunosElem = document.getElementById("totalAlunos");
-    const turmaConfig = getTurmaConfig();
-    if (totalAlunosElem && turmaConfig) totalAlunosElem.textContent = turmaConfig.alunos.length;
+    const turma = getTurmaAtual();
+    if (totalAlunosElem && turma) totalAlunosElem.textContent = turma.alunos.length;
     
-    // Total de vistos no mês
     let totalVistos = 0;
     const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
     for (let aluno in vistosTurma) {
@@ -1041,12 +1148,14 @@ function renderizarDashboard() {
 
 function renderizarAdmin() {
     const turmaAdmin = document.getElementById("adminTurmaSelect")?.value || estado.turmaAtual;
-    const turmaConfig = ESCOLAS[estado.escolaAtual]?.turmas[turmaAdmin];
-    if (!turmaConfig) return;
+    const escola = getEscolaAtual();
+    if (!escola) return;
+    const turma = escola.turmas[turmaAdmin];
+    if (!turma) return;
     const tbody = document.getElementById("tbodyAdmin");
     if (!tbody) return;
     tbody.innerHTML = "";
-    turmaConfig.alunos.forEach((aluno, idx) => {
+    turma.alunos.forEach((aluno, idx) => {
         const obs = estado.dadosObservacoes[estado.escolaAtual]?.[turmaAdmin]?.[aluno] || "";
         const row = tbody.insertRow();
         row.insertCell(0).textContent = idx + 1;
@@ -1065,11 +1174,13 @@ function renderizarAdmin() {
 }
 
 function removerAluno(turmaId, alunoNome) {
-    if (!confirm(`⚠️ Remover "${alunoNome}"? Todos os dados serão excluídos!`)) return;
-    const turmaConfig = ESCOLAS[estado.escolaAtual]?.turmas[turmaId];
-    if (!turmaConfig) return;
-    const index = turmaConfig.alunos.indexOf(alunoNome);
-    if (index !== -1) turmaConfig.alunos.splice(index, 1);
+    if (!confirm(`⚠️ Remover "${alunoNome}"?`)) return;
+    const escola = getEscolaAtual();
+    if (!escola) return;
+    const turma = escola.turmas[turmaId];
+    if (!turma) return;
+    const index = turma.alunos.indexOf(alunoNome);
+    if (index !== -1) turma.alunos.splice(index, 1);
     salvarDados();
     renderizarAdmin();
     renderizarNotas();
@@ -1083,15 +1194,17 @@ function removerAluno(turmaId, alunoNome) {
 function adicionarAluno(turmaId, alunoNome, nascimento = "") {
     alunoNome = alunoNome.trim().toUpperCase();
     if (!alunoNome) { mostrarToast("Digite o nome!", "warning"); return false; }
-    const turmaConfig = ESCOLAS[estado.escolaAtual]?.turmas[turmaId];
-    if (!turmaConfig) return false;
-    if (turmaConfig.alunos.includes(alunoNome)) { mostrarToast("Aluno já cadastrado!", "warning"); return false; }
+    const escola = getEscolaAtual();
+    if (!escola) return false;
+    const turma = escola.turmas[turmaId];
+    if (!turma) return false;
+    if (turma.alunos.includes(alunoNome)) { mostrarToast("Aluno já cadastrado!", "warning"); return false; }
     
-    turmaConfig.alunos.push(alunoNome);
-    turmaConfig.alunos.sort();
+    turma.alunos.push(alunoNome);
+    turma.alunos.sort();
     
-    const tipo = turmaConfig.tipoAvaliacao;
-    turmaConfig.disciplinas.forEach(disciplina => {
+    const tipo = turma.tipoAvaliacao;
+    turma.disciplinas.forEach(disciplina => {
         if (!estado.dadosNotas[estado.escolaAtual][turmaId][disciplina]) {
             estado.dadosNotas[estado.escolaAtual][turmaId][disciplina] = {};
         }
@@ -1164,7 +1277,144 @@ function restoreDados(file) {
 }
 
 // ============================================================================
-// EVENTOS
+// INDEXEDDB
+// ============================================================================
+
+const DB_NAME = 'AcademicManagerDB';
+const DB_VERSION = 1;
+
+function abrirBancoDados() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('backups')) {
+                db.createObjectStore('backups', { keyPath: 'timestamp' });
+            }
+        };
+    });
+}
+
+async function fazerBackupIndexedDB() {
+    const backup = {
+        timestamp: new Date().toISOString(),
+        notas: estado.dadosNotas,
+        presenca: estado.dadosPresenca,
+        vistos: estado.dadosVistos,
+        observacoes: estado.dadosObservacoes,
+        eventos: estado.dadosEventos
+    };
+    
+    const db = await abrirBancoDados();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['backups'], 'readwrite');
+        const store = transaction.objectStore('backups');
+        const request = store.add(backup);
+        request.onsuccess = () => {
+            mostrarToast("Backup salvo no IndexedDB!", "success");
+            resolve();
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function restaurarUltimoBackup() {
+    const db = await abrirBancoDados();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['backups'], 'readonly');
+        const store = transaction.objectStore('backups');
+        const request = store.getAll();
+        request.onsuccess = () => {
+            const backups = request.result;
+            if (backups.length === 0) {
+                mostrarToast("Nenhum backup encontrado!", "warning");
+                resolve();
+                return;
+            }
+            backups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const ultimoBackup = backups[0];
+            
+            estado.dadosNotas = ultimoBackup.notas;
+            estado.dadosPresenca = ultimoBackup.presenca;
+            estado.dadosVistos = ultimoBackup.vistos;
+            estado.dadosObservacoes = ultimoBackup.observacoes;
+            estado.dadosEventos = ultimoBackup.eventos;
+            
+            salvarDados();
+            renderizarNotas();
+            renderizarPresenca();
+            renderizarVistos();
+            renderizarRelatorios();
+            renderizarRanking();
+            renderizarDashboard();
+            atualizarEstatisticas();
+            mostrarToast("Backup restaurado com sucesso!", "success");
+            resolve();
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// ============================================================================
+// QR CODE
+// ============================================================================
+
+function gerarQRCode() {
+    const turma = getTurmaAtual();
+    if (!turma) {
+        mostrarToast("Selecione uma turma primeiro!", "warning");
+        return;
+    }
+    
+    const urlAtual = window.location.href.split('?')[0];
+    const urlCompartilhamento = `${urlAtual}?escola=${estado.escolaAtual}&turma=${estado.turmaAtual}`;
+    
+    const container = document.getElementById("qrcodeContainer");
+    container.innerHTML = "";
+    
+    if (typeof QRCode !== 'undefined') {
+        new QRCode(container, {
+            text: urlCompartilhamento,
+            width: 200,
+            height: 200,
+            colorDark: "#667eea",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } else {
+        container.innerHTML = '<p>QR Code não disponível</p>';
+    }
+    
+    document.getElementById("qrLinkText").textContent = urlCompartilhamento;
+    document.getElementById("modalQR").style.display = "flex";
+}
+
+function copiarLink() {
+    const link = document.getElementById("qrLinkText").textContent;
+    navigator.clipboard.writeText(link).then(() => {
+        mostrarToast("Link copiado para a área de transferência!", "success");
+    }).catch(() => {
+        mostrarToast("Erro ao copiar link!", "error");
+    });
+}
+
+function processarParametrosURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const escola = urlParams.get('escola');
+    const turma = urlParams.get('turma');
+    
+    if (escola && turma && ESCOLAS[escola] && ESCOLAS[escola].turmas[turma]) {
+        setTimeout(() => {
+            trocarEscolaTurma(escola, turma);
+            mostrarToast(`Acessando: ${ESCOLAS[escola].turmas[turma].nome}`, "success");
+        }, 1000);
+    }
+}
+
+// ============================================================================
+// EVENTOS, OBSERVAÇÕES E GRÁFICO
 // ============================================================================
 
 function renderizarEventos() {
@@ -1208,10 +1458,6 @@ function adicionarEvento(titulo, data, descricao) {
     return true;
 }
 
-// ============================================================================
-// OBSERVAÇÕES E GRÁFICO
-// ============================================================================
-
 function abrirModalObservacao(aluno) {
     const obs = estado.dadosObservacoes[estado.escolaAtual]?.[estado.turmaAtual]?.[aluno] || "";
     document.getElementById("modalObsTexto").value = obs;
@@ -1240,9 +1486,9 @@ function atualizarGraficoEvolucao() {
     if (!aluno) return;
     
     const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turmaConfig = getTurmaConfig();
-    if (!turmaConfig) return;
-    const tipo = turmaConfig.tipoAvaliacao;
+    const turma = getTurmaAtual();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
     const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
     
     let labels = [], valores = [];
@@ -1287,7 +1533,7 @@ function atualizarGraficoEvolucao() {
 // INICIALIZAÇÃO DO SISTEMA
 // ============================================================================
 
-function iniciarSistema(usuario) {
+async function iniciarSistema(usuario) {
     console.log("Iniciando sistema para:", usuario.nome);
     estado.sessaoAtual = usuario;
     
@@ -1298,36 +1544,33 @@ function iniciarSistema(usuario) {
     document.getElementById("conteudoPrincipal").style.display = "flex";
     
     carregarDadosSalvos();
-    carregarTurmasSidebar();
+    carregarSidebar();
     
-    // Selecionar primeira turma com base no usuário
-    let primeiraEscola = "gentil";
-    let primeiraTurma = "1adm";
+    let escolaInicial = "gentil";
+    let turmaInicial = "1adm";
     if (usuario.escola === "eneas") {
-        primeiraEscola = "eneas";
-        primeiraTurma = "inf1";
+        escolaInicial = "eneas";
+        turmaInicial = "inf1";
     } else if (usuario.escola === "gentil") {
-        primeiraEscola = "gentil";
-        primeiraTurma = "1adm";
-    } else {
-        primeiraEscola = "gentil";
-        primeiraTurma = "1adm";
+        escolaInicial = "gentil";
+        turmaInicial = "1adm";
     }
-    trocarEscolaTurma(primeiraEscola, primeiraTurma);
+    await trocarEscolaTurma(escolaInicial, turmaInicial);
     
-    // Configurar eventos dos botões
+    // Event listeners dos botões principais
     document.getElementById("salvarNotas")?.addEventListener("click", salvarNotas);
     document.getElementById("exportarNotas")?.addEventListener("click", exportarNotas);
     document.getElementById("adicionarAula")?.addEventListener("click", adicionarAula);
     document.getElementById("salvarPresenca")?.addEventListener("click", () => { salvarDados(); mostrarToast("Presenças salvas!"); });
     document.getElementById("exportarPresenca")?.addEventListener("click", exportarPresenca);
     document.getElementById("adicionarVisto")?.addEventListener("click", () => {
-        const tc = getTurmaConfig();
-        if (tc && tc.alunos.length > 0) abrirModalVisto(tc.alunos[0]);
+        const turma = getTurmaAtual();
+        if (turma && turma.alunos.length > 0) abrirModalVisto(turma.alunos[0]);
     });
     document.getElementById("salvarVistos")?.addEventListener("click", () => { salvarDados(); mostrarToast("Vistos salvos!"); });
     document.getElementById("exportarVistos")?.addEventListener("click", exportarVistos);
     document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
+    document.getElementById("exportarPDF")?.addEventListener("click", exportarBoletimPDF);
     document.getElementById("adicionarEvento")?.addEventListener("click", () => {
         document.getElementById("eventoTitulo").value = "";
         document.getElementById("eventoData").value = "";
@@ -1357,11 +1600,17 @@ function iniciarSistema(usuario) {
         input.onchange = (e) => { if (e.target.files[0]) restoreDados(e.target.files[0]); };
         input.click();
     });
+    document.getElementById("backupIndexedDBBtn")?.addEventListener("click", fazerBackupIndexedDB);
+    document.getElementById("restoreIndexedDBBtn")?.addEventListener("click", restaurarUltimoBackup);
+    document.getElementById("gerarQRBtn")?.addEventListener("click", gerarQRCode);
+    document.getElementById("copiarLinkBtn")?.addEventListener("click", copiarLink);
+    document.querySelector(".modal-fechar-qr")?.addEventListener("click", () => {
+        document.getElementById("modalQR").style.display = "none";
+    });
     document.getElementById("configurarAlertas")?.addEventListener("click", configurarAlertas);
     document.getElementById("testarAlerta")?.addEventListener("click", testarAlerta);
     document.getElementById("graficoAlunoSelect")?.addEventListener("change", atualizarGraficoEvolucao);
     
-    // Fechar modais
     document.querySelectorAll(".modal-fechar, .modal-fechar-aluno, .modal-fechar-evento, .modal-fechar-obs").forEach(btn => {
         btn.onclick = () => {
             document.getElementById("modalAluno").style.display = "none";
@@ -1374,14 +1623,13 @@ function iniciarSistema(usuario) {
     document.getElementById("modalSalvarVisto")?.addEventListener("click", salvarVisto);
     document.getElementById("modalSalvarObs")?.addEventListener("click", salvarObservacaoModal);
     
-    // Dark Mode e Sidebar
     const toggleBtn = document.getElementById("toggleSidebar");
     if (toggleBtn) toggleBtn.onclick = () => document.getElementById("sidebar").classList.toggle("collapsed");
     const darkModeBtn = document.getElementById("toggleDarkMode");
     if (darkModeBtn) darkModeBtn.onclick = () => document.body.classList.toggle("dark-mode");
     
-    // Iniciar horários
     iniciarHorarios();
+    processarParametrosURL();
     
     console.log("Sistema iniciado com sucesso!");
 }
@@ -1400,7 +1648,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("conteudoPrincipal").style.display = "none";
     }
     
-    // Login
     document.getElementById("loginCpf")?.addEventListener("input", () => formatarCPF(document.getElementById("loginCpf")));
     document.getElementById("btnLogin")?.addEventListener("click", () => {
         const resultado = fazerLogin(document.getElementById("loginCpf").value, document.getElementById("loginSenha").value);
@@ -1415,7 +1662,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     document.getElementById("btnLogoutSidebar")?.addEventListener("click", fazerLogout);
     
-    // Navegação das abas
     document.querySelectorAll(".nav-item-aba").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".nav-item-aba").forEach(b => b.classList.remove("ativo"));
@@ -1425,7 +1671,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const abaElement = document.getElementById(abaId);
             if (abaElement) abaElement.classList.add("active");
             
-            // Recarregar conteúdo específico da aba
             if (btn.dataset.aba === "relatorios") renderizarRelatorios();
             if (btn.dataset.aba === "ranking") renderizarRanking();
             if (btn.dataset.aba === "calendario") renderizarEventos();
@@ -1441,21 +1686,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("rankingDisciplina")?.addEventListener("change", renderizarRanking);
     document.getElementById("adminTurmaSelect")?.addEventListener("change", renderizarAdmin);
     
-    // Filtros
     document.getElementById("mesPresenca")?.addEventListener("change", renderizarPresenca);
     document.getElementById("anoPresenca")?.addEventListener("change", renderizarPresenca);
-    
-    // Pesquisa global
-    document.getElementById("globalSearch")?.addEventListener("input", (e) => {
-        const termo = e.target.value.toLowerCase();
-        const turmaConfig = getTurmaConfig();
-        if (!turmaConfig) return;
-        const alunos = turmaConfig.alunos;
-        const filtrados = alunos.filter(a => a.toLowerCase().includes(termo));
-        if (termo.length > 0 && filtrados.length > 0) {
-            mostrarToast(`🔍 Encontrados ${filtrados.length} alunos: ${filtrados.slice(0, 3).join(", ")}${filtrados.length > 3 ? "..." : ""}`, "info");
-        }
-    });
     
     document.querySelector(".nav-item-aba[data-aba='dashboard']")?.classList.add("ativo");
 });
