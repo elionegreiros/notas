@@ -10,108 +10,10 @@ const USUARIOS = {
     "99988877766": { nome: "Administrador", senha: "admin123", tipo: "admin", escola: "ambas" }
 };
 
-// ============================================================================
-// DADOS DOS ALUNOS
-// ============================================================================
-
-const ALUNOS_GENTIL_1ADM = [
-    "ALICE FERREIRA DA SILVA", "CARLENE MARTINS DA SILVA", "DAVI DE ALENCAR MELO BEZERRA",
-    "ELIEZER LEAL BARBOSA", "ENRICO SAMUEL PEREIRA HOSTERNO", "FRANCISCA YARA GONCALVES DE SANTANA",
-    "FRANCISCO FELIX DINO JUNIOR", "FRANCISCO JHONANTAN GONCALVES DA SILVA", "HELOA MENDES ALVES",
-    "JOSE GUILHERME ALVES PIMENTEL", "KELY FERNANDES DA SILVA", "KEVEN VINICIUS ALVES DE OLVEIRA",
-    "LAVINE MARIA FERREIRA FELIX", "LUCAS VINICIUS ALVES DA SILVA", "LUIS ERIVAN FERNANDES DE SOUSA",
-    "MARIA ALICE FREIRE DA SILVA", "MARIA CLARA DAMACENA DE SOUSA", "MARIA FERNANDA DE SOUSA",
-    "MARIA ISADORA RIBEIRO DA SILVA", "MARIELLE PIRES DA SILVA", "MIGUEL THARL EY BATISTA BARROSA",
-    "PAULO VICTOR MOREIRA DA SILVA", "PEDRO LUCAS BEZERRA DA COSTA", "RANNIEL ALVES NOGUEIRA DA SILVA",
-    "RENNA DUARTE DA SILVA", "THAYSSA DO NASCIMENTO SILVA"
-];
-
-const ALUNOS_GENTIL_1AMB = [
-    "ALEXANDRA DUARTE LOPES DA ROCHA", "ALICKY", "ANA CLARA MOTA GOMES", "ANA CLARA SOUSA SILVA",
-    "ANDRESSA OLIVEIRA DE SOUSA", "ANNE VITORIA MARTINS CARVALHO", "DEBORA CAMILLE OLIVEIRA DE SOUSA",
-    "DEISE MARTINS LIMA", "ELICKY SOARES LOIOLA", "FRANCISCO DAVID ROQUE DA SILVA",
-    "GABRIELLY BRITO PEDROSA", "GEOVANNA ANTONELE RIBEIRO DE SOUSA", "JANICE VIANA DE SOUSA",
-    "LARA MAYSA VITURIANO DE CARVALHO", "LUIS DAVY DA SILVA RULIM", "LUIS GUSTAVO GOMES DE MELO",
-    "MAYSA ALVES SILVA", "SARA OLIVEIRA CRIZANTINO", "STEICIE DA SILVA LIMA"
-];
-
-const ALUNOS_GENTIL_2DS = [
-    "ANA SOPHIA GOMES DA SILVA", "CARLOS MANOEL CAETANO", "FRANCISCA INGRID TAINAR DA SILVA ADALBERTO",
-    "IAN BENICIO DE OLIVEIRA CARVALHO", "JACKSON VICENTE DO NASCIMENTO", "JOHNNATHAN RODRIGUES DA SILVA",
-    "JUAN LOIOLA DA SILVA", "LEO VICTOR FERREIRA LOIOLA", "MARIA BEATRIZ XAVIER DE SOUSA",
-    "MIKLENYO JOSE LUSTOSA ALVES", "NICOLAS OLIVEIRA DINIZ", "PABLO KAUAN DE SOUSA NASCIMENTO",
-    "SHAUANY SOUZA LOPES", "TAYNARA OLIVEIRA REIS", "THIAGO LEVI NUNES PEREIRA",
-    "VALTER ALEXANDRE OLIVEIRA FERNANDES"
-];
-
-const ALUNOS_ENEAS_INF1 = [
-    "ALEXANDRE BARBOSA DA SILVA", "ANTONIA GLENDA DA SILVA ALVES", "EMANUELLY DA SILVA ALVES",
-    "FRANCISCO EDSON DA SILVA CARNEIRO", "GEOVANA MARIA PEREIRA MARTINS", "KELIANY VIEIRA ANDRADE",
-    "LUZANIRA ARAUJO DE SOUSA", "MARIA DA CRUZ FURTUNATA DA SILVA", "MARIA DE FATIMA OLIVEIRA",
-    "MARIA ISABELLY RIBEIRO MARTINA", "MARIA ISLANIA DE SOUSA", "MARIA KARIELY DE MELO ANDRADE",
-    "MARISANGELA VELOSO DA SILVA", "RITA FRALINA ROQUE DA SILVA", "SIDNEY SANTANA DA SILVA",
-    "VIVIANE DE SOUSA LOPES"
-];
-
-const ALUNOS_ENEAS_INF5 = [
-    "AELTON MOTA DE SOUSA", "ANDRE DE CASTRO LIMA", "ANTONIA RODRIGUES MARTINS",
-    "DAYANNY MARIA OLIVEIRA FREITAS", "DOUGLAS DE CARVALHO CARDOSO", "EDILENE CARVALHO DA SILVA",
-    "HILTON FERNANDES DA SILVA", "KAIQUE JOSE LIMA LEITE"
-];
-
-// ============================================================================
-// CONFIGURAÇÃO DAS TURMAS
-// ============================================================================
-
-const ESCOLAS = {
-    gentil: {
-        nome: "CETI Antonio Gentil Dantas Sobrinho",
-        turno: "Diurno",
-        icone: "fa-sun",
-        turmas: {
-            "1adm": { nome: "1º Administração", alunos: [...ALUNOS_GENTIL_1ADM], disciplinas: ["Inteligência Artificial"], tipoAvaliacao: "trimestral" },
-            "1amb": { nome: "1º Controle Ambiental", alunos: [...ALUNOS_GENTIL_1AMB], disciplinas: ["Inteligência Artificial"], tipoAvaliacao: "trimestral" },
-            "2ds": { nome: "2º Desenvolvimento de Sistemas", alunos: [...ALUNOS_GENTIL_2DS], disciplinas: ["Inteligência Artificial", "MENTORIAS TEC II", "FUNDAMENTOS DE UI/UX", "PENSAMENTO COMPUTACIONAL II", "PROGRAMAÇÃO ESTRUTURADA", "PROGRAMAÇÃO ORIENTADA À OBJETOS", "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", "PROGRAMAÇÃO WEB FRONT-END"], tipoAvaliacao: "trimestral" }
-        }
-    },
-    eneas: {
-        nome: "Unidade Escolar Eneas Nogueira",
-        turno: "Noturno",
-        icone: "fa-moon",
-        turmas: {
-            "inf1": { nome: "Informática - Módulo I", alunos: [...ALUNOS_ENEAS_INF1], disciplinas: ["Análise e Lógica de Programação"], tipoAvaliacao: "bimestral" },
-            "inf5": { nome: "Informática - Módulo V", alunos: [...ALUNOS_ENEAS_INF5], disciplinas: ["Empreendedorismo para TI"], tipoAvaliacao: "bimestral" }
-        }
-    }
-};
-
-// ============================================================================
-// HORÁRIOS
-// ============================================================================
-
-const HORARIOS_GENTIL = {
-    segunda: { "1adm": [], "1amb": [], "2ds": [{ hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "16:10", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }] },
-    terca: { "1adm": [{ hora: "15:10", disciplina: "INTELIGÊNCIA ARTIFICIAL" }], "1amb": [], "2ds": [{ hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" }, { hora: "13:50", disciplina: "MENTORIA TEC" }] },
-    quarta: { "1adm": [], "1amb": [{ hora: "08:30", disciplina: "INTELIGÊNCIA ARTIFICIAL" }], "2ds": [{ hora: "15:10", disciplina: "FRONT-END" }, { hora: "16:10", disciplina: "PROGRAMAÇÃO ESTRUTURADA" }] },
-    quinta: { "1adm": [], "1amb": [], "2ds": [{ hora: "07:30", disciplina: "PROG. ORIENTADA A OBJETOS" }, { hora: "12:50", disciplina: "PROG. P/ DISPOSITIVOS MÓVEIS" }] },
-    sexta: { "1adm": [], "1amb": [], "2ds": [{ hora: "10:50", disciplina: "INTELIGÊNCIA ARTIFICIAL" }, { hora: "12:50", disciplina: "FUNDAMENTOS DE UI/UX" }, { hora: "16:10", disciplina: "PENSAMENTO COMPUTACIONAL" }] }
-};
-
-const HORARIOS_ENEAS = {
-    segunda: { "inf1": [{ hora: "19:25", disciplina: "INF - MÓDULO I" }], "inf5": [{ hora: "18:30", disciplina: "INF - MÓDULO V" }] },
-    terca: { "inf1": [{ hora: "20:20", disciplina: "INF - MÓDULO I" }], "inf5": [{ hora: "21:25", disciplina: "INF - MÓDULO V" }] },
-    quarta: { "inf1": [], "inf5": [{ hora: "18:30", disciplina: "INF - MÓDULO V" }] },
-    quinta: { "inf1": [], "inf5": [] },
-    sexta: { "inf1": [], "inf5": [] }
-};
-
-// ============================================================================
-// ESTADO GLOBAL
-// ============================================================================
-
+// Estado Global
 let estado = {
     escolaAtual: "gentil",
-    turmaAtual: "1adm",
+    turmaAtual: "",
     dadosNotas: {},
     dadosPresenca: {},
     dadosVistos: {},
@@ -120,8 +22,62 @@ let estado = {
     graficoEvolucao: null,
     alunoSelecionadoVisto: null,
     sessaoAtual: null,
-    configAlertas: { notificar: true, minutosAntecedencia: 15, som: true }
+    configAlertas: { notificar: true, minutosAntecedencia: 15, som: true },
+    escolas: {},
+    turmas: {},
+    alunos: {},
+    horarios: {}
 };
+
+// ============================================================================
+// FUNÇÕES DE CARREGAMENTO DE DADOS
+// ============================================================================
+
+async function carregarDadosJSON() {
+    try {
+        // Carregar configuração das escolas
+        const resEscolas = await fetch('/dados/escolas.json');
+        estado.escolas = await resEscolas.json();
+
+        const escolas = ['gentil', 'eneas'];
+        
+        for (const escola of escolas) {
+            // Carregar turmas
+            const resTurmas = await fetch(`/dados/${escola}/turmas.json`);
+            estado.turmas[escola] = await resTurmas.json();
+
+            // Carregar horários
+            const resHorarios = await fetch(`/dados/${escola}/horarios.json`);
+            estado.horarios[escola] = await resHorarios.json();
+
+            // Carregar alunos para cada turma
+            estado.alunos[escola] = {};
+            const turmasLista = Object.keys(estado.turmas[escola]);
+            
+            for (const turmaId of turmasLista) {
+                try {
+                    const resAlunos = await fetch(`/dados/${escola}/alunos_${turmaId}.json`);
+                    estado.alunos[escola][turmaId] = await resAlunos.json();
+                } catch (e) {
+                    console.warn(`Alunos para ${escola}/${turmaId} não encontrados`);
+                    estado.alunos[escola][turmaId] = [];
+                }
+            }
+        }
+
+        // Definir primeira turma
+        const primeirasTurmas = Object.keys(estado.turmas.gentil);
+        estado.turmaAtual = primeirasTurmas[0] || "1adm";
+        
+        inicializarEstruturas();
+        carregarDadosSalvos();
+        
+        mostrarToast("✅ Dados carregados com sucesso");
+    } catch (erro) {
+        console.error("❌ Erro ao carregar dados JSON:", erro);
+        mostrarToast("Erro ao carregar dados do sistema", "error");
+    }
+}
 
 // ============================================================================
 // FUNÇÕES UTILITÁRIAS
@@ -164,33 +120,38 @@ function carregarDadosSalvos() {
             estado.dadosVistos = data.vistos || {};
             estado.dadosObservacoes = data.observacoes || {};
             estado.dadosEventos = data.eventos || [];
-        } catch(e) { console.log("Erro ao carregar dados salvos"); }
+        } catch(e) { 
+            console.log("Erro ao carregar dados salvos"); 
+        }
     }
-    inicializarEstruturas();
 }
 
 function inicializarEstruturas() {
-    for (let escolaId in ESCOLAS) {
+    for (let escolaId in estado.escolas) {
         if (!estado.dadosNotas[escolaId]) estado.dadosNotas[escolaId] = {};
         if (!estado.dadosPresenca[escolaId]) estado.dadosPresenca[escolaId] = {};
         if (!estado.dadosVistos[escolaId]) estado.dadosVistos[escolaId] = {};
         if (!estado.dadosObservacoes[escolaId]) estado.dadosObservacoes[escolaId] = {};
         
-        const turmas = ESCOLAS[escolaId].turmas;
+        const turmas = estado.turmas[escolaId];
         for (let turmaId in turmas) {
             const turma = turmas[turmaId];
+            const alunosTurma = estado.alunos[escolaId]?.[turmaId] || [];
+            
             if (!estado.dadosNotas[escolaId][turmaId]) estado.dadosNotas[escolaId][turmaId] = {};
+            
             turma.disciplinas.forEach(disciplina => {
                 if (!estado.dadosNotas[escolaId][turmaId][disciplina]) {
                     estado.dadosNotas[escolaId][turmaId][disciplina] = {};
-                    turma.alunos.forEach(aluno => {
-                        estado.dadosNotas[escolaId][turmaId][disciplina][aluno] = turma.tipoAvaliacao === "trimestral" ? { nm1: "", nm2: "", nm3: "" } : { nm1: "", nm2: "" };
+                    alunosTurma.forEach(aluno => {
+                        estado.dadosNotas[escolaId][turmaId][disciplina][aluno] = 
+                            turma.tipoAvaliacao === "trimestral" ? { nm1: "", nm2: "", nm3: "" } : { nm1: "", nm2: "" };
                     });
                 }
             });
-            
+
             if (!estado.dadosVistos[escolaId][turmaId]) estado.dadosVistos[escolaId][turmaId] = {};
-            turma.alunos.forEach(aluno => {
+            alunosTurma.forEach(aluno => {
                 if (!estado.dadosVistos[escolaId][turmaId][aluno]) {
                     estado.dadosVistos[escolaId][turmaId][aluno] = { total: 0, registros: [], ultima: "" };
                 }
@@ -200,15 +161,15 @@ function inicializarEstruturas() {
 }
 
 function getTurmaConfig() {
-    return ESCOLAS[estado.escolaAtual]?.turmas[estado.turmaAtual] || null;
+    return estado.turmas[estado.escolaAtual]?.[estado.turmaAtual] || null;
 }
 
-function getEscolaAtual() {
-    return ESCOLAS[estado.escolaAtual];
+function getAlunosTurma() {
+    return estado.alunos[estado.escolaAtual]?.[estado.turmaAtual] || [];
 }
 
 function getHorariosAtuais() {
-    return estado.escolaAtual === "gentil" ? HORARIOS_GENTIL : HORARIOS_ENEAS;
+    return estado.horarios[estado.escolaAtual] || {};
 }
 
 // ============================================================================
@@ -219,7 +180,13 @@ function fazerLogin(cpf, senha) {
     const cpfLimpo = cpf.replace(/[.\-]/g, '');
     const usuario = USUARIOS[cpfLimpo];
     if (usuario && usuario.senha === senha) {
-        estado.sessaoAtual = { cpf: cpfLimpo, nome: usuario.nome, tipo: usuario.tipo, escola: usuario.escola, loginTime: new Date().toISOString() };
+        estado.sessaoAtual = { 
+            cpf: cpfLimpo, 
+            nome: usuario.nome, 
+            tipo: usuario.tipo, 
+            escola: usuario.escola, 
+            loginTime: new Date().toISOString() 
+        };
         localStorage.setItem("sessaoAcademico", JSON.stringify(estado.sessaoAtual));
         return { sucesso: true };
     }
@@ -232,7 +199,10 @@ function verificarSessao() {
     try {
         const sessao = JSON.parse(sessaoStr);
         const diffHoras = (new Date() - new Date(sessao.loginTime)) / (1000 * 60 * 60);
-        if (diffHoras > 24) { localStorage.removeItem("sessaoAcademico"); return null; }
+        if (diffHoras > 24) { 
+            localStorage.removeItem("sessaoAcademico"); 
+            return null; 
+        }
         return sessao;
     } catch(e) { return null; }
 }
@@ -246,7 +216,7 @@ function fazerLogout() {
     mostrarToast("Logout realizado com sucesso!", "info");
 }
 
-function formatarCPF(input) {
+window.formatarCPF = function(input) {
     let valor = input.value.replace(/\D/g, '');
     if (valor.length > 9) valor = valor.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
     else if (valor.length > 6) valor = valor.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
@@ -261,11 +231,10 @@ function formatarCPF(input) {
 function carregarTurmasSelect() {
     const turmaSelect = document.getElementById("turmaSelect");
     if (!turmaSelect) return;
-    
-    const escola = ESCOLAS[estado.escolaAtual];
+    const turmas = estado.turmas[estado.escolaAtual];
     turmaSelect.innerHTML = "";
-    for (let turmaId in escola.turmas) {
-        const turma = escola.turmas[turmaId];
+    for (let turmaId in turmas) {
+        const turma = turmas[turmaId];
         const option = document.createElement("option");
         option.value = turmaId;
         option.textContent = turma.nome;
@@ -277,14 +246,16 @@ function carregarTurmasSelect() {
 function trocarEscolaTurma(escolaId, turmaId) {
     estado.escolaAtual = escolaId;
     estado.turmaAtual = turmaId;
+    const escola = estado.escolas[escolaId];
     
-    const escola = ESCOLAS[escolaId];
-    document.getElementById("escolaBadge").innerHTML = `<i class="fas ${escola.icone}"></i> ${escola.nome}`;
+    const escolaBadge = document.getElementById("escolaBadge");
+    if (escolaBadge) {
+        escolaBadge.innerHTML = `<i class="fas ${escola.icone}"></i> ${escola.nome}`;
+    }
     
     carregarTurmasSelect();
-    
-    // Atualizar selects de disciplinas
-    const turma = escola.turmas[turmaId];
+
+    const turma = estado.turmas[escolaId][turmaId];
     const selectDisciplina = document.getElementById("disciplinaNotas");
     if (selectDisciplina) {
         selectDisciplina.innerHTML = "";
@@ -295,7 +266,7 @@ function trocarEscolaTurma(escolaId, turmaId) {
             selectDisciplina.appendChild(opt);
         });
     }
-    
+
     const rankingDisciplina = document.getElementById("rankingDisciplina");
     if (rankingDisciplina) {
         rankingDisciplina.innerHTML = "";
@@ -306,19 +277,19 @@ function trocarEscolaTurma(escolaId, turmaId) {
             rankingDisciplina.appendChild(opt);
         });
     }
-    
+
     const graficoSelect = document.getElementById("graficoAlunoSelect");
     if (graficoSelect) {
         graficoSelect.innerHTML = '<option value="">Selecione um aluno</option>';
-        turma.alunos.forEach(aluno => {
+        const alunos = estado.alunos[escolaId][turmaId] || [];
+        alunos.forEach(aluno => {
             const opt = document.createElement("option");
             opt.value = aluno;
             opt.textContent = aluno;
             graficoSelect.appendChild(opt);
         });
     }
-    
-    // Recarregar todas as visualizações
+
     renderizarNotas();
     renderizarPresenca();
     renderizarVistos();
@@ -329,6 +300,25 @@ function trocarEscolaTurma(escolaId, turmaId) {
     renderizarAdmin();
     renderizarEventos();
     atualizarEstatisticas();
+    atualizarGraficoEvolucao();
+}
+
+function navegarPagina(paginaId) {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    const pageElement = document.getElementById(`page${paginaId.charAt(0).toUpperCase() + paginaId.slice(1)}`);
+    if (pageElement) pageElement.classList.add('active');
+    
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+    const menuItem = document.querySelector(`.menu-item[data-page="${paginaId}"]`);
+    if (menuItem) menuItem.classList.add('active');
+    
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle) {
+        const nomes = { dashboard: 'Dashboard', notas: 'Notas', presenca: 'Presença', vistos: 'Vistos', 
+                        horarios: 'Horários', ranking: 'Ranking', relatorios: 'Relatórios', 
+                        eventos: 'Eventos', admin: 'Administração' };
+        pageTitle.textContent = nomes[paginaId] || paginaId;
+    }
 }
 
 // ============================================================================
@@ -348,20 +338,19 @@ function renderizarNotas() {
     const turma = getTurmaConfig();
     if (!turma) return;
     const tipo = turma.tipoAvaliacao;
-    const alunos = turma.alunos;
+    const alunos = getAlunosTurma();
     const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
     const tbody = document.getElementById("tbodyNotas");
     if (!tbody) return;
     tbody.innerHTML = "";
-    
-    // Atualizar cabeçalho da tabela
+
     const header = document.getElementById("tabelaNotasHeader");
-    if (tipo === "trimestral") {
-        header.innerHTML = `<th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th></th>`;
-    } else {
-        header.innerHTML = `<th>Aluno</th><th>NM1</th><th>NM2</th><th>Média</th><th>Status</th><th></th>`;
+    if (header) {
+        header.innerHTML = tipo === "trimestral" 
+            ? `<th>Aluno</th><th>NM1</th><th>NM2</th><th>NM3</th><th>Média</th><th>Status</th><th></th>`
+            : `<th>Aluno</th><th>NM1</th><th>NM2</th><th>Média</th><th>Status</th><th></th>`;
     }
-    
+
     alunos.forEach(aluno => {
         const notas = notasTurma[aluno] || (tipo === "trimestral" ? { nm1: "", nm2: "", nm3: "" } : { nm1: "", nm2: "" });
         const media = calcularMedia(notas, tipo);
@@ -370,18 +359,21 @@ function renderizarNotas() {
         
         const row = tbody.insertRow();
         row.insertCell(0).innerHTML = `<strong>${aluno}</strong>`;
-        
+
         for (let i = 1; i <= (tipo === "trimestral" ? 3 : 2); i++) {
             const cell = row.insertCell(i);
             const input = document.createElement("input");
-            input.type = "number"; input.step = "0.1"; input.min = "0"; input.max = "10";
+            input.type = "number";
+            input.step = "0.1";
+            input.min = "0";
+            input.max = "10";
             input.value = notas[`nm${i}`] !== "" ? notas[`nm${i}`] : "";
             input.classList.add("nota-input");
             input.dataset.aluno = aluno;
             input.dataset.trimestre = `nm${i}`;
             cell.appendChild(input);
         }
-        
+
         row.insertCell(tipo === "trimestral" ? 4 : 3).innerHTML = `<strong>${media.toFixed(1)}</strong>`;
         row.insertCell(tipo === "trimestral" ? 5 : 4).innerHTML = `<span class="${statusClass}">${status}</span>`;
         
@@ -393,7 +385,6 @@ function renderizarNotas() {
         obsBtn.onclick = () => abrirModalObservacao(aluno);
         obsCell.appendChild(obsBtn);
     });
-    
     atualizarEstatisticas();
 }
 
@@ -405,6 +396,7 @@ function salvarNotas() {
         const trimestre = input.dataset.trimestre;
         let valor = input.value === "" ? "" : parseFloat(input.value);
         if (valor !== "" && (isNaN(valor) || valor < 0 || valor > 10)) valor = "";
+        
         if (!estado.dadosNotas[estado.escolaAtual][estado.turmaAtual][disciplina][aluno]) {
             estado.dadosNotas[estado.escolaAtual][estado.turmaAtual][disciplina][aluno] = { nm1: "", nm2: "", nm3: "" };
         }
@@ -422,20 +414,26 @@ function atualizarEstatisticas() {
     const turma = getTurmaConfig();
     if (!turma) return;
     const tipo = turma.tipoAvaliacao;
+    const alunos = getAlunosTurma();
     let aprovados = 0, recuperacao = 0, reprovados = 0;
-    
-    turma.alunos.forEach(aluno => {
+
+    alunos.forEach(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
         const media = calcularMedia(notas, tipo);
         if (media >= 7) aprovados++;
         else if (media >= 5) recuperacao++;
         else reprovados++;
     });
+
+    const statAlunos = document.getElementById("statAlunos");
+    const statAprovados = document.getElementById("statAprovados");
+    const statRecuperacao = document.getElementById("statRecuperacao");
+    const statReprovados = document.getElementById("statReprovados");
     
-    document.getElementById("statAlunos").textContent = turma.alunos.length;
-    document.getElementById("statAprovados").textContent = aprovados;
-    document.getElementById("statRecuperacao").textContent = recuperacao;
-    document.getElementById("statReprovados").textContent = reprovados;
+    if (statAlunos) statAlunos.textContent = alunos.length;
+    if (statAprovados) statAprovados.textContent = aprovados;
+    if (statRecuperacao) statRecuperacao.textContent = recuperacao;
+    if (statReprovados) statReprovados.textContent = reprovados;
 }
 
 function exportarNotas() {
@@ -443,13 +441,14 @@ function exportarNotas() {
     const turma = getTurmaConfig();
     if (!turma) return;
     const tipo = turma.tipoAvaliacao;
-    const dados = turma.alunos.map(aluno => {
+    const alunos = getAlunosTurma();
+    const dados = alunos.map(aluno => {
         const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        if (tipo === "trimestral") {
-            return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" };
-        }
-        return { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "" };
+        return tipo === "trimestral" 
+            ? { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "", NM3: notas.nm3 || "" }
+            : { Aluno: aluno, NM1: notas.nm1 || "", NM2: notas.nm2 || "" };
     });
+
     const planilha = XLSX.utils.json_to_sheet(dados);
     const livro = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(livro, planilha, `Notas_${turma.nome}`);
@@ -462,41 +461,43 @@ function exportarNotas() {
 // ============================================================================
 
 function renderizarPresenca() {
-    const mes = document.getElementById("mesPresenca").value;
-    const ano = document.getElementById("anoPresenca").value;
+    const mes = document.getElementById("mesPresenca")?.value;
+    const ano = document.getElementById("anoPresenca")?.value;
     const key = `${ano}-${mes.padStart(2,'0')}`;
     const aulas = estado.dadosPresenca[estado.escolaAtual]?.[estado.turmaAtual]?.[key] || [];
     const container = document.getElementById("aulasContainer");
     if (!container) return;
     container.innerHTML = "";
-    
+
     if (aulas.length === 0) {
         container.innerHTML = '<div class="lista-vazia"><i class="fas fa-calendar"></i> Nenhuma aula registrada.</div>';
         return;
     }
-    
-    const turma = getTurmaAtual();
+
+    const alunos = getAlunosTurma();
     aulas.forEach((aula, idx) => {
         const aulaCard = document.createElement("div");
         aulaCard.className = "aula-card-moderno";
         let presencasHtml = "";
-        turma.alunos.forEach(aluno => {
+        alunos.forEach(aluno => {
             const isChecked = aula.presencas && aula.presencas[aluno] === true;
-            presencasHtml += `<tr><td>${aluno}</td><td><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${isChecked ? 'checked' : ''}></td></tr>`;
+            presencasHtml += `<tr><td style="padding:8px">${aluno}</td><td style="padding:8px"><input type="checkbox" class="presenca-check" data-aluno="${aluno}" ${isChecked ? 'checked' : ''}></td></tr>`;
         });
+
         aulaCard.innerHTML = `
-            <div class="aula-header-moderno">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #e2e8f0">
                 <span><i class="fas fa-calendar-alt"></i> ${new Date(aula.data).toLocaleDateString('pt-BR')}</span>
-                <button class="aula-remover" data-index="${idx}"><i class="fas fa-trash"></i> Remover</button>
+                <button class="aula-remover btn-secondary" data-index="${idx}" style="padding:4px 12px">Remover</button>
             </div>
             <div class="tabela-container">
-                <table class="tabela-presenca-moderna">
+                <table style="width:100%">
                     <thead><tr><th>Aluno</th><th>Presente</th></tr></thead>
                     <tbody>${presencasHtml}</tbody>
                 </table>
             </div>
         `;
         container.appendChild(aulaCard);
+
         aulaCard.querySelector(".aula-remover").onclick = () => removerAula(key, idx);
         aulaCard.querySelectorAll(".presenca-check").forEach(checkbox => {
             checkbox.onchange = (e) => {
@@ -524,9 +525,12 @@ function removerAula(key, index) {
 }
 
 function adicionarAula() {
-    const mes = document.getElementById("mesPresenca").value;
-    const ano = document.getElementById("anoPresenca").value;
+    const mes = document.getElementById("mesPresenca")?.value;
+    const ano = document.getElementById("anoPresenca")?.value;
     const key = `${ano}-${mes.padStart(2,'0')}`;
+    if (!estado.dadosPresenca[estado.escolaAtual][estado.turmaAtual]) {
+        estado.dadosPresenca[estado.escolaAtual][estado.turmaAtual] = {};
+    }
     if (!estado.dadosPresenca[estado.escolaAtual][estado.turmaAtual][key]) {
         estado.dadosPresenca[estado.escolaAtual][estado.turmaAtual][key] = [];
     }
@@ -551,12 +555,11 @@ function salvarPresenca() {
 function renderizarVistos() {
     const tbody = document.getElementById("tbodyVistos");
     if (!tbody) return;
-    const turma = getTurmaAtual();
-    if (!turma) return;
+    const alunos = getAlunosTurma();
     const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
     tbody.innerHTML = "";
-    
-    turma.alunos.forEach(aluno => {
+
+    alunos.forEach(aluno => {
         const dados = vistosTurma[aluno] || { total: 0, ultima: "" };
         const row = tbody.insertRow();
         row.insertCell(0).innerHTML = `<strong>${aluno}</strong>`;
@@ -573,14 +576,17 @@ function renderizarVistos() {
 
 function abrirModalVisto(aluno) {
     estado.alunoSelecionadoVisto = aluno;
-    document.getElementById("modalDescVisto").value = "";
-    document.getElementById("modalVisto").style.display = "flex";
+    const modal = document.getElementById("modalVisto");
+    const textarea = document.getElementById("modalDescVisto");
+    if (textarea) textarea.value = "";
+    if (modal) modal.style.display = "flex";
 }
 
 function salvarVisto() {
     if (!estado.alunoSelecionadoVisto) return;
     const descricao = document.getElementById("modalDescVisto")?.value.trim();
     if (!descricao) { mostrarToast("Descreva a participação!", "warning"); return; }
+    
     if (!estado.dadosVistos[estado.escolaAtual][estado.turmaAtual]) {
         estado.dadosVistos[estado.escolaAtual][estado.turmaAtual] = {};
     }
@@ -591,163 +597,64 @@ function salvarVisto() {
     vistosAluno.total++;
     vistosAluno.registros.push({ data: new Date().toISOString(), descricao: descricao });
     vistosAluno.ultima = new Date().toISOString();
+    
     salvarDados();
     renderizarVistos();
     renderizarRanking();
-    document.getElementById("modalVisto").style.display = "none";
-    mostrarToast(`Visto concedido para ${estado.alunoSelecionadoVisto}!`);
+    const modal = document.getElementById("modalVisto");
+    if (modal) modal.style.display = "none";
+    mostrarToast("Visto concedido!");
 }
 
 // ============================================================================
-// RELATÓRIOS
+// HORÁRIOS
 // ============================================================================
 
-function renderizarRelatorios() {
-    const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turma = getTurmaAtual();
-    if (!turma) return;
-    const tipo = turma.tipoAvaliacao;
-    let aprovados = 0, recuperacao = 0, reprovados = 0, somaMedias = 0;
-    
-    turma.alunos.forEach(aluno => {
-        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        const media = calcularMedia(notas, tipo);
-        if (media >= 7) aprovados++;
-        else if (media >= 5) recuperacao++;
-        else reprovados++;
-        somaMedias += media;
-    });
-    const mediaGeral = turma.alunos.length ? (somaMedias / turma.alunos.length).toFixed(1) : 0;
-    
-    document.getElementById("resumoNotas").innerHTML = `
-        <ul>
-            <li>📊 Média Geral: <strong>${mediaGeral}</strong></li>
-            <li>✅ Aprovados: <strong style="color:#22c55e">${aprovados}</strong></li>
-            <li>⚠️ Recuperação: <strong style="color:#f97316">${recuperacao}</strong></li>
-            <li>❌ Reprovados: <strong style="color:#ef4444">${reprovados}</strong></li>
-        </ul>
-    `;
-    
-    let totalPresencas = 0, totalAulas = 0;
-    const presencasTurma = estado.dadosPresenca[estado.escolaAtual]?.[estado.turmaAtual] || {};
-    for (let key in presencasTurma) {
-        if (Array.isArray(presencasTurma[key])) {
-            presencasTurma[key].forEach(aula => {
-                totalAulas++;
-                totalPresencas += Object.values(aula.presencas || {}).filter(v => v === true).length;
-            });
-        }
-    }
-    const freqMedia = totalAulas ? ((totalPresencas / (totalAulas * turma.alunos.length)) * 100).toFixed(1) : 0;
-    document.getElementById("resumoFrequencia").innerHTML = `
-        <ul>
-            <li>📅 Total Aulas: <strong>${totalAulas}</strong></li>
-            <li>📈 Frequência Média: <strong>${freqMedia}%</strong></li>
-        </ul>
-    `;
-    
-    const destaques = [];
-    const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
-    turma.alunos.forEach(aluno => {
-        const v = vistosTurma[aluno]?.total || 0;
-        if (v >= 3) destaques.push({ aluno, vistos: v });
-    });
-    destaques.sort((a, b) => b.vistos - a.vistos);
-    document.getElementById("alunosDestaque").innerHTML = destaques.length ? 
-        `<ul>${destaques.slice(0,5).map(d => `<li>⭐ ${d.aluno} - ${d.vistos} vistos</li>`).join('')}</ul>` : 
-        "<p>Nenhum aluno com destaque</p>";
-    
-    const recuperacaoList = [];
-    turma.alunos.forEach(aluno => {
-        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        const media = calcularMedia(notas, tipo);
-        if (media >= 5 && media < 7) recuperacaoList.push({ aluno, media });
-    });
-    document.getElementById("alunosRecuperacao").innerHTML = recuperacaoList.length ?
-        `<ul>${recuperacaoList.map(r => `<li>⚠️ ${r.aluno} - Média: ${r.media.toFixed(1)}</li>`).join('')}</ul>` :
-        "<p>Nenhum aluno em recuperação</p>";
-}
-
-function exportarRelatorioCompleto() {
-    const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turma = getTurmaAtual();
-    if (!turma) return;
-    const tipo = turma.tipoAvaliacao;
-    const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
-    const presencasTurma = estado.dadosPresenca[estado.escolaAtual]?.[estado.turmaAtual] || {};
-    
-    const dadosExport = turma.alunos.map(aluno => {
-        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        const nm1 = parseFloat(notas.nm1) || 0;
-        const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = tipo === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
-        const media = tipo === "trimestral" ? (nm1 + nm2 + nm3) / 3 : (nm1 + nm2) / 2;
-        const status = media >= 7 ? "Aprovado" : (media >= 5 ? "Recuperação" : "Reprovado");
-        const vistos = vistosTurma[aluno]?.total || 0;
-        const obs = estado.dadosObservacoes[estado.escolaAtual]?.[estado.turmaAtual]?.[aluno] || "";
-        
-        let presencas = 0, aulas = 0;
-        for (let key in presencasTurma) {
-            if (Array.isArray(presencasTurma[key])) {
-                presencasTurma[key].forEach(aula => {
-                    aulas++;
-                    if (aula.presencas && aula.presencas[aluno]) presencas++;
-                });
-            }
-        }
-        const freq = aulas ? ((presencas / aulas) * 100).toFixed(1) : "0";
-        
-        const row = { Aluno: aluno, NM1: nm1, NM2: nm2, "Média": media.toFixed(1), Status: status, Frequência: `${freq}%`, Vistos: vistos, Observações: obs };
-        if (tipo === "trimestral") row["NM3"] = nm3;
-        return row;
-    });
-    
-    const planilha = XLSX.utils.json_to_sheet(dadosExport);
-    const livro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(livro, planilha, `Relatorio_${turma.nome}`);
-    XLSX.writeFile(livro, `Relatorio_${turma.nome}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
-    mostrarToast("Relatório exportado!");
-}
-
-function exportarPDF() {
-    const turma = getTurmaAtual();
-    if (!turma) {
-        mostrarToast("Selecione uma turma primeiro!", "warning");
-        return;
+function renderizarHorarios(diaAlvo = null) {
+    if (!diaAlvo) {
+        const dias = ["segunda", "terca", "quarta", "quinta", "sexta"];
+        const hoje = new Date();
+        const diaSemana = hoje.getDay();
+        diaAlvo = dias[diaSemana - 1] || "segunda";
     }
     
-    const element = document.createElement('div');
-    element.style.padding = '20px';
-    element.style.fontFamily = 'Arial, sans-serif';
+    const grade = document.getElementById("gradeHorarios");
+    if (!grade) return;
     
-    element.innerHTML = `
-        <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #667eea;">Academic Manager Pro</h1>
-            <h2>${turma.nome}</h2>
-            <p>${getEscolaAtual().nome}</p>
-            <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
-        </div>
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead><tr><th style="border:1px solid #ddd;padding:8px;background:#667eea;color:white">Aluno</th><th style="border:1px solid #ddd;padding:8px;background:#667eea;color:white">NM1</th><th style="border:1px solid #ddd;padding:8px;background:#667eea;color:white">NM2</th>${turma.tipoAvaliacao === "trimestral" ? '<th style="border:1px solid #ddd;padding:8px;background:#667eea;color:white">NM3</th>' : ''}<th style="border:1px solid #ddd;padding:8px;background:#667eea;color:white">Média</th><th style="border:1px solid #ddd;padding:8px;background:#667eea;color:white">Status</th></thead><tbody>
-    `;
+    const horarios = getHorariosAtuais();
+    const horariosDia = horarios[diaAlvo] || {};
     
-    const disciplina = document.getElementById("disciplinaNotas")?.value || turma.disciplinas[0];
-    turma.alunos.forEach(aluno => {
-        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        const nm1 = parseFloat(notas.nm1) || 0;
-        const nm2 = parseFloat(notas.nm2) || 0;
-        const nm3 = turma.tipoAvaliacao === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
-        const media = turma.tipoAvaliacao === "trimestral" ? (nm1 + nm2 + nm3) / 3 : (nm1 + nm2) / 2;
-        const status = media >= 7 ? "Aprovado" : (media >= 5 ? "Recuperação" : "Reprovado");
-        const statusColor = media >= 7 ? "#22c55e" : (media >= 5 ? "#f97316" : "#ef4444");
+    grade.innerHTML = "";
+
+    document.querySelectorAll('.dia-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.dia-btn[data-dia="${diaAlvo}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    let temAula = false;
+    for (let turmaId in horariosDia) {
+        const aulas = horariosDia[turmaId];
+        if (!aulas || aulas.length === 0) continue;
+        temAula = true;
+        const turmaNome = estado.turmas[estado.escolaAtual]?.[turmaId]?.nome || turmaId;
         
-        element.innerHTML += `<tr><td style="border:1px solid #ddd;padding:8px">${aluno}</td><td style="border:1px solid #ddd;padding:8px;text-align:center">${nm1.toFixed(1)}</td><td style="border:1px solid #ddd;padding:8px;text-align:center">${nm2.toFixed(1)}</td>${turma.tipoAvaliacao === "trimestral" ? `<td style="border:1px solid #ddd;padding:8px;text-align:center">${nm3.toFixed(1)}</td>` : ''}<td style="border:1px solid #ddd;padding:8px;text-align:center;font-weight:bold">${media.toFixed(1)}</td><td style="border:1px solid #ddd;padding:8px;text-align:center;color:${statusColor}">${status}</td></tr>`;
-    });
-    
-    element.innerHTML += `</tbody></table><div style="margin-top:30px;text-align:center"><p>© ${new Date().getFullYear()} Academic Manager Pro</p></div>`;
-    
-    html2pdf().set({ margin: [0.5,0.5,0.5,0.5], filename: `Boletim_${turma.nome}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(element).save();
-    mostrarToast("PDF gerado!");
+        aulas.forEach(aula => {
+            const item = document.createElement("div");
+            item.className = "horario-item-moderno";
+            item.style.cssText = "display:flex; align-items:center; gap:15px; padding:12px; background:#f8fafc; border-radius:8px; margin-bottom:8px; border-left:4px solid #667eea";
+            item.innerHTML = `
+                <div style="min-width:80px; font-weight:bold; color:#667eea">${aula.hora}</div>
+                <div style="flex:1">
+                    <strong>${aula.disciplina}</strong>
+                    <div style="font-size:12px; color:#64748b">${turmaNome}</div>
+                </div>
+            `;
+            grade.appendChild(item);
+        });
+    }
+
+    if (!temAula) {
+        grade.innerHTML = '<div class="lista-vazia"><i class="fas fa-calendar-times"></i> Nenhuma aula cadastrada para este dia.</div>';
+    }
 }
 
 // ============================================================================
@@ -756,81 +663,153 @@ function exportarPDF() {
 
 function renderizarRanking() {
     const disciplina = document.getElementById("rankingDisciplina")?.value;
-    const turma = getTurmaAtual();
+    if (!disciplina) return;
+    const turma = getTurmaConfig();
     if (!turma) return;
     const tipo = turma.tipoAvaliacao;
-    const container = document.getElementById("rankingContainer");
-    if (!container) return;
-    
-    const rankings = turma.alunos.map(aluno => {
-        const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
-        const media = calcularMedia(notas, tipo);
-        const vistos = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual]?.[aluno]?.total || 0;
+    const alunos = getAlunosTurma();
+    const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
+    const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
+
+    const dadosAlunos = alunos.map(aluno => {
+        const media = calcularMedia(notasTurma[aluno] || {}, tipo);
+        const vistos = vistosTurma[aluno]?.total || 0;
         return { aluno, media, vistos };
     });
-    rankings.sort((a, b) => b.media - a.media);
-    
-    container.innerHTML = rankings.map((item, idx) => {
-        let posClass = idx === 0 ? "gold" : idx === 1 ? "silver" : idx === 2 ? "bronze" : "";
-        return `
-            <div class="ranking-item-moderno">
-                <div class="ranking-pos ${posClass}">${idx + 1}</div>
-                <div class="ranking-info">
-                    <h4>${item.aluno}</h4>
-                    <p><i class="fas fa-star"></i> ${item.vistos} vistos</p>
-                </div>
-                <div class="ranking-nota">${item.media.toFixed(1)}</div>
-            </div>
+
+    dadosAlunos.sort((a, b) => b.media - a.media);
+
+    const container = document.getElementById("rankingContainer");
+    if (!container) return;
+    container.innerHTML = "";
+
+    dadosAlunos.forEach((dado, pos) => {
+        let medalha = "";
+        if (pos === 0) medalha = "🥇";
+        else if (pos === 1) medalha = "🥈";
+        else if (pos === 2) medalha = "🥉";
+        
+        const item = document.createElement("div");
+        item.className = "ranking-item-moderno";
+        item.style.cssText = "display:flex; align-items:center; gap:15px; padding:12px; background:#f8fafc; border-radius:8px; margin-bottom:8px";
+        item.innerHTML = `
+            <div style="min-width:50px; font-size:20px; font-weight:bold; text-align:center">${medalha || (pos+1)}</div>
+            <div style="flex:1"><strong>${dado.aluno}</strong></div>
+            <div style="text-align:center; min-width:80px"><span class="badge-visto">${dado.vistos}</span></div>
+            <div style="min-width:60px; font-weight:bold; color:#667eea">${dado.media.toFixed(1)}</div>
         `;
-    }).join('');
+        container.appendChild(item);
+    });
 }
 
 // ============================================================================
-// HORÁRIOS
+// RELATÓRIOS
 // ============================================================================
 
-function renderizarHorarios(dia = null) {
-    if (!dia) {
-        const dias = ["segunda", "terca", "quarta", "quinta", "sexta"];
-        const hoje = new Date();
-        const diaSemana = hoje.getDay();
-        dia = dias[diaSemana - 1] || "segunda";
-    }
+function renderizarRelatorios() {
+    renderizarResumoNotas();
+    renderizarResumoFrequencia();
+    renderizarAlunosDestaque();
+    renderizarAlunosRecuperacao();
+    atualizarGraficoEvolucao();
+}
+
+function renderizarResumoNotas() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value;
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    const alunos = getAlunosTurma();
+    const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
     
-    document.querySelectorAll(".dia-btn").forEach(btn => {
-        btn.classList.toggle("ativo", btn.dataset.dia === dia);
+    let soma = 0, qtd = 0, aprovados = 0, rec = 0, rep = 0;
+    alunos.forEach(aluno => {
+        const m = calcularMedia(notasTurma[aluno] || {}, tipo);
+        if (m > 0) { soma += m; qtd++; }
+        if (m >= 7) aprovados++;
+        else if (m >= 5) rec++;
+        else if (m > 0) rep++;
     });
-    
-    const horariosAtuais = getHorariosAtuais();
-    const aulasDia = horariosAtuais[dia];
-    if (!aulasDia) return;
-    
-    const escola = getEscolaAtual();
-    const turmasLista = Object.keys(escola.turmas);
-    const horariosFixos = estado.escolaAtual === "gentil" 
-        ? ["07:30", "08:30", "09:50", "10:50", "11:50", "12:50", "13:50", "15:10", "16:10"]
-        : ["18:30", "19:25", "20:20", "21:25", "22:20"];
-    
-    let html = `<table class="tabela-horarios-moderna"><thead><tr><th>Horário</th>${turmasLista.map(t => `<th>${escola.turmas[t].nome}</th>`).join('')}</thead><tbody>`;
-    
-    for (let i = 0; i < horariosFixos.length; i++) {
-        const hora = horariosFixos[i];
-        html += `<tr><td class="hora-col">${hora}</td>`;
-        for (let turmaId of turmasLista) {
-            const aula = aulasDia[turmaId]?.find(a => a.hora === hora);
-            html += `<td>${aula ? `<strong>${aula.disciplina}</strong>` : "—"}</td>`;
-        }
-        html += `</tr>`;
-        
-        if (estado.escolaAtual === "gentil" && hora === "09:50") {
-            html += `<tr style="background:#fef3c7;"><td class="hora-col">☕ INTERVALO<td colspan="${turmasLista.length}">Recreio</td></tr>`;
-        }
-        if (estado.escolaAtual === "gentil" && hora === "12:50") {
-            html += `<tr style="background:#fef3c7;"><td class="hora-col">🍽️ ALMOÇO<td colspan="${turmasLista.length}">Horário de Almoço</td></tr>`;
-        }
+    const mediaGeral = qtd > 0 ? (soma / qtd).toFixed(1) : "0.0";
+
+    const resumoDiv = document.getElementById("resumoNotas");
+    if (resumoDiv) {
+        resumoDiv.innerHTML = `
+            <p><strong>Média geral:</strong> ${mediaGeral}</p>
+            <p><strong>✅ Aprovados:</strong> ${aprovados}</p>
+            <p><strong>⚠️ Recuperação:</strong> ${rec}</p>
+            <p><strong>❌ Reprovados:</strong> ${rep}</p>
+        `;
     }
-    html += `</tbody></table>`;
-    document.getElementById("gradeHorarios").innerHTML = html;
+}
+
+function renderizarResumoFrequencia() {
+    const alunos = getAlunosTurma();
+    const presencaTurma = estado.dadosPresenca[estado.escolaAtual]?.[estado.turmaAtual] || {};
+    
+    let totalAulas = 0, totalPresencas = 0;
+    for (let key in presencaTurma) {
+        const aulas = presencaTurma[key];
+        totalAulas += aulas.length;
+        aulas.forEach(aula => {
+            for (let aluno in aula.presencas) {
+                if (aula.presencas[aluno]) totalPresencas++;
+            }
+        });
+    }
+    const mediaPresencas = totalAulas > 0 && alunos.length > 0 ? Math.round((totalPresencas / (totalAulas * alunos.length)) * 100) : 0;
+
+    const resumoDiv = document.getElementById("resumoFrequencia");
+    if (resumoDiv) {
+        resumoDiv.innerHTML = `
+            <p><strong>Total de aulas:</strong> ${totalAulas}</p>
+            <p><strong>Presença média:</strong> ${mediaPresencas}%</p>
+        `;
+    }
+}
+
+function renderizarAlunosDestaque() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value;
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    const alunos = getAlunosTurma();
+    const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
+    const vistosTurma = estado.dadosVistos[estado.escolaAtual]?.[estado.turmaAtual] || {};
+
+    const destaques = alunos
+        .map(aluno => ({ aluno, media: calcularMedia(notasTurma[aluno]||{}, tipo), vistos: vistosTurma[aluno]?.total||0 }))
+        .filter(d => d.media >= 8.5)
+        .sort((a,b) => b.media - a.media)
+        .slice(0, 3);
+
+    const container = document.getElementById("alunosDestaque");
+    if (container) {
+        container.innerHTML = destaques.length 
+            ? destaques.map(d => `<p><strong>⭐ ${d.aluno}</strong> - Média: ${d.media.toFixed(1)}</p>`).join('') 
+            : "<p>Nenhum aluno em destaque.</p>";
+    }
+}
+
+function renderizarAlunosRecuperacao() {
+    const disciplina = document.getElementById("disciplinaNotas")?.value;
+    const turma = getTurmaConfig();
+    if (!turma) return;
+    const tipo = turma.tipoAvaliacao;
+    const alunos = getAlunosTurma();
+    const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
+
+    const rec = alunos.filter(aluno => {
+        const m = calcularMedia(notasTurma[aluno]||{}, tipo);
+        return m >= 5 && m < 7;
+    });
+
+    const container = document.getElementById("alunosRecuperacao");
+    if (container) {
+        container.innerHTML = rec.length 
+            ? rec.map(a => `<p><strong>⚠️ ${a}</strong></p>`).join('') 
+            : "<p>Nenhum aluno em recuperação.</p>";
+    }
 }
 
 // ============================================================================
@@ -844,13 +823,19 @@ function getDiaSemanaNome(data) {
 
 function getAulasDoDia(data) {
     const diaSemana = getDiaSemanaNome(data);
-    const horariosAtuais = getHorariosAtuais();
-    const aulasDia = horariosAtuais[diaSemana] || {};
+    const horarios = getHorariosAtuais();
+    const aulasDia = horarios[diaSemana] || {};
     const aulas = [];
-    const escola = getEscolaAtual();
-    for (let turmaId in escola.turmas) {
-        (aulasDia[turmaId] || []).forEach(aula => {
-            aulas.push({ turmaNome: escola.turmas[turmaId].nome, disciplina: aula.disciplina, hora: aula.hora });
+    const turmasDaEscola = estado.turmas[estado.escolaAtual] || {};
+    
+    for (let turmaId in turmasDaEscola) {
+        const turmaAulas = aulasDia[turmaId] || [];
+        turmaAulas.forEach(aula => {
+            aulas.push({
+                turmaNome: turmasDaEscola[turmaId]?.nome || turmaId,
+                disciplina: aula.disciplina,
+                hora: aula.hora
+            });
         });
     }
     aulas.sort((a, b) => a.hora.localeCompare(b.hora));
@@ -859,22 +844,24 @@ function getAulasDoDia(data) {
 
 function renderizarDashboard() {
     const hoje = new Date();
-    const amanha = new Date(hoje); amanha.setDate(amanha.getDate() + 1);
+    const amanha = new Date(hoje);
+    amanha.setDate(amanha.getDate() + 1);
     
-    document.getElementById("hojeData").textContent = hoje.toLocaleDateString('pt-BR');
+    const hojeDataSpan = document.getElementById("hojeData");
+    if (hojeDataSpan) hojeDataSpan.textContent = hoje.toLocaleDateString('pt-BR');
     
     const aulasHoje = getAulasDoDia(hoje);
     const aulasHojeContainer = document.getElementById("aulasHojeContainer");
     if (aulasHojeContainer) {
         if (aulasHoje.length === 0) {
-            aulasHojeContainer.innerHTML = '<div class="empty-state">Nenhuma aula programada para hoje!</div>';
+            aulasHojeContainer.innerHTML = '<div class="lista-vazia">Nenhuma aula programada para hoje!</div>';
         } else {
             aulasHojeContainer.innerHTML = aulasHoje.map(aula => `
-                <div class="aula-item-moderno">
-                    <div class="aula-hora">${aula.hora}</div>
-                    <div class="aula-info">
+                <div style="display:flex; align-items:center; gap:15px; padding:12px; background:#f8fafc; border-radius:8px; border-left:4px solid #667eea">
+                    <div style="min-width:80px; font-weight:bold; color:#667eea">${aula.hora}</div>
+                    <div style="flex:1">
                         <strong>${aula.disciplina}</strong>
-                        <small>${aula.turmaNome}</small>
+                        <div style="font-size:12px; color:#64748b">${aula.turmaNome}</div>
                     </div>
                 </div>
             `).join('');
@@ -883,29 +870,32 @@ function renderizarDashboard() {
     
     const todasProximas = [];
     for (let i = 0; i < 3; i++) {
-        const dia = new Date(hoje); dia.setDate(hoje.getDate() + i);
+        const dia = new Date(hoje);
+        dia.setDate(hoje.getDate() + i);
         getAulasDoDia(dia).forEach(aula => {
             const [h, m] = aula.hora.split(":").map(Number);
-            const dataAula = new Date(dia); dataAula.setHours(h, m, 0);
+            const dataAula = new Date(dia);
+            dataAula.setHours(h, m, 0);
             if (dataAula > new Date()) {
                 todasProximas.push({ ...aula, data: new Date(dia), diffMin: Math.floor((dataAula - new Date()) / 60000) });
             }
         });
     }
     todasProximas.sort((a, b) => a.diffMin - b.diffMin);
+    
     const proximasContainer = document.getElementById("proximasAulasContainer");
     if (proximasContainer) {
         if (todasProximas.length === 0) {
-            proximasContainer.innerHTML = '<div class="empty-state">Nenhuma aula futura agendada</div>';
+            proximasContainer.innerHTML = '<div class="lista-vazia">Nenhuma aula futura agendada</div>';
         } else {
             proximasContainer.innerHTML = todasProximas.slice(0, 5).map(a => `
-                <div class="aula-item-moderno">
-                    <div class="aula-hora">${a.hora}</div>
-                    <div class="aula-info">
+                <div style="display:flex; align-items:center; gap:15px; padding:12px; background:#f8fafc; border-radius:8px; border-left:4px solid #667eea">
+                    <div style="min-width:80px; font-weight:bold; color:#667eea">${a.hora}</div>
+                    <div style="flex:1">
                         <strong>${a.disciplina}</strong>
-                        <small>${a.turmaNome} - ${a.data.toLocaleDateString('pt-BR')}</small>
+                        <div style="font-size:12px; color:#64748b">${a.turmaNome} - ${a.data.toLocaleDateString('pt-BR')}</div>
                     </div>
-                    <div class="aula-tempo">em ${a.diffMin} min</div>
+                    <div style="background:#fef3c7; padding:4px 10px; border-radius:20px; font-size:12px">em ${a.diffMin}min</div>
                 </div>
             `).join('');
         }
@@ -913,24 +903,29 @@ function renderizarDashboard() {
 }
 
 // ============================================================================
-// ADMIN
+// ADMIN, EVENTOS, OBSERVAÇÕES
 // ============================================================================
 
 function renderizarAdmin() {
-    const turma = getTurmaAtual();
+    const turma = getTurmaConfig();
     if (!turma) return;
+    const alunos = getAlunosTurma();
     const tbody = document.getElementById("tbodyAdmin");
     if (!tbody) return;
     tbody.innerHTML = "";
-    turma.alunos.forEach((aluno, idx) => {
+    
+    alunos.forEach((aluno, idx) => {
         const row = tbody.insertRow();
         row.insertCell(0).textContent = idx + 1;
         row.insertCell(1).innerHTML = `<strong>${aluno}</strong>`;
-        row.insertCell(2).innerHTML = '<span style="color: #22c55e;">Ativo</span>';
+        row.insertCell(2).innerHTML = '<span style="color: #22c55e;">✓ Ativo</span>';
         const btnCell = row.insertCell(3);
         const btnRemover = document.createElement("button");
         btnRemover.innerHTML = '<i class="fas fa-trash"></i>';
         btnRemover.className = "btn-secondary";
+        btnRemover.style.padding = "5px 10px";
+        btnRemover.style.background = "#fef2f2";
+        btnRemover.style.color = "#ef4444";
         btnRemover.onclick = () => removerAluno(aluno);
         btnCell.appendChild(btnRemover);
     });
@@ -938,10 +933,9 @@ function renderizarAdmin() {
 
 function removerAluno(alunoNome) {
     if (!confirm(`Remover "${alunoNome}"?`)) return;
-    const turma = getTurmaAtual();
-    if (!turma) return;
-    const index = turma.alunos.indexOf(alunoNome);
-    if (index !== -1) turma.alunos.splice(index, 1);
+    const alunos = getAlunosTurma();
+    const index = alunos.indexOf(alunoNome);
+    if (index !== -1) alunos.splice(index, 1);
     salvarDados();
     renderizarAdmin();
     renderizarNotas();
@@ -952,23 +946,20 @@ function removerAluno(alunoNome) {
 function adicionarAluno() {
     const nome = document.getElementById("modalAlunoNome")?.value.trim().toUpperCase();
     if (!nome) { mostrarToast("Digite o nome!", "warning"); return; }
-    const turma = getTurmaAtual();
-    if (!turma) return;
-    if (turma.alunos.includes(nome)) { mostrarToast("Aluno já existe!", "warning"); return; }
-    turma.alunos.push(nome);
-    turma.alunos.sort();
+    const alunos = getAlunosTurma();
+    if (alunos.includes(nome)) { mostrarToast("Aluno já existe!", "warning"); return; }
+    alunos.push(nome);
+    alunos.sort();
     salvarDados();
     renderizarAdmin();
     renderizarNotas();
     renderizarDashboard();
-    document.getElementById("modalAluno").style.display = "none";
-    document.getElementById("modalAlunoNome").value = "";
+    const modal = document.getElementById("modalAluno");
+    if (modal) modal.style.display = "none";
+    const inputNome = document.getElementById("modalAlunoNome");
+    if (inputNome) inputNome.value = "";
     mostrarToast(`"${nome}" adicionado!`);
 }
-
-// ============================================================================
-// EVENTOS
-// ============================================================================
 
 function renderizarEventos() {
     const container = document.getElementById("eventosContainer");
@@ -976,7 +967,7 @@ function renderizarEventos() {
     container.innerHTML = "";
     
     if (!estado.dadosEventos || estado.dadosEventos.length === 0) {
-        container.innerHTML = '<div class="empty-state">Nenhum evento cadastrado</div>';
+        container.innerHTML = '<div class="lista-vazia">Nenhum evento cadastrado</div>';
         return;
     }
     
@@ -987,12 +978,20 @@ function renderizarEventos() {
         const data = new Date(evento.data);
         const eventCard = document.createElement("div");
         eventCard.className = "evento-item-moderno";
+        eventCard.style.cssText = "display:flex; align-items:center; gap:15px; padding:12px; background:#f8fafc; border-radius:8px; margin-bottom:8px";
         eventCard.innerHTML = `
-            <div class="evento-data"><div class="dia">${data.getDate()}</div><div class="mes">${meses[data.getMonth()]}</div></div>
-            <div class="evento-info"><h4>${evento.titulo}</h4><p>${evento.descricao || ""}</p></div>
-            <button class="evento-remover" data-index="${idx}"><i class="fas fa-trash"></i></button>
+            <div style="min-width:70px; text-align:center; padding:8px; background:#667eea; color:white; border-radius:12px">
+                <div style="font-size:22px; font-weight:bold">${data.getDate()}</div>
+                <div style="font-size:11px; text-transform:uppercase">${meses[data.getMonth()]}</div>
+            </div>
+            <div style="flex:1">
+                <h4 style="margin-bottom:4px">${evento.titulo}</h4>
+                <p style="font-size:13px; color:#64748b">${evento.descricao || ""}</p>
+            </div>
+            <button class="evento-remover btn-secondary" data-index="${idx}" style="padding:5px 10px">Remover</button>
         `;
         container.appendChild(eventCard);
+        
         eventCard.querySelector(".evento-remover").onclick = () => {
             estado.dadosEventos.splice(idx, 1);
             salvarDados();
@@ -1010,7 +1009,8 @@ function adicionarEvento() {
     estado.dadosEventos.push({ titulo, data, descricao });
     salvarDados();
     renderizarEventos();
-    document.getElementById("modalEvento").style.display = "none";
+    const modal = document.getElementById("modalEvento");
+    if (modal) modal.style.display = "none";
     mostrarToast("Evento adicionado!");
 }
 
@@ -1060,19 +1060,22 @@ function restoreDados(file) {
 
 function abrirModalObservacao(aluno) {
     const obs = estado.dadosObservacoes[estado.escolaAtual]?.[estado.turmaAtual]?.[aluno] || "";
-    document.getElementById("modalObsTexto").value = obs;
-    document.getElementById("modalObs").style.display = "flex";
+    const textarea = document.getElementById("modalObsTexto");
+    if (textarea) textarea.value = obs;
+    const modal = document.getElementById("modalObs");
+    if (modal) modal.style.display = "flex";
     window.alunoObsSelecionado = aluno;
 }
 
 function salvarObservacaoModal() {
-    const obs = document.getElementById("modalObsTexto").value;
+    const obs = document.getElementById("modalObsTexto")?.value || "";
     if (window.alunoObsSelecionado) {
         if (!estado.dadosObservacoes[estado.escolaAtual]) estado.dadosObservacoes[estado.escolaAtual] = {};
         if (!estado.dadosObservacoes[estado.escolaAtual][estado.turmaAtual]) estado.dadosObservacoes[estado.escolaAtual][estado.turmaAtual] = {};
         estado.dadosObservacoes[estado.escolaAtual][estado.turmaAtual][window.alunoObsSelecionado] = obs;
         salvarDados();
-        document.getElementById("modalObs").style.display = "none";
+        const modal = document.getElementById("modalObs");
+        if (modal) modal.style.display = "none";
         mostrarToast("Observação salva!");
     }
 }
@@ -1084,7 +1087,7 @@ function atualizarGraficoEvolucao() {
     if (!aluno) return;
     
     const disciplina = document.getElementById("disciplinaNotas")?.value;
-    const turma = getTurmaAtual();
+    const turma = getTurmaConfig();
     if (!turma) return;
     const tipo = turma.tipoAvaliacao;
     const notas = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina]?.[aluno] || {};
@@ -1109,32 +1112,89 @@ function atualizarGraficoEvolucao() {
     });
 }
 
+function exportarPDF() {
+    const turma = getTurmaConfig();
+    if (!turma) {
+        mostrarToast("Selecione uma turma primeiro!", "warning");
+        return;
+    }
+    
+    const element = document.createElement('div');
+    element.style.padding = '20px';
+    element.style.fontFamily = 'Arial, sans-serif';
+    
+    element.innerHTML = `
+        <div style="text-align:center; margin-bottom:30px">
+            <h1 style="color:#667eea">Academic Manager Pro</h1>
+            <h2>${turma.nome}</h2>
+            <p>${estado.escolas[estado.escolaAtual]?.nome || ''}</p>
+            <p>Data: ${new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+        <table style="width:100%; border-collapse:collapse">
+            <thead><tr>
+                <th style="border:1px solid #ddd; padding:8px; background:#667eea; color:white">Aluno</th>
+                <th style="border:1px solid #ddd; padding:8px; background:#667eea; color:white">NM1</th>
+                <th style="border:1px solid #ddd; padding:8px; background:#667eea; color:white">NM2</th>
+                ${turma.tipoAvaliacao === "trimestral" ? '<th style="border:1px solid #ddd; padding:8px; background:#667eea; color:white">NM3</th>' : ''}
+                <th style="border:1px solid #ddd; padding:8px; background:#667eea; color:white">Média</th>
+                <th style="border:1px solid #ddd; padding:8px; background:#667eea; color:white">Status</th>
+            </tr></thead>
+            <tbody>
+    `;
+    
+    const disciplina = document.getElementById("disciplinaNotas")?.value || turma.disciplinas[0];
+    const alunos = getAlunosTurma();
+    const notasTurma = estado.dadosNotas[estado.escolaAtual]?.[estado.turmaAtual]?.[disciplina] || {};
+    
+    alunos.forEach(aluno => {
+        const notas = notasTurma[aluno] || {};
+        const nm1 = parseFloat(notas.nm1) || 0;
+        const nm2 = parseFloat(notas.nm2) || 0;
+        const nm3 = turma.tipoAvaliacao === "trimestral" ? (parseFloat(notas.nm3) || 0) : 0;
+        const media = turma.tipoAvaliacao === "trimestral" ? (nm1 + nm2 + nm3) / 3 : (nm1 + nm2) / 2;
+        const status = media >= 7 ? "Aprovado" : (media >= 5 ? "Recuperação" : "Reprovado");
+        const statusColor = media >= 7 ? "#22c55e" : (media >= 5 ? "#f97316" : "#ef4444");
+        
+        element.innerHTML += `<tr>
+            <td style="border:1px solid #ddd; padding:8px">${alumo}</td>
+            <td style="border:1px solid #ddd; padding:8px; text-align:center">${nm1.toFixed(1)}</td>
+            <td style="border:1px solid #ddd; padding:8px; text-align:center">${nm2.toFixed(1)}</td>
+            ${turma.tipoAvaliacao === "trimestral" ? `<td style="border:1px solid #ddd; padding:8px; text-align:center">${nm3.toFixed(1)}</td>` : ''}
+            <td style="border:1px solid #ddd; padding:8px; text-align:center; font-weight:bold">${media.toFixed(1)}</td>
+            <td style="border:1px solid #ddd; padding:8px; text-align:center; color:${statusColor}">${status}</td>
+        </tr>`;
+    });
+    
+    element.innerHTML += `</tbody></table><div style="margin-top:30px; text-align:center"><p>© ${new Date().getFullYear()} Academic Manager Pro</p></div>`;
+    
+    html2pdf().set({ margin: [0.5,0.5,0.5,0.5], filename: `Boletim_${turma.nome}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(element).save();
+    mostrarToast("PDF gerado!");
+}
+
 // ============================================================================
 // INICIALIZAÇÃO
 // ============================================================================
 
-function iniciarSistema(usuario) {
+async function iniciarSistema(usuario) {
     estado.sessaoAtual = usuario;
-    document.getElementById("usuarioLogado").textContent = usuario.nome;
-    document.getElementById("telaLogin").style.display = "none";
-    document.getElementById("conteudoPrincipal").style.display = "flex";
+    const usuarioLogado = document.getElementById("usuarioLogado");
+    if (usuarioLogado) usuarioLogado.textContent = usuario.nome;
     
-    carregarDadosSalvos();
+    document.getElementById("telaLogin").style.display = "none";
+    document.getElementById("conteudoPrincipal").style.display = "block";
+    
+    await carregarDadosJSON();
     carregarTurmasSelect();
     
     let escolaInicial = "gentil", turmaInicial = "1adm";
     if (usuario.escola === "eneas") { escolaInicial = "eneas"; turmaInicial = "inf1"; }
     trocarEscolaTurma(escolaInicial, turmaInicial);
     
-    // Navegação do menu
+    // Eventos de navegação
     document.querySelectorAll(".menu-item").forEach(item => {
         item.addEventListener("click", () => {
-            document.querySelectorAll(".menu-item").forEach(m => m.classList.remove("active"));
-            document.querySelectorAll(".page-content").forEach(p => p.classList.remove("active"));
-            item.classList.add("active");
-            const page = item.dataset.page;
-            document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.add("active");
-            document.getElementById("pageTitle").textContent = item.querySelector("span").textContent;
+            const pagina = item.dataset.page;
+            navegarPagina(pagina);
         });
     });
     
@@ -1144,18 +1204,20 @@ function iniciarSistema(usuario) {
     document.getElementById("adicionarAula")?.addEventListener("click", adicionarAula);
     document.getElementById("salvarPresenca")?.addEventListener("click", salvarPresenca);
     document.getElementById("adicionarVisto")?.addEventListener("click", () => {
-        const turma = getTurmaAtual();
-        if (turma && turma.alunos.length > 0) abrirModalVisto(turma.alunos[0]);
+        const alunos = getAlunosTurma();
+        if (alunos.length > 0) abrirModalVisto(alunos[0]);
     });
     document.getElementById("salvarVistos")?.addEventListener("click", () => { salvarDados(); mostrarToast("Vistos salvos!"); });
-    document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto);
+    document.getElementById("exportarRelatorioGeral")?.addEventListener("click", exportarRelatorioCompleto || (() => mostrarToast("Função em desenvolvimento")));
     document.getElementById("exportarPDF")?.addEventListener("click", exportarPDF);
     document.getElementById("adicionarEvento")?.addEventListener("click", () => {
-        document.getElementById("modalEvento").style.display = "flex";
+        const modal = document.getElementById("modalEvento");
+        if (modal) modal.style.display = "flex";
     });
     document.getElementById("modalSalvarEvento")?.addEventListener("click", adicionarEvento);
     document.getElementById("adicionarAlunoBtn")?.addEventListener("click", () => {
-        document.getElementById("modalAluno").style.display = "flex";
+        const modal = document.getElementById("modalAluno");
+        if (modal) modal.style.display = "flex";
     });
     document.getElementById("modalSalvarAluno")?.addEventListener("click", adicionarAluno);
     document.getElementById("backupDadosBtn")?.addEventListener("click", backupDados);
@@ -1171,7 +1233,7 @@ function iniciarSistema(usuario) {
     document.getElementById("graficoAlunoSelect")?.addEventListener("change", atualizarGraficoEvolucao);
     document.getElementById("escolaSelect")?.addEventListener("change", (e) => {
         const novaEscola = e.target.value;
-        const primeiraTurma = Object.keys(ESCOLAS[novaEscola].turmas)[0];
+        const primeiraTurma = Object.keys(estado.turmas[novaEscola])[0];
         trocarEscolaTurma(novaEscola, primeiraTurma);
     });
     document.getElementById("turmaSelect")?.addEventListener("change", (e) => {
@@ -1194,40 +1256,27 @@ function iniciarSistema(usuario) {
     
     document.querySelectorAll(".modal-fechar").forEach(btn => {
         btn.onclick = () => {
-            document.getElementById("modalAluno").style.display = "none";
-            document.getElementById("modalVisto").style.display = "none";
-            document.getElementById("modalEvento").style.display = "none";
-            document.getElementById("modalObs").style.display = "none";
+            const modais = ["modalAluno", "modalVisto", "modalEvento", "modalObs"];
+            modais.forEach(id => {
+                const modal = document.getElementById(id);
+                if (modal) modal.style.display = "none";
+            });
         };
     });
     
-    console.log("Sistema iniciado!");
+    mostrarToast("Sistema iniciado com sucesso!");
 }
 
-// TELA DE LOGIN
-function initLogin() {
-    document.getElementById("loginCpf")?.addEventListener("input", () => formatarCPF(document.getElementById("loginCpf")));
-    document.getElementById("btnLogin")?.addEventListener("click", () => {
-        const resultado = fazerLogin(document.getElementById("loginCpf").value, document.getElementById("loginSenha").value);
-        if (resultado.sucesso) {
-            iniciarSistema(estado.sessaoAtual);
-        } else {
-            document.getElementById("loginError").textContent = resultado.erro;
-        }
-    });
-    document.getElementById("loginSenha")?.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") document.getElementById("btnLogin").click();
-    });
-}
+// ============================================================================
+// SERVICE WORKER E DOM CONTENT LOADED
+// ============================================================================
 
-// SERVICE WORKER
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log(err));
     });
 }
 
-// DOM CONTENT LOADED
 document.addEventListener("DOMContentLoaded", () => {
     const sessao = verificarSessao();
     if (sessao) {
@@ -1236,5 +1285,19 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("telaLogin").style.display = "flex";
         document.getElementById("conteudoPrincipal").style.display = "none";
     }
-    initLogin();
+    
+    document.getElementById("btnLogin")?.addEventListener("click", () => {
+        const cpf = document.getElementById("loginCpf").value;
+        const senha = document.getElementById("loginSenha").value;
+        const resultado = fazerLogin(cpf, senha);
+        if (resultado.sucesso) {
+            iniciarSistema(estado.sessaoAtual);
+        } else {
+            document.getElementById("loginError").textContent = resultado.erro;
+        }
+    });
+    
+    document.getElementById("loginSenha")?.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") document.getElementById("btnLogin").click();
+    });
 });
